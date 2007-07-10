@@ -911,6 +911,7 @@ PRO rat,STARTFILE=startfile,BLOCK=block, $
 		wid.info = WIDGET_TEXT(lower,SCR_XSIZE=wid.base_xsize-135, YSIZE=3)
 ;	  	image_rat_draw = widget_draw(lower,xsize=130,ysize=57)
 
+
 ;;; set a 'fancy' prompt for rat:
 
 ;---- draw everything ----
