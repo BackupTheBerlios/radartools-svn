@@ -5,6 +5,7 @@
 Version 0.19:
 
 - Change to the MPL 1.1 license
+- Move to Berlios
 - New routines: PolDInSAR phase and height estimation from MB-PolInSAR data
 - New routine : Individual basis transformation per pixel (with given SM vectors)
 - Improved routines: Possibility to save optimal scattering mechanism vectors in MB-PolInSAR
