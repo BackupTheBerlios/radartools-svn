@@ -1,0 +1,12 @@
+@general/mm/mm_determ.pro
+@general/mm/mm_diag.pro
+@general/mm/mm_herm.pro
+@general/mm/mm_invert.pro
+@general/mm/mm_mm.pro
+@general/mm/mm_xprod.pro
+@general/mm/mm_s2v.pro
+@general/mm/mm_transpose.pro
+@general/mm/mm_v2m.pro
+@general/mm/mm_vnormalize.pro
+@general/mm/mm_power.pro
+@general/mm/mm_trace.pro

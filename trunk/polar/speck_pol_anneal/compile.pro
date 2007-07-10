@@ -1,0 +1,5 @@
+@polar/speck_pol_anneal/calcCliqueConfig
+@polar/speck_pol_anneal/calcEffectiveNumLooks
+@polar/speck_pol_anneal/updateEstimate
+@polar/speck_pol_anneal/finaliseEstimate
+@polar/speck_pol_anneal/speck_pol_anneal

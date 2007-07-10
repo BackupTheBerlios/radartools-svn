@@ -1,0 +1,75 @@
+\chapter{Development Guide}
+
+This section is meant as a reference for the developers of RAT, as well as for
+those of you, who would like to understand better RAT was programmed.
+
+
+\section{Import Template}
+
+\section{Data Parameter Handling}
+This section answers the questions:
+\begin{itemize}
+  \item How can I get access to parameters, resp. read/write them?
+  \item How do I include new parameters.
+  \item Where should I get the real parameters from?
+\end{itemize}
+
+\begin{enumerate}
+  \item Define the parameter in the parameter structure \textbf{parstruct} in
+    \textbf{definitions.pro}. The name of the entry is also the name of the
+    parameter, followed by an NIL--Pointer type. Don't forget to add some
+    comments about your parameter. Also think of a good name!
+  \item For changing a parameter use the function \textbf{set\_par()}. You have to
+    provide the name as a string and the value(can also be an array). As a
+    result you get a status flag, which you should check. If you get 0, then
+    everything is ok.
+  \item For getting a parameter use the function \textbf{get\_par()}. See details above.
+\end{enumerate}
+
+
+\section{Speckle Filter Wizard}
+This section answers the questions:
+\begin{itemize}
+  \item How do I include my newly written speckle filter into the Wizard.
+  \item I have changed some parameters in my speckle filter. What do I have to
+    modify in the Wizard?
+\end{itemize}
+Following modifications need to be considered:
+\begin{enumerate}
+  \item Put the name of the filter into the string--array
+    \textbf{filter\_type}. Remember the position of your filter (index in the array).
+  \item In dependence of the data type (POLINSAR, POLSAR, others) you should
+    either \emph{offer} or \emph{not offer} this speckle filter to use. Set the right
+    flag in the byte--array \textbf{offer}.
+  \item Write generic fields for input in the widget at the right position.
+  \item Call you speckle filter with the right parameters. Compere the fields
+    you defined for the widget.
+\end{enumerate}
+
+\paragraph{Example}
+
+\begin{enumerate}
+  \item
+\begin{verbatim}
+  filter_type = [...,'MY-FILTER',...]  ; at position Z
+\end{verbatim}
+  \item
+\begin{verbatim}
+   POLINSAR --> offer = [...,1,...]  ; at position Z
+   POLSAR   --> offer = [...,0,...]  ; at position Z
+   OTHERS   --> offer = [...,0,...]  ; at position Z
+\end{verbatim}
+   with it this filter is allowed only for POLINSAR data
+  \item 
+\begin{verbatim}
+Z: begin                ; MY-FILTER
+   field[0,i]=CW_FIELD(filter_grp[i],VALUE=50,/integer,TITLE='Parameter1 : ',XSIZE=3)
+   field[1,i]=CW_FIELD(filter_grp[i],VALUE=25,/integer,TITLE='Parameter2 : ',XSIZE=3)
+\end{verbatim}
+   \item
+\begin{verbatim}
+;; MY-FILTER
+   Z: my-filter,/called,par1=*field_value[0],par2=*field_value[1]
+\end{verbatim}
+   \end{enumerate}
+And that's it!
