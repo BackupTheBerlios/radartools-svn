@@ -4,6 +4,7 @@
 @sar/speck_lee
 @sar/edge_robsob
 @sar/edge_maxgrad
+@sar/edge_roa4
 @sar/edge_msproa
 @sar/edge_canny
 @sar/slant2ground
