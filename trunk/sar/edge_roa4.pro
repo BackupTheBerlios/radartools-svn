@@ -1,64 +1,35 @@
 
 ;-----------------------------------------------------------------
-; maxgrad.pro
+; ROA4
 ;
-; 08/2001 by Andreas Reigber
+; 07/2007 by Andreas Reigber
 ;------------------------------------------------------------------
 ; Maximum Gradient edge detector for SAR images
-;
-; Usage: res = maxgrad(arr,sb)
-; 		arr = 2D input array 
-;		sb  = filter box size 
+; using spliting of window into 4 possible halfs
 ;------------------------------------------------------------------
 
-function maxgrad,amp,delta
-	siz    = size(amp)	
-	anz_rg = siz[1]
-	anz_az = siz[2]
-	
-	dl = (delta+1) / 2
-	xs = [dl,dl, 0,-dl,-dl,dl, 0,-dl]
-	ys = [0 ,dl,dl,dl, 0,-dl,-dl,-dl]
-	samp = smooth(amp,delta)
-	grad = fltarr(9,anz_rg,anz_az)
-	for i=0,7 do grad[i,*,*] = abs(shift(samp,xs[i],ys[i])/samp-1.0)
-	mag = max(grad,dir,dim=1)
-
-	aux = where(finite(mag) eq 0,nr)  ; remove possible division by zero
-	if nr gt 0 then mag[aux] = 0.0
-	return,mag
-end
-
-function maxgrad2,amp,delta
+function roa4,amp,delta
 	siz = size(amp)	
 	nrx = siz[1]
 	nry = siz[2]
 	samp = smooth(amp,delta)
 	grad = fltarr(4,nrx,nry)
 	dsh   = (delta+1)/2
-	grad[0,*,*] = (shift(samp,+dsh,0)+shift(samp,+dsh,+dsh)+shift(samp,+dsh,-dsh)-shift(samp,-dsh,0)-shift(samp,-dsh,+dsh)-shift(samp,-dsh,-dsh)) ; vertical
-	grad[1,*,*] = (shift(samp,+dsh,+dsh)+shift(samp,0,+dsh)+shift(samp,+dsh,0)-shift(samp,-dsh,-dsh)-shift(samp,0,-dsh)-shift(samp,-dsh,0) )
-	grad[2,*,*] = (shift(samp,0,+dsh)+shift(samp,+dsh,+dsh)+shift(samp,-dsh,+dsh)-shift(samp,0,-dsh)-shift(samp,-dsh,-dsh)-shift(samp,+dsh,-dsh)) ; horizontal
-	grad[3,*,*] = -(shift(samp,+dsh,-dsh)+shift(samp,+dsh,0)+shift(samp,0,-dsh)-shift(samp,-dsh,+dsh)-shift(samp,0,+dsh)-shift(samp,-dsh,0) )
-	return,max(grad,dir,dim=1,/absolute)
+	grad[0,*,*] = abs((shift(samp,+dsh,0)+shift(samp,+dsh,+dsh)+shift(samp,+dsh,-dsh)) / (shift(samp,-dsh,0)+shift(samp,-dsh,+dsh)+shift(samp,-dsh,-dsh))-1.0) ; vertical
+	grad[1,*,*] = abs((shift(samp,+dsh,+dsh)+shift(samp,0,+dsh)+shift(samp,+dsh,0)) / (shift(samp,-dsh,-dsh)+shift(samp,0,-dsh)+shift(samp,-dsh,0))-1.0)       ; diagonal 1
+	grad[2,*,*] = abs((shift(samp,0,+dsh)+shift(samp,+dsh,+dsh)+shift(samp,-dsh,+dsh)) / (shift(samp,0,-dsh)+shift(samp,-dsh,-dsh)+shift(samp,+dsh,-dsh))-1.0) ; horizontal
+	grad[3,*,*] = abs((shift(samp,+dsh,-dsh)+shift(samp,+dsh,0)+shift(samp,0,-dsh)) / (shift(samp,-dsh,+dsh)+shift(samp,0,+dsh)+shift(samp,-dsh,0))-1.0)       ; disgonal 2
+	mag = max(grad,dir,dim=1)
+	aux = where(finite(mag) eq 0,nr)  ; remove possible division by zero
+	if nr gt 0 then mag[aux] = 0.0
+	return,mag
 end
-;************************************************************************
-;* edge_maxgrad.pro                              
-;*                                                                       
-;* Version: 1.0              Revisão: 03/Feb/2003        
-;************************************************************************
-;* Written by:
-;* - Andreas Reigber, TUB                            
-;************************************************************************
-;* Maximum Gradien Edge Detector            
-;************************************************************************
 
 
-
-pro edge_maxgrad,CALLED = called, SMM = smm
+pro edge_roa4,CALLED = called, SMM = smm
 	common rat, types, file, wid, config
 	if not keyword_set(called) then begin             ; Graphical interface
-		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=2,TITLE='RoA Edge Detector',/floating,/tlb_kill_request_events,/tlb_frame_attr)
+		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=2,TITLE='RoA4 Edge Detector',/floating,/tlb_kill_request_events,/tlb_frame_attr)
 		field1   = CW_FIELD(main,VALUE=3,/integer,TITLE='Filter boxsize     : ',XSIZE=3)
 		buttons  = WIDGET_BASE(main,column=3,/frame)
 		but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
@@ -72,9 +43,9 @@ pro edge_maxgrad,CALLED = called, SMM = smm
 		repeat begin
 			event = widget_event(main)
 			if event.id eq but_info then begin               ; Info Button clicked
-				infotext = ['RATIO OF AVERAGE (ROA) EDGE DETECTION',$
+				infotext = ['RATIO OF AVERAGE (ROA) EDGE DETECTION (4 directions)',$
 				' ',$
-				'RAT module written 01/2003 by Andreas Reigber']
+				'RAT module written 07/2007 by Andreas Reigber']
 				info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
 			end
 		endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
@@ -139,7 +110,7 @@ pro edge_maxgrad,CALLED = called, SMM = smm
 		readu,ddd,block
 
 ; -------- THE FILTER ----------
-		for j=0,file.vdim-1 do for k=0,file.zdim-1 do block[j,k,*,*] = maxgrad(reform(block[j,k,*,*]),smm)    
+		for j=0,file.vdim-1 do for k=0,file.zdim-1 do block[j,k,*,*] = roa4(reform(block[j,k,*,*]),smm)    
 ; -------- THE FILTER ----------
 
 		if i eq anz_blocks-1 then ypos2 = bs_last

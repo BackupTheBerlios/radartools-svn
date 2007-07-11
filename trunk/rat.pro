@@ -181,6 +181,7 @@ PRO rat_event, event
 				'Speckle filter.Kuan'						   : speck_kuan
 				'Speckle filter.Gamma-MAP'						: speck_gammamap
 				'Edge detection.RoA'						      : edge_maxgrad
+				'Edge detection.RoA4'					      : edge_roa4
 				'Edge detection.MSP-RoA'						: edge_msproa
 				'Edge detection.Sobel'							: edge_robsob,/sobel
 				'Edge detection.Roberts'						: edge_robsob,/roberts
@@ -591,6 +592,7 @@ PRO rat,STARTFILE=startfile,BLOCK=block, $
 		'2\Frost' , $
 		'1\Edge detection' , $
 		'0\RoA'     , $
+		'0\RoA4'     , $
 		'0\MSP-RoA'     , $
 		'0\Sobel'     , $
 		'0\Roberts'   , $
