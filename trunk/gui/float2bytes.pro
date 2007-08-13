@@ -24,6 +24,7 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
 	ch_scl  = 1  ; scale channels independently (1=mean, 2=max)
 	sar_scl = 1  ; SAR type scaling
 	amp_scl = 1  ; amplitude power trick for better display
+	hist_scl = 0  ; amplitude power trick for better display
 
 	case 1 of
 					
@@ -32,7 +33,7 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
 ;-----------------------------------------------------------
 
 		(type eq 100) or (type eq 51) or (type eq 54) or (type eq 101)  $
-		                   or (type eq 103) or (type eq 110) $
+		                   or (type eq 103) $
                          or (type eq 250): begin
 
 		end
@@ -61,6 +62,12 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
                    scaling = 0
                 end
 
+		(type eq 58) or (type eq 110) : begin
+			hist_scl = 1
+			ch_scl  = 0
+			sar_scl = 0
+			amp_scl = 0
+		end
 ;-----------------------------------------------------------
 ; Multitemporal
 ;-----------------------------------------------------------
@@ -292,6 +299,19 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
 
 	if scaling eq 1 then begin
 
+; Histogram scaling
+		if hist_scl eq 1 then begin
+			hist = histogram(arr,nbin=1000,locations=loc)
+			mh = total(hist)/20.
+			st = 0
+			while total(hist[0:st]) lt mh do st++
+			en = 999
+			while total(hist[en:999]) lt mh do en--
+			min_data = loc[st]
+			max_data = loc[en]
+			arr=bytscl(arr,min_data,max_data)
+		endif
+
 ; Channel scaling
 	
 		if ch_scl eq 1 then begin
@@ -324,6 +344,8 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
 			mm = max(arr)
 			arr=bytscl(temporary(arr),0,mm)
 		endelse
+		
+		
 	endif
    if ~keyword_set(OVERWRITE) then begin
    	result=arr
