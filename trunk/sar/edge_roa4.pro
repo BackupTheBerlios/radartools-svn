@@ -1,4 +1,3 @@
-
 ;-----------------------------------------------------------------
 ; ROA4
 ;
@@ -15,11 +14,17 @@ function roa4,amp,delta
 	samp = smooth(amp,delta)
 	grad = fltarr(4,nrx,nry)
 	dsh   = (delta+1)/2
-	grad[0,*,*] = abs((shift(samp,+dsh,0)+shift(samp,+dsh,+dsh)+shift(samp,+dsh,-dsh)) / (shift(samp,-dsh,0)+shift(samp,-dsh,+dsh)+shift(samp,-dsh,-dsh))-1.0) ; vertical
-	grad[1,*,*] = abs((shift(samp,+dsh,+dsh)+shift(samp,0,+dsh)+shift(samp,+dsh,0)) / (shift(samp,-dsh,-dsh)+shift(samp,0,-dsh)+shift(samp,-dsh,0))-1.0)       ; diagonal 1
-	grad[2,*,*] = abs((shift(samp,0,+dsh)+shift(samp,+dsh,+dsh)+shift(samp,-dsh,+dsh)) / (shift(samp,0,-dsh)+shift(samp,-dsh,-dsh)+shift(samp,+dsh,-dsh))-1.0) ; horizontal
-	grad[3,*,*] = abs((shift(samp,+dsh,-dsh)+shift(samp,+dsh,0)+shift(samp,0,-dsh)) / (shift(samp,-dsh,+dsh)+shift(samp,0,+dsh)+shift(samp,-dsh,0))-1.0)       ; disgonal 2
-	mag = max(grad,dir,dim=1)
+	grad[0,*,*] = ((shift(samp,+dsh,0)+shift(samp,+dsh,+dsh)+shift(samp,+dsh,-dsh)) / (shift(samp,-dsh,0)+shift(samp,-dsh,+dsh)+shift(samp,-dsh,-dsh))) ; vertical
+	grad[1,*,*] = ((shift(samp,+dsh,+dsh)+shift(samp,0,+dsh)+shift(samp,+dsh,0)) / (shift(samp,-dsh,-dsh)+shift(samp,0,-dsh)+shift(samp,-dsh,0)))		 ; diagonal 1
+	grad[2,*,*] = ((shift(samp,0,+dsh)+shift(samp,+dsh,+dsh)+shift(samp,-dsh,+dsh)) / (shift(samp,0,-dsh)+shift(samp,-dsh,-dsh)+shift(samp,+dsh,-dsh))) ; horizontal
+	grad[3,*,*] = ((shift(samp,+dsh,-dsh)+shift(samp,+dsh,0)+shift(samp,0,-dsh)) / (shift(samp,-dsh,+dsh)+shift(samp,0,+dsh)+shift(samp,-dsh,0)))		 ; disgonal 2
+	
+	grad[0,*,*] = max([grad[0,*,*],1/grad[0,*,*]],dim=1)
+	grad[1,*,*] = max([grad[1,*,*],1/grad[1,*,*]],dim=1)
+	grad[2,*,*] = max([grad[2,*,*],1/grad[2,*,*]],dim=1)
+	grad[3,*,*] = max([grad[3,*,*],1/grad[3,*,*]],dim=1)
+	mag = sqrt(grad[0,*,*]^2 + grad[1,*,*]^2 + grad[2,*,*]^2 + grad[3,*,*]^2)
+	
 	aux = where(finite(mag) eq 0,nr)  ; remove possible division by zero
 	if nr gt 0 then mag[aux] = 0.0
 	return,mag
@@ -29,7 +34,7 @@ end
 pro edge_roa4,CALLED = called, SMM = smm
 	common rat, types, file, wid, config
 	if not keyword_set(called) then begin             ; Graphical interface
-		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=2,TITLE='RoA4 Edge Detector',/floating,/tlb_kill_request_events,/tlb_frame_attr)
+		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=2,TITLE='RoA Edge Detector',/floating,/tlb_kill_request_events,/tlb_frame_attr)
 		field1   = CW_FIELD(main,VALUE=3,/integer,TITLE='Filter boxsize     : ',XSIZE=3)
 		buttons  = WIDGET_BASE(main,column=3,/frame)
 		but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
@@ -44,8 +49,12 @@ pro edge_roa4,CALLED = called, SMM = smm
 			event = widget_event(main)
 			if event.id eq but_info then begin               ; Info Button clicked
 				infotext = ['RATIO OF AVERAGE (ROA) EDGE DETECTION (4 directions)',$
+				'This filter uses 4 ratios: horizontal, vertical and 2*diagonal',$
 				' ',$
-				'RAT module written 07/2007 by Andreas Reigber']
+				'For more information, see A. Bovik: On detecting edges in speckled imagery,',$
+				'IEEE Transactions on Acoustics, Speech and Signal Processing, 36(10), pp. 1618-1627, 1988',$
+				' ',$
+				'RAT module written 08/2007 by Andreas Reigber']
 				info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
 			end
 		endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
