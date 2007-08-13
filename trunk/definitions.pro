@@ -33,6 +33,7 @@ pro definitions,update_pref=update_pref
 	types[55]  = "generic complex phase"
 	types[56]  = "generic correlation"         ;; values in range [0:1]
 	types[57]  = "generic complex correlation" ;; values in range [0:1]
+	types[58]  = "generic amplitude (histogram scaled)"
 
 ; 100-199 single channel SAR
 
