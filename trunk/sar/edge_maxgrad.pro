@@ -74,6 +74,9 @@ pro edge_maxgrad,CALLED = called, SMM = smm
 			if event.id eq but_info then begin               ; Info Button clicked
 				infotext = ['RATIO OF AVERAGE (ROA) EDGE DETECTION',$
 				' ',$
+				'For more information, see J.S. Lee et al.: Polarimetric SAR Speckle Filtering and Its ',$
+				'Implication for Classification, IEEE Trans. Geos. Rem. Sens. 37(5), pp. 2363-2373, 1999',$
+				' ',$
 				'RAT module written 01/2003 by Andreas Reigber']
 				info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
 			end

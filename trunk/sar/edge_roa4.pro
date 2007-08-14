@@ -49,7 +49,7 @@ pro edge_roa4,CALLED = called, SMM = smm
 			event = widget_event(main)
 			if event.id eq but_info then begin               ; Info Button clicked
 				infotext = ['RATIO OF AVERAGE (ROA) EDGE DETECTION (4 directions)',$
-				'This filter uses 4 ratios: horizontal, vertical and 2*diagonal',$
+				'This filter uses 4 ratios: horizontal, vertical and the 2 diagonals',$
 				' ',$
 				'For more information, see A. Bovik: On detecting edges in speckled imagery,',$
 				'IEEE Transactions on Acoustics, Speech and Signal Processing, 36(10), pp. 1618-1627, 1988',$

@@ -6,7 +6,7 @@ pro license
 '----------------------------------------------------------------------',$
 'The RAT source code and binary releases are licenced under the Mozilla',$
 'Public License (MPL) version 1.1. This allows the use of the code in  ',$
-'as wide variety of other free and commercial software projects, while ',$
+'a wide variety of other free and commercial software projects, while ',$
 'maintaining copyleft on the written code. ',$
 '',$
 'For more details see http://www.mozilla.org/MPL/MPL-1.1.html',$
