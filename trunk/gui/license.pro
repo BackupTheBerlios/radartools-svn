@@ -4,23 +4,17 @@ pro license
 	infostring = [ $
 'RAT - Terms of Use',$
 '----------------------------------------------------------------------',$
-'RAT can be used free of charge, for non-commercial and commercial',$
-'applications. However, this software is POSTCARDWARE. This means, ',$
-'that after an evaluation period, it is REQUIRED TO REGISTER each ',$
-'copy of the software by simply sending a postcard to the RAT team ',$
-'(local motives preferred). An address can be found in the menu ',$
-'via help->contact.',$ 
-' ',$
-'The software is provided "as is", without warranty of any kind, ',$
-'express or implied, including but not limited to the warranties of ',$
-'merchantability, fitness for a particular purpose and noninfringement.',$
-'In no event shall the authors or copyright holders be liable for any ',$
-'claim, damages or other liability, whether in an action of contract, ',$
-'tort or otherwise, arising from, out of or in connection with the ',$
-'software or the use or other dealings in the software.',$
+'The RAT source code and binary releases are licenced under the Mozilla',$
+'Public License (MPL) version 1.1. This allows the use of the code in  ',$
+'as wide variety of other free and commercial software projects, while ',$
+'maintaining copyleft on the written code. ',$
 '',$
-'Further details of the license can be found in the file LICENSE,',$
-'distributed together with RAT.']
+'For more details see http://www.mozilla.org/MPL/MPL-1.1.html',$
+'or the file LICENCE in the base directory of the source distribution.',$
+'',$
+'The software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ',$
+'ANY KIND, either express or implied. See the license for the specific',$
+'language governing rights and limitations under the license.']
  	
 	dummy=DIALOG_MESSAGE(infostring,DIALOG_PARENT = wid.base, TITLE='License',/INFORMATION)
 end

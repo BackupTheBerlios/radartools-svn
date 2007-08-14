@@ -2,15 +2,12 @@ pro contact
 	common rat, types, file, wid, config
 	
 	infostring = [ $
-	'RAT Team', $
+	'Contact the RAT developers:', $
 	'', $
-	'Berlin University of Technology', $
-	'Computer Vision and Remote Sensing',$
-	'Franklinstrasse 28/29 (FR3-1)',$
-	'D-10587 Berlin, Germany',$
-	'',$
-	'Web:   http://www.cv.tu-berlin.de/rat/',$
- 	'Email: anderl@cs.tu-berlin.de']
+	'Mailing list     : https://lists.berlios.de/mailman/listinfo/radartools-users', $
+	'RAT development  : https://developer.berlios.de/projects/radartools/', $
+	'Bug reports      : https://developer.berlios.de/bugs/?group_id=8644', $
+	'Main RAT website : http://www.cv.tu-berlin.de/rat/']
 	
 	dummy=DIALOG_MESSAGE(infostring,DIALOG_PARENT = wid.base, TITLE='Contact information',/INFORMATION)
 end
