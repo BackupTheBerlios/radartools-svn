@@ -8,8 +8,9 @@ Version 0.19:
 - Move to Berlios
 - New routines: PolDInSAR phase and height estimation from MB-PolInSAR data
 - New routine : Individual basis transformation per pixel (with given SM vectors)
-- Improved routines: Possibility to save optimal scattering mechanism vectors in MB-PolInSAR
 - New routines: Import of ASF SLC formats (ERS, JERS, RADARSAT-1)
+- Improved routines: Corrected RoA edge detectors
+- Improved routines: Possibility to save optimal scattering mechanism vectors in MB-PolInSAR
 - Various small improvements and bug fixes
 
 
