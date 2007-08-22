@@ -2,7 +2,7 @@ pro about
 	common rat, types, file, wid, config
 	
 	infostring = [ $
-	'RAT - Radar Tools  (Version SVN-HEAD)',$
+	'RAT - Radar Tools  (Version 0.19)',$
 	'---------------------------------------------',$
 	'(c) 2003-2007 by the RAT development team',$ 
 	'---------------------------------------------',$
@@ -10,7 +10,7 @@ pro about
    'Andreas Reigber, Maxim Neumann & Marc Jaeger',$
 	' ',$
 	'Additional programming: ',$
-	'Stephane Guillaso, Franz Mayer, ',$
+	'Markus Steiof, Stephane Guillaso, Franz Mayer, ',$
 	'Marcus Saemmang, Jan-Christoph Unger',$
 	'Thomas Weser, Oliver Bach, Bert Wolff',$
 	'Andre Lehmann, Nicole Bouvier, Mathias Weller']
