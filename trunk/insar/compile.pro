@@ -20,6 +20,9 @@
 @insar/airborne_insar_info_gen
 @insar/display_information_system
 @insar/unwrap_ls
+@insar/unwrap_goldstein
+@insar/unwrap_bc
+@insar/unwrap_residue
 @insar/unwrap_rewrap
 @insar/unwrap_diff
 @insar/rgflt_standard

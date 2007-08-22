@@ -6,6 +6,19 @@
 ;------------------------------------------------------------------------
 ; Least-squares phase unwrapping
 ;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is Andreas Reigber.
+; All Rights Reserved.
+;------------------------------------------------------------------------
 
 function lsphu,pha
    s = size(pha)
@@ -61,7 +74,11 @@ pro unwrap_ls,CALLED = called, ITER=iter,SMM1 = smm1,SMM2 = smm2
 			if event.id eq but_info then begin               ; Info Button clicked
 				infotext = ['LEAST-SQUARES PHASE UNWRAPPING',$
 				' ',$
-				'RAT module written 06/2004 by Andreas Reigber']
+				'RAT module written 06/2004 by Andreas Reigber',$
+				' ',$
+				'more information:',$
+				'M.D. Pritt and J.S. Shipman: Least-Squares Two Dimensional Phase Unwrapping',$
+				'using FFTs, IEEE Trans. Geosc. Rem. Sens. 32(3), pp.706-708, 1994']
 				info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
 			end
 		endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'

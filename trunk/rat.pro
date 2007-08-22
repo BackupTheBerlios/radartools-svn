@@ -391,6 +391,9 @@ PRO rat_event, event
 				'Airborne case.Parameter information'		: parameter_information,wid.base
 				'Airborne case.Remove flat-earth phase'	: rm_flatearth_airborne
 				'Phase Unwrapping.Least-Squares'          : unwrap_ls
+				'Phase Unwrapping.Branch Cuts.Branch cuts unwrapping' : unwrap_goldstein
+				'Phase Unwrapping.Branch Cuts.Identify residues' 		: unwrap_residue
+				'Phase Unwrapping.Branch Cuts.Calculate branch cuts' 	: unwrap_bc
 				'Phase Unwrapping.Rewrap phase'           : unwrap_rewrap
 				'Phase Unwrapping.Calculate difference map': unwrap_diff
 				'Spectral filtering.Range (standard)'		: rgflt_standard
@@ -837,9 +840,13 @@ PRO rat,STARTFILE=startfile,BLOCK=block, $
 		'0\Goldstein'      , $
 		'2\GLSME'      , $
 		'1\Phase Unwrapping', $
-		'0\Least-Squares', $
-		'4\Rewrap phase', $
-		'2\Calculate difference map', $
+			'0\Least-Squares', $
+			'1\Branch Cuts', $
+				'0\Branch cuts unwrapping', $
+				'0\Identify residues', $
+				'2\Calculate branch cuts', $
+			'4\Rewrap phase', $
+			'2\Calculate difference map', $
 		'0\Shaded relief', $
   		'5\Airborne case', $
   		'0\Parameter information',$
