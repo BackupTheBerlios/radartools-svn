@@ -1,0 +1,18 @@
+BUGS:
+
+Critical     Routine		Description   
+
+   +         tool_box		Support for single file previews for multi-files
+   +         flat-earth       	All signs should be consistent
+   -         preview          	Speed ups for symmetric matrices
+   -         channel_default  	Naming and defaults for all the new polinsar channels
+
+ROUTINES:
+
+- missing: projection on a specific polarisation
+- remove?: linear flat-earth in polinsar?
+
+SOLVED:
+
+- missing: range filter
+

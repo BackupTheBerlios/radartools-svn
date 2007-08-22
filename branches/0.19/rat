@@ -1,0 +1,6 @@
+cd ~/Work/Rat/rat_cvs
+idl << final
+.r rat
+rat,startfile="$1",/block
+final
+echo $1

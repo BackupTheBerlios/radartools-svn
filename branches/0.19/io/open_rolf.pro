@@ -1,0 +1,101 @@
+pro open_rolf,INPUTFILE = inputfile
+	common rat, types, file, wid, config
+	common channel, channel_names, channel_selec, color_flag, palettes, pnames
+
+	if not keyword_set(inputfile) then begin
+		path = config.workdir
+		inputfile = cw_rat_dialog_pickfile(TITLE='Open E-SAR rk-file (Rolf format)', $
+		DIALOG_PARENT=wid.base, FILTER = '*.dat', /MUST_EXIST, PATH=path, GET_PATH=path)
+		if strlen(inputfile) gt 0 then config.workdir = path
+	endif
+
+	if strlen(inputfile) gt 0 then begin
+
+; change mousepointer
+	
+		WIDGET_CONTROL,/hourglass
+; undo function
+                undo_prepare,outputfile,finalfile,CALLED=CALLED
+                open_rit,/EMPTY ; no parameters are set: delete the odl ones!
+
+
+; converting Rolf's format to RAT
+	
+		bytnr = 0l
+		anzx  = 0l
+		anzy  = 0l
+		openr,ddd,inputfile,/xdr,/get_lun
+		readu,ddd,bytnr
+		readu,ddd,anzy
+		readu,ddd,anzx
+		inf = fstat(ddd)
+		anzy = (inf.size - 12 ) / anzx / 8
+		srat,config.tempdir+config.workfile1,eee,header=[2l,anzx,anzy,6l],type=0l
+
+		bs_y  = config.blocksize
+		zeile = complexarr(anzx,bs_y)
+		nr_y  = anzy  /  bs_y
+		re_y  = anzy mod bs_y
+		
+		progress,message='Read E-SAR rk-file...'
+		
+		for i=0,nr_y-1 do begin
+			progress,percent=((i+1)*100)/nr_y
+			readu,ddd,zeile
+			writeu,eee,zeile
+		endfor
+		if re_y gt 0 then begin
+			zeile = complexarr(anzx,re_y)
+			readu,ddd,zeile
+			writeu,eee,zeile
+		endif		
+		free_lun,ddd,eee
+	
+; read header
+
+		head = 1l
+		rrat,config.tempdir+config.workfile1,ins1,header=head,info=info
+		free_lun,ins1
+		
+; analyse header
+	
+		file.name = config.tempdir+config.workfile1
+		file.info = info
+		file.type = 101l
+		file.dim  = head[0]
+		if file.dim eq 2 then begin
+			file.xdim = head[1]
+			file.ydim = head[2]
+			file.zdim = 1l
+			file.vdim = 1l
+			file.var  = head[3]
+		endif
+		if file.dim eq 3 then begin
+			file.xdim = head[2]
+			file.ydim = head[3]
+			file.zdim = head[1]
+			file.vdim = 1l
+			file.var  = head[4]
+		endif
+		if file.dim eq 4 then begin
+			file.xdim = head[3]
+			file.ydim = head[4]
+			file.zdim = head[1]
+			file.vdim = head[2]
+			file.var  = head[5]
+		endif
+	
+	
+; read palette information
+	
+	palettes[0,*,*] = palettes[2,*,*] ; set variable palette to b/w linear
+	palettes[1,*,*] = palettes[2,*,*] ; set variable palette to b/w linear
+
+; generate preview
+
+	file.window_name = 'Untitled.rat'
+	generate_preview
+	update_info_box
+	
+	endif	
+end
