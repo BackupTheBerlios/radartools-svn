@@ -21,7 +21,7 @@ pro definitions,update_pref=update_pref
 	common channel, channel_names, channel_selec, color_flag, palettes, pnames
         common rit, parstruct, evolution
 	
-	prefversion = 0.181 ; version .18 beta1
+	prefversion = 0.19 ; version .18 beta1
 ;;; please take note, that prefversion is closely related to version
 ;;; control at the beginning of the rat procedure. (adjust both
 ;;; accordingly: prefversion should never be smaller than the checked
@@ -280,7 +280,7 @@ pro definitions,update_pref=update_pref
                 struct_assign,config,config_struct,/NOZERO ; for backwards compatibility (mn, 2/7)
                 config=config_struct
                 wid_struct = -1 & config_struct = -1
-	endif
+	endif else config.version = 0.0
 ;        config.docdir = file_dirname((routine_info('rat',/source)).path,/mark)+'doc'+path_sep()
         config.docdir = file_dirname((routine_info('definitions',/source)).path,/mark)+'doc'+path_sep()
         

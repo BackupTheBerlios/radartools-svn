@@ -454,7 +454,7 @@ PRO rat,STARTFILE=startfile,BLOCK=block, $
 ;;; a new rat_install may be necessary in case of addition of new
 ;;; icons, or color palettes, as well as through changes in
 ;;; configuration structure variables. (mn, 06.07)
-        if config.version lt 0.181 then begin
+        if config.version lt 0.19 then begin
 ;; i incremented the number to 0.181 because i made some changes on
 ;; icons, so that you also have to run the rat_install
 ;; (mn, 6.6.7)

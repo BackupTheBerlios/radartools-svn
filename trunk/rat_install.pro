@@ -182,23 +182,17 @@ LICENSE:
 			base2right = widget_base(base2,/column)
 				mes  = 'RAT - Terms of Use' + newline
 				mes += '----------------------------------------------------------------------' + newline
-				mes += 'RAT can be used free of charge, for non-commercial and commercial' + newline
-				mes += 'applications. However, this software is POSTCARDWARE. This means, ' + newline
-				mes += 'that after an evaluation period, it is REQUIRED TO REGISTER each ' + newline
-				mes += 'copy of the software by simply sending a postcard to the RAT team ' + newline
-				mes += '(local motives preferred). An address can be found in the menu ' + newline
-				mes += 'via help->contact.' + newline 
-				mes += ' ' + newline
-				mes += 'The software is provided "as is", without warranty of any kind, ' + newline
-				mes += 'express or implied, including but not limited to the warranties of ' + newline
-				mes += 'merchantability, fitness for a particular purpose and noninfringement.' + newline
-				mes += 'In no event shall the authors or copyright holders be liable for any ' + newline
-				mes += 'claim, damages or other liability, whether in an action of contract, ' + newline
-				mes += 'tort or otherwise, arising from, out of or in connection with the ' + newline
-				mes += 'software or the use or other dealings in the software.' + newline
-				mes += '' + newline
-				mes += 'Further details of the license can be found in the file LICENSE,' + newline
-				mes += 'distributed together with RAT.'
+				mes += 'The RAT source code and binary releases are licenced under the Mozilla' + newline
+				mes += 'Public License (MPL) version 1.1. This allows the use of the code in  ' + newline
+				mes += 'a wide variety of other free and commercial software projects, while  ' + newline
+				mes += 'maintaining copyleft on the written code.                             ' + newline
+				mes += '                                                                      ' + newline
+				mes += 'For more details see http://www.mozilla.org/MPL/MPL-1.1.html          ' + newline
+				mes += 'or the file LICENCE in the base directory of the source distribution. ' + newline
+				mes += '                                                                      ' + newline
+				mes += 'The software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF  ' + newline
+				mes += 'ANY KIND, either express or implied. See the license for the specific ' + newline
+				mes += 'language governing rights and limitations under the license.          '
 				dummy = widget_text(base2right,value=mes,SCR_XSIZE=500,YSIZE=17,/scroll)
 		buttons  = WIDGET_BASE(base,column=3,/frame)
 			but_prev   = WIDGET_BUTTON(buttons,VALUE='Previous',xsize=80)
@@ -507,19 +501,5 @@ PRE_INSTALL:
 		event = widget_event(base)
 	endrep until (event.id eq but_next)
 	widget_control,base,/destroy
-	
-	if os eq "windows" then font="courier new*18*bold" else font="8x13bold"
-	
-	base = widget_base(title='WARNING',/column)
-		dummy = widget_label(base,value = "And dont forget to register RAT",font=font)
-		dummy = widget_label(base,value = "by sending us a postcard. For  ",font=font)
-		dummy = widget_label(base,value = "details see license conditions.",font=font)
-		buttons  = WIDGET_BASE(base,/row)
-			but_next   = WIDGET_BUTTON(buttons,VALUE=' OK ',/frame)
-	WIDGET_CONTROL, base, /REALIZE, default_button = but_next, XOFFSET=500,yoffset=400
-	repeat begin
-		event = widget_event(base)
-	endrep until (event.id eq but_next)
-	widget_control,base,/destroy
-	
+		
 end
