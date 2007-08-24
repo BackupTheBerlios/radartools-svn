@@ -1,18 +1,29 @@
 ;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; RAT Module    : consruct_multi.pro
 ; Author        : Marco Saemmang (Technical University Berlin, Germany)
 ; Last revision : March 2006
 ; Modified      : mn, 08/2006
-;
 ; Module produces a new multifile or opens an existing multifile for
 ; changing order and number of files.
 ; Tests for allowed files are included.
-;
 ; PRO construct_multi - dialog for selecting, changing etc.
-;
-;------------------------------------------------------------------------
 ; module for creating a new RAT-multifile or
 ; for change an existing multifile
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
 ;------------------------------------------------------------------------
 
 pro construct_multi, CALLED = called

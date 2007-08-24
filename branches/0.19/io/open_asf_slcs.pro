@@ -1,12 +1,25 @@
 ;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
  ; RAT Module: open_asf_slcs
- ;
  ; written by : Franz Meyer / ASF Alaska
  ; last revision : 10th . April 2007
- ;------------------------------------------------------------------------
  ; Open SLC files in ASF SAR CEOS Format
  ; This program is able to handle ASFs RADARSAT-1, ERS-1/2, and JERS data
- ;------------------------------------------------------------------------
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
+;------------------------------------------------------------------------
 
  pro open_asf_slcs,INPUTFILE = inputfile, PATH = path
  common rat, types, file, wid, config

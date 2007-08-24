@@ -1,4 +1,4 @@
-cd ~/Work/Rat/rat_cvs
+cd /home/yossa/sar/rat/svn/0.19/
 idl << final
 .r rat
 rat,startfile="$1",/block

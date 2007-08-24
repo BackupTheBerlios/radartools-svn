@@ -1,11 +1,27 @@
+;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; KEYWORD
-;
 ; - TYPE:     replace the current file.type
 ; - C_FLAG:   replace the current color_flag
 ; - SELECT:   replace the current channel_selec
 ; - DIM:      replace the current file.dim
 ; - ARR_SIZE: replace file.vdim,file.zdim,file.xdim,file.ydim should be a 4 element array
 ; this keyword should be call only if you want to display a short byte image for small preview
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
+;------------------------------------------------------------------------
 
 pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_flag
 	common rat, types, file, wid, config

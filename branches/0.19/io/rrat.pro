@@ -1,19 +1,29 @@
-;------------------------------------------------------------------------------ 
-;------------------------------------------------------------------------------ 
+;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; Autor: Andreas Reigber
 ; Datum: 25.9.2003
-;
 ; read an array in RAT (Radar Tool) format
-;
 ; Aufruf: 	rarr,filename,array
 ; Keywords:	INFO  - here you find the comment (Default = "unknown content")
 ;           NOXDR - do not use /XDR
 ;           HEADER- read only header, in array you get the open LUN.
 ;           BLOCK - read only this block of the data [X1,Y1,DX,DY]
 ;           PREVIEW - read the preview image if existing otherwise return -1
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
 ;
-;------------------------------------------------------------------------------ 
-;------------------------------------------------------------------------------ 
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
+;------------------------------------------------------------------------
 
 
 pro rrat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,BLOCK=block,TYPE=type,PREVIEW=preview,FILETYPE=filetype,MT=mt,MULTI=multi, $

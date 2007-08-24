@@ -1,15 +1,27 @@
 ;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; RAT Module	: mt_all_in_one
 ; Author 		: Marco Saemmang (Technical University Berlin, Germany)
 ; Last revision : March 2006
-;
 ; Module copies the subfiles from a multifile into a common file.
-;
 ; All subfiles are separat rat-files with own previews.
 ; A multifile with names and preview exist. After using this
 ; module all subfiles are copied into one rat-file.
-;------------------------------------------------------------------------
 ; module for save all subfiles in one rat-file (no multifile)
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
 ;------------------------------------------------------------------------
 
 PRO mt_allinone

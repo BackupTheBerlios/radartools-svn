@@ -421,14 +421,14 @@ PRE_INSTALL:
 	
 	; * Copie the color palettes
 	mes += 'Copy the color palettes '
-	file_copy,sourcedir+'preferences'+path_sep()+'*.*',homedir,/recursive,/overwrite
+	file_copy,sourcedir+'preferences'+path_sep()+'*.*',homedir,/overwrite
 	widget_control,wid_text,set_value=mes
 	wait,0.5
 	mes += '     OK' + newline
 	
 	; * Copie the color palettes
 	mes += 'Copy the icons '
-	file_copy,sourcedir+'icons',homedir,/recursive,/overwrite
+	file_copy,sourcedir+'icons'+path_sep()+'*.*',homedir+'icons'+path_sep(),/overwrite
 	widget_control,wid_text,set_value=mes
 	wait,0.5
 	mes += '     OK' + newline
@@ -447,6 +447,23 @@ PRE_INSTALL:
 	endfor
 	config.tempbase = config.tempdir
 	config.version  = version
+
+;;; update the rat script for starting rat from the shell (mn, 24.08.07)
+        if os eq 'unix' then begin
+           wait,0.5
+           mes += '     OK' + newline
+           mes += 'Update the starting script "rat"'
+           widget_control,wid_text,set_value=mes
+           openw, 1,sourcedir+'rat'
+           printf,1,'cd '+sourcedir
+           printf,1,'idl << final'
+           printf,1,'.r rat'
+           printf,1,'rat,startfile="$1",/block'
+           printf,1,'final'
+           printf,1,'echo $1'
+           close, 1
+           spawn,'chmod a+x '+sourcedir+'rat'
+        endif
 
 	wait,0.5
 	mes += '     OK' + newline
@@ -479,7 +496,8 @@ PRE_INSTALL:
 	endrep until (event.id eq but_next) or (event.id eq but_prev) 
 	widget_control,base,/destroy
 	if event.id eq but_prev then goto,PRE_INSTALL
-	 
+
+
 ; --> SUCCES ? QUIT
 	base = widget_base(title='RAT Installation',/column,/tlb_kill_request_events,/tlb_frame_attr)
 		base2 = widget_base(base,/row)

@@ -1,11 +1,10 @@
 ;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; RAT Module: rit_read
-;
 ; written by    : Maxim Neumann
 ; last revision : 07.Oct.2005
-;------------------------------------------------------------------------
 ; Reads an entry with name=value syntax from a given file
-;------------------------------------------------------------------------
 ; PARAMETERS:
 ;   filename:    [string] An existing readable file
 ;   name:        [string] you should know it
@@ -13,12 +12,23 @@
 ;   status=st:   if ok, 0 is returned, else some error code
 ;  /NAMES_PRINT: print out the names of all entries
 ;  /ALL_PRINT:   print out the names and the values of all entries
-;------------------------------------------------------------------------
 ; TODO:
 ;   implement support for structures, string arrays, pntr, objref
-;------------------------------------------------------------------------
 ; EXAMPLE:
 ;   rit_read,'file.rit','flat-earth',fe
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
 ;------------------------------------------------------------------------
 pro rit_read, FILENAME, name, value, STATUS=STATUS, $
               NAMES_PRINT=NAMES_PRINT, ALL_PRINT=ALL_PRINT, DEBUG=DEBUG
