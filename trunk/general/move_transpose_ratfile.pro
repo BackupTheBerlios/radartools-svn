@@ -1,12 +1,25 @@
-;-----------------------------------------------------------------
+;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; move_transpose_ratfile.pro
-;
 ; copies the given file with simultaneous transpose operation
 ; on given dimensions.
 ; used for obsolete data type updates.
-;
 ; 02/2007 by Maxim Neumann
-;------------------------------------------------------------------
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
+;------------------------------------------------------------------------
 
 pro move_transpose_ratfile, filename, transp_dims=transp_dims, new_type=new_type, new_info=new_info
   common rat, types, file, wid, config

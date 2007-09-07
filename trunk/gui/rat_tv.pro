@@ -1,9 +1,25 @@
+;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; KEYWORD
-;
 ; - TYPE:     replace the current file.type
 ; - C_FLAG:   replace the current color_flag
 ; - SELECT:   replace the current channel_selec
 ; - DIM:      replace the current file.dim
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
+;------------------------------------------------------------------------
 
 pro rat_tv,arr,SAVE=save,PNG=png,jpg=jpg,TIF=tif,type=type,c_flag=c_flag,select=select,dim=dim,small_preview=small_preview,ARR_SIZE=arr_size
 	common rat, types, file, wid, config

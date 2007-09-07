@@ -1,14 +1,25 @@
 ;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; RAT Module: open_rit
-;
 ; written by    : Maxim Neumann
 ; last revision : 17.Oct.2005
-;------------------------------------------------------------------------
 ; Read the parstruct values from the rit file
-;------------------------------------------------------------------------
 ; PARAMETERS:
-;------------------------------------------------------------------------
 ; EXAMPLE:
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
 ;------------------------------------------------------------------------
 
 pro open_rit, FILENAME=FILENAME_orig,EMPTY=EMPTY

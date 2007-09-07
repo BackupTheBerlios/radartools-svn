@@ -1,11 +1,24 @@
 ;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; RAT Module: det
-;
 ; written by    : Stéphane Guillaso (TUB)
 ; last revision : 24.February.2004
-;------------------------------------------------------------------------
 ; determinant of 2x2, 3x3 and 4x4 [T] or [C] matrix
 ; can handle up to 5xdimensional block-matrices (mn)
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
 ;------------------------------------------------------------------------
 
 FUNCTION block_det,in,REFORM=REFORM

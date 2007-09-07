@@ -1,10 +1,9 @@
-;------------------------------------------------------------------------------ 
-;------------------------------------------------------------------------------ 
+;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; Autor: Andreas Reigber
 ; Datum: 1.4.1998
-;
 ; Write a variable to a file. Any dimensions and type.
-;
 ; Aufruf: 	sarr,filename,array
 ; Keywords:	INFO  - Comment (default = "unknown content")
 ;        	JOAO  - my old format (2*long, then always floatarray)
@@ -12,13 +11,22 @@
 ;           HEADER- only save header (only if not /JOAO)
 ;                   in array you get back open LUN
 ;        	GZIP  - compress with gzip komprimiert, dont put .gz at the end
-;
-;------------------------------------------------------------------------------ 
-;------------------------------------------------------------------------------ 
-;------------------------------------------------------------------
 ; This software has been released under the terms of the GNU Public
 ; license. See http://www.gnu.org/copyleft/gpl.html for details.
-;------------------------------------------------------------------
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
+;------------------------------------------------------------------------
 
  
 pro sarr,file,bild,INFO=info,JOAO=joao,NOXDR=noxdr,HEADER=header,GZIP=gzip

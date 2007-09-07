@@ -1,20 +1,31 @@
 ;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; RAT Module    : save_multi.pro
 ; Author        : Marco Saemmang (Technical University Berlin, Germany)
 ; Last revision : March 2006
 ; Modified      : mn, 08/2006
-;
 ; Read a multifile and estimate the offset for coregistration.
 ; If user wants, RAT coregists the subfiles.
 ; If user wants, RAT resizes the subfiles to a common size an saves them.
-;
 ; PRO save_multi  - saves new multifile and changes the involved subfiles
 ;                   and resizes the files to a common size
 ;				  - creates multifile ( header and filenames ) with
 ; 					subfile-informations and previews
-;
-;------------------------------------------------------------------------
 ; module for saving new multifile and resizing subfiles
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
 ;------------------------------------------------------------------------
 
 PRO save_multi, files

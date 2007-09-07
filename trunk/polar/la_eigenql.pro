@@ -1,13 +1,26 @@
-;------------------------------------------------------------------------------------
+;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; TECHNICAL UNIVERSITY BERLIN
 ; DEPARTMENT OF PHOTOGRAMMETRY UND CARTOGRAPHY
-; 
 ; (c)2001 by Andreas Reigber  (anderl@fpk.tu-berlin.de)
-;------------------------------------------------------------------------------------
 ; Calculates eigenvalues and eigenvectors of a 3x3 complex hermitian matrix
 ; This routine exists natively in IDL >= 5.6
 ; WARNING: Only for 3x3 matrices !!!!
-;------------------------------------------------------------------------------------
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
+;------------------------------------------------------------------------
 
 
 function la_eigenql,matrix,EIGENVECTORS = eigen_vec

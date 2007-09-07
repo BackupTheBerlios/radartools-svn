@@ -1,9 +1,22 @@
 ;------------------------------------------------------------------------
-;
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; written by    : Maxim Neumann (TUB)
 ; last revision : 21. October 2004
-;------------------------------------------------------------------------
 ; gives back an array [xpos,ypos] of the clicked position in draw area
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
 ;------------------------------------------------------------------------
 
 function get_rat_draw_position, POS_DEVICE=pos_device, NO_CURSOR_CHANGE=no_cursor_change

@@ -1,4 +1,6 @@
 ;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; RAT Module: unwrap_goldstein
 ;
 ; written by   : Markus Steiof
@@ -22,6 +24,8 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 ; Hinweis: Kommentare beginnend mit '#' entsprechen dem Pseudocode
+
+forward_function init_adjoinlist
 
 ;========================================================================
 function goldstein, phase, switch_rm_dipoles, switch_unwrap_bc, xinit, yinit

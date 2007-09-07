@@ -1,11 +1,24 @@
 ;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ; RAT Module: polin_deco_abgd
-;
 ; written by	: Maxim Neumann
 ; last revision	: 09/2006
-;------------------------------------------------------------------------
 ; Single-Track Alpha, Beta, Gamma, Delta angles
 ; result: [ [Alpha[0:2],Beta[0:2],Gamma[0:2],Delta[0:2]], track, x, y]
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
 ;------------------------------------------------------------------------
 
 

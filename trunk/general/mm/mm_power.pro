@@ -1,15 +1,14 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;------------------------------------------------------------------------
+; RAT - Radar Tools
+;------------------------------------------------------------------------
 ;;;	 mm_:	MATRIX MATHEMATICS routines			;;;
 ;;;		for fast mathematical operations		;;;
 ;;;		of complex matrices/vectors/scalars		;;;
 ;;;		over all dimensions				;;;
 ;;;		utilising mathematical matrix notation		;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;
 ;;; matrix power over all dimensions
 ;;;   Maxim Neumann - 08/2006
 ;;;   based on sqrtm.pro (version 2.2)
-;;;
 ;;; power over complex-hermitian or real-symmetric matrices
 ;;;   mm_power,M,power,SQRT=SQRT,INVERT=INVERT
 ;;;   <==> M^power  where power=any real (pos/neg) number
@@ -17,6 +16,20 @@
 ;;;   /INV    		power *= -1
 ;;;   /OVERWRITE 	
 ;;;   result is complex!
+;------------------------------------------------------------------------
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
+;------------------------------------------------------------------------
 
 
 function mm_power, A, power, SQRT=SQRT_KEY, INVERT=INVERT, OVERWRITE=OVERWRITE
