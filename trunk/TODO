@@ -6,7 +6,7 @@
 - Add EMPLR classifier (started)
 - Check / remove some of the multifile stuff
 - Check display of change detection results
-
+- Advanced usage of RAT from the bash + nice tutorial (started)
 
 ========
   TODO 
@@ -46,6 +46,7 @@ Polarimetry:
 
 Interferometry:
 
+- Coherence bias removal
 - construct insar pair should work also for 2 different image sizes
 - ellipsoid flat-earth estimation (started)
 - Orbit analysis for calculating flat-earth and range filter parameters
@@ -55,6 +56,7 @@ Interferometry:
 
 PolInSAR
 
+- Coherence bias removal
 - Add Tomography routines
 
 =========
