@@ -196,6 +196,7 @@ pro definitions,update_pref=update_pref
 		draw  : 0l , $		;Draw window widget ID
 		cancel : 0l , $		;cancel a routine
 		block : 0b, $		;block rat widget or not
+		plugins : ptr_new(), $	;plugin names
 		info  : 0l , $        	;Info window widget ID
                 button_undo: 0l , $   	;Undo button widget ID 
                 button_redo: 0l , $   	;Redo button widget ID 
@@ -302,6 +303,55 @@ pro definitions,update_pref=update_pref
 		pnames = pnames[1:*]
 		free_lun,ddd
 	endif
+
+;;; load plugins
+        plugin_dirs  = [config.prefdir,file_dirname((routine_info('definitions',/source)).path,/mark)]+'plugins'+path_sep()
+        if ~strmatch(!path,"*"+strjoin(plugin_dirs+':')+"*") then $
+           !path=strjoin(plugin_dirs+':')+!path
+;        if ~strmatch(!path,"*"+strjoin(':'+plugin_dirs)+"*") then $
+;           !path=strjoin(':'+plugin_dirs)+!path
+        plugins = {pro_name:'',menu_name:'',menu_pos:''}
+        plugin_files = file_search(plugin_dirs,'rat_plugin_*.{sav,pro}',/FOLD_CASE,/TEST_READ)
+        if (size(plugin_files))[0] ne 0 then $
+           for i=0,n_elements(plugin_files)-1 do begin
+           plugin_name = file_basename(strmid(plugin_files[i],0,strlen(plugin_files[i])-4))
+           if strcmp(strmid(plugin_files[i],strlen(plugin_files[i])-3,3),'sav',/fold) then $
+              restore,plugin_files[i] $
+           else resolve_routine,plugin_name,/comp
+;;; if an error occures at this place, then the plugin procedure has
+;;; either the wrong name, or the file is in a further subdirectory.
+;;; ==> adjust the plugin, or remove the file from the plugin directory!
+           if total(strcmp(routine_info(),plugin_name,/Fold),/int) gt 0 then $
+              call_procedure,plugin_name,PLUGIN_INFO=plugin_info
+           for j=0,n_elements(plugin_info.menu_pos)-1 do $
+              plugins = [plugins,{pro_name:plugin_name,menu_name:plugin_info.menu_name,menu_pos:strlowcase(plugin_info.menu_pos[j])}]
+        endfor
+        if n_elements(plugins) gt 1 then $
+           wid.plugins=ptr_new(plugins[1:*])
+;;; delete similar entries
+        sorted=sort((*wid.plugins)[*].menu_name+(*wid.plugins)[*].menu_pos)
+        curr=uniq((*wid.plugins)[sorted].menu_name+(*wid.plugins)[sorted].menu_pos)
+        *wid.plugins=(*wid.plugins)[curr]
+
+;         plugin_sav_files = file_search(plugin_dirs,'rat_plugin_*.sav',/FOLD_CASE,/TEST_READ)
+;         plugin_pro_files = file_search(plugin_dirs,'rat_plugin_*.pro',/FOLD_CASE,/TEST_READ)
+;         if (size(plugin_sav_files))[0] ne 0 then $
+;            for i=0,n_elements(plugin_sav_files)-1 do begin
+;            restore,plugin_sav_files[i]
+;            plugin_name = file_basename(plugin_sav_files[i],'.sav',/Fold)
+;            if total(strcmp(routine_info(),plugin_name,/Fold),/int) gt 0 then $
+;               plugins = [plugins,plugin_name]
+;         endfor
+;         if (size(plugin_pro_files))[0] ne 0 then $
+;            for i=0,n_elements(plugin_pro_files)-1 do begin
+;            plugin_name = file_basename(plugin_pro_files[i],'.pro',/Fold)
+;            resolve_routine,plugin_name,/comp
+;            if total(strcmp(routine_info(),plugin_name,/Fold),/int) gt 0 then begin
+;               call_procedure,plugin_name,PLUGIN_INFO=plugin_info
+;               plugins = [plugins,{pro_name:plugin_name,menu_name:plugin_info.menu_name,menu_pos:plugin_info.menu_pos}]
+;            endif
+;         endfor
+
 
 	wid.base  = 0l
 	wid.draw  = 0l

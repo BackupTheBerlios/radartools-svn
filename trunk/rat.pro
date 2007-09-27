@@ -134,7 +134,7 @@ PRO rat_event, event
 		 		'Edit file header'							: whatisthis
 		 		'Data management'								: tool_box ,/data_management
 		      'Quit'          								: exit_rat
-				else: dummy
+				else: if ~strmatch(event.value,'*plugin*',/Fold) then dummy
 			endcase
 		end
 
@@ -161,7 +161,7 @@ PRO rat_event, event
 				'Select channels'	 								: tool_box ,/select_channel
 				'Colour palettes'	 								: tool_box ,/color_table
 				'Parameter Information' 							: parameter_info
-				else: dummy
+				else: if ~strmatch(event.value,'*plugin*',/Fold) then  dummy
 			endcase
 		end
 
@@ -215,7 +215,7 @@ PRO rat_event, event
 				'Calculate.Interchannel phase difference'	: calc_iphase
 				'Calculate.Interchannel correlation'		: calc_icorr
 				'Wizard mode.Speckle filtering'				: wiz_speckle
-				else: dummy
+				else: if ~strmatch(event.value,'*plugin*',/Fold) then  dummy
 			endcase
 		end
 
@@ -278,7 +278,7 @@ PRO rat_event, event
 				'Wizard mode.Scattering vector -> Entropy/Alpha/Anisotropy'	: wiz_k2eaa
 				'Wizard mode.Scattering vector -> Wishart classification'	: wiz_k2wclass
 				'Wizard mode.Speckle filtering'				: wiz_speckle
-				else: dummy
+				else: if ~strmatch(event.value,'*plugin*',/Fold) then  dummy
 			endcase
 		end
 
@@ -365,7 +365,7 @@ PRO rat_event, event
 ;                      'For developers.Data info'				: polin_data_info
                       'Wizard mode.POLINSAR data -> HaA-Wishart classification' : polin_wiz_2haawish	; done !
                       'Wizard mode.Speckle filtering'				: wiz_speckle		; done !
-                      else: dummy
+                      else: if ~strmatch(event.value,'*plugin*',/Fold) then  stop ;dummy
                    endcase
                 end
 
@@ -399,20 +399,8 @@ PRO rat_event, event
 				'Spectral filtering.Range (standard)'		: rgflt_standard
 				'Spectral filtering.Range (adaptive)'		: rgflt_adaptive
 				'Spectral tools.watch spectra'				: channel_spectrum
-				else: dummy
+				else: if ~strmatch(event.value,'*plugin*',/Fold) then  dummy
 			endcase
-                     end
-
-; SUBAP MENU
-		'subap': begin
-			case event.value of
-				'Generate.Sub-apertures' : subap_generate
-				'Generate.Sub-aperture covariace matrix' : subap_cov
-                                'Multi-channel SubAp.Vector -> Covarince matrix for every Sub-aperture' : subap_k2m
-                                'Extract.Single Aperture' : subap_extract_single
-                                'Nonstationarity.Calculate' : subap_nonstat
-                                else: dummy
-                             endcase
                      end
 
 ;HELP MENU
@@ -422,17 +410,29 @@ PRO rat_event, event
 				'About RAT'			: about
 				'Contact'			: contact
 				'License'			: license
-				else: dummy
+				else: if ~strmatch(event.value,'*plugin*',/Fold) then  dummy
 			endcase
-		end
+                     end
+
 ;BASE
 		'base': begin
 			ysize = event.y
 			widget_control,wid.draw,scr_ysize=ysize-80
 		end
 ;ELSE
-			else: dummy
-   	endcase
+                else: if ~strmatch(event.value,'*plugin*',/Fold) then  dummy
+             endcase
+
+;PLUGINS
+		if wid.plugins ne ptr_new() && total(strcmp(tag_names(event),'value',/fold),/int) gt 0 then begin
+                   for i=0,n_elements(*wid.plugins)-1 do $
+                      if strmatch(event.value,'*plugin*'+(*wid.plugins)[i].menu_name+'*') && $
+                      (strmatch(uval,(*wid.plugins)[i].menu_pos)|| uval eq 'general') then begin
+                         call_procedure,(*wid.plugins)[i].pro_name
+                         break
+                      endif
+                endif
+
 		widget_control,wid.draw,draw_button_events=1, draw_motion_events = 1,event_pro='cw_rat_draw_ev',bad_id = dummy
 	endelse  ; click on close button
 	out:
@@ -455,9 +455,6 @@ PRO rat,STARTFILE=startfile,BLOCK=block, $
 ;;; icons, or color palettes, as well as through changes in
 ;;; configuration structure variables. (mn, 06.07)
         if config.version lt 0.19 then begin
-;; i incremented the number to 0.181 because i made some changes on
-;; icons, so that you also have to run the rat_install
-;; (mn, 6.6.7)
            info = DIALOG_MESSAGE(["Congratulations!","You obtained a new version of RAT.","This requires the re-installation of some configuration files."], TITLE='RAT Installation Update',/info,/cancel,/center)
            if info eq 'Cancel' then return
            rat_install
@@ -491,95 +488,92 @@ PRO rat,STARTFILE=startfile,BLOCK=block, $
         sar_menu      = WIDGET_BUTTON(bar, VALUE=' SAR ', /MENU)
         polar_menu    = WIDGET_BUTTON(bar, VALUE=' PolSAR ', /MENU)
         insar_menu    = WIDGET_BUTTON(bar, VALUE=' InSAR' , /MENU )
-        polin_menu    = WIDGET_BUTTON(bar, VALUE=' PolInSAR ', /MENU)
+        polinsar_menu = WIDGET_BUTTON(bar, VALUE=' PolInSAR ', /MENU)
 ;	subap_menu    = WIDGET_BUTTON(bar, VALUE=' SubAp' , /MENU )
         help_menu     = WIDGET_BUTTON(bar, VALUE=' Help', /MENU, /HELP)
 
-	m_file = CW_PDMENU(file_menu,[ $
-		'0\Open RAT file', $
-		'1\Construct', $
-		'1\Multitemporal', $
-		'0\Create new multitemporal set', $
-		'2\Change existing multitemporal set', $
-		'0\PolSAR vector', $
-		'0\InSAR pair', $
-                '0\MB-PolInSAR vector', $
-;                '0\MB-SAR vector' , $
-                '0\Flat earth file' , $
-                '0\Baseline lengths file' , $
-                '2\Wavenumber file' , $
-		'1\Open external', $
-		'0\E-SAR        (DLR)', $
-		'0\EMISAR       (DCRS)', $
-		'0\PI-SAR       (NASDA-CRL)', $
-		'0\RAMSES       (ONERA)', $
-		'0\CONVAIR      (CCRS)', $
-		'4\ENVISAT-ASAR (ESA)', $
-		'0\ALOS-PALSAR  (JAXA)', $
-		'0\RADARSAT-2   (CSA)', $
-		'1\ASF SAR DATA', $
-			'1\SLC DATA', $
-				'0\RADARSAT-1', $
-				'0\ERS-1/2', $
-				'2\JERS', $
-			'3\DETECTED DATA', $
-				'0\RADARSAT-1', $
-				'0\ERS-1/2', $
-				'2\JERS', $
- 		'4\POLSARPRO 2.0/3.0', $
-  		'0\Generic binary', $
-		'2\ENVI standard', $
-		'1\Open internal', $
-		'0\rarr / sarr', $
-		'0\2*long + complex', $
-		'2\E-SAR-RK (Rolf)', $
-		'1\Open pixmap', $
-		'0\Open PNG'  , $
-		'0\Open JPEG' , $
-		'2\Open TIFF' , $
-                '1\Import system info', $
-                '0\E-SAR        (DLR)', $
-                '0\RAMSES       (ONERA)', $
-                '2\Generic',$
-		'4\Save RAT file', $
-		'1\Save external' , $
-		'0\ENVI Standard' , $
-		'2\Generic binary' , $
-		'1\Save pixmap' , $
-		'0\Save PNG'  , $
-		'0\Save JPEG' , $
-		'2\Save TIFF' , $
-		'4\Edit file header'  , $
-		'0\Data management'  , $
-		'4\Preferences'  , $
-		'6\Quit'],/MBAR,/RETURN_FULL_NAME,UVALUE = 'file')
 
-	m_general = CW_PDMENU(general_menu,[ $
-		'0\Undo' , $
-		'0\Redo' , $
-		'0\Recalculate preview' , $
-		'4\Measure value/location' , $
-		'4\Zoom' , $
-		'4\Resize image' , $
-		'0\Presumming' , $
-		'0\Cut out region' , $
-		'4\Mirror vertical' , $
-		'0\Mirror horizontal', $
-		'4\Select channels', $
-		'0\Extract channels', $
-		'4\Colour palettes',$
-		'4\Channel statistics',$
-		'0\Channel spectrum', $
-		'0\Principal Components',$
-		'4\Parameter Information', $
-		'5\Binary transform'  , $
-		'0\Complex -> Amplitude' , $
-		'0\Complex -> Phase', $
-		'2\Integer -> Float' $
-		],/MBAR,/RETURN_FULL_NAME, UVALUE = 'general')
 
-	m_sar = CW_PDMENU(sar_menu,[ $
-		'5\Inspect'   , $
+
+        desc_file_menu=[ '4\Open RAT file', $
+                         '1\Construct', $
+                         '1\Multitemporal', $
+                         '0\Create new multitemporal set', $
+                         '2\Change existing multitemporal set', $
+                         '0\PolSAR vector', $
+                         '0\InSAR pair', $
+                         '0\MB-PolInSAR vector', $
+                         '0\Flat earth file' , $
+                         '0\Baseline lengths file' , $
+                         '2\Wavenumber file' , $
+                         '1\Open external', $
+                         '0\E-SAR        (DLR)', $
+                         '0\EMISAR       (DCRS)', $
+                         '0\PI-SAR       (NASDA-CRL)', $
+                         '0\RAMSES       (ONERA)', $
+                         '0\CONVAIR      (CCRS)', $
+                         '4\ENVISAT-ASAR (ESA)', $
+                         '0\ALOS-PALSAR  (JAXA)', $
+                         '0\RADARSAT-2   (CSA)', $
+                         '1\ASF SAR DATA', $
+                         '1\SLC DATA', $
+                         '0\RADARSAT-1', $
+                         '0\ERS-1/2', $
+                         '2\JERS', $
+                         '3\DETECTED DATA', $
+                         '0\RADARSAT-1', $
+                         '0\ERS-1/2', $
+                         '2\JERS', $
+                         '4\POLSARPRO 2.0/3.0', $
+                         '0\Generic binary', $
+                         '2\ENVI standard', $
+                         '1\Open internal', $
+                         '0\rarr / sarr', $
+                         '0\2*long + complex', $
+                         '2\E-SAR-RK (Rolf)', $
+                         '1\Open pixmap', $
+                         '0\Open PNG'  , $
+                         '0\Open JPEG' , $
+                         '2\Open TIFF' , $
+                         '1\Import system info', $
+                         '0\E-SAR        (DLR)', $
+                         '0\RAMSES       (ONERA)', $
+                         '2\Generic',$
+                         '4\Save RAT file', $
+                         '1\Save external' , $
+                         '0\ENVI Standard' , $
+                         '2\Generic binary' , $
+                         '1\Save pixmap' , $
+                         '0\Save PNG'  , $
+                         '0\Save JPEG' , $
+                         '2\Save TIFF' , $
+                         '4\Edit file header'  , $
+                         '0\Data management'  , $
+                         '4\Preferences'  , $
+                         '6\Quit']
+        desc_general_menu =[ '4\Undo' , $
+                             '0\Redo' , $
+                             '0\Recalculate preview' , $
+                             '4\Measure value/location' , $
+                             '4\Zoom' , $
+                             '4\Resize image' , $
+                             '0\Presumming' , $
+                             '0\Cut out region' , $
+                             '4\Mirror vertical' , $
+                             '0\Mirror horizontal', $
+                             '4\Select channels', $
+                             '0\Extract channels', $
+                             '4\Colour palettes',$
+                             '4\Channel statistics',$
+                             '0\Channel spectrum', $
+                             '0\Principal Components',$
+                             '4\Parameter Information', $
+                             '5\Binary transform'  , $
+                             '0\Complex -> Amplitude' , $
+                             '0\Complex -> Phase', $
+                             '2\Integer -> Float' $
+                           ]
+        desc_sar_menu = [ '5\Inspect'   , $
 		'0\Point target', $
 		'0\Distributed target',$
 		'2\Calculate # of looks',$
@@ -640,9 +634,8 @@ PRO rat,STARTFILE=startfile,BLOCK=block, $
 		'2\SLC -> Amplitude Image',  $
 		'5\Wizard mode', $
 			'2\Speckle filtering' $
-		],/MBAR,/RETURN_FULL_NAME, UVALUE = 'sar')
-
-	m_polar = CW_PDMENU(polar_menu,[ $
+		]
+        desc_polar_menu = [ $
 		'5\Inspect'   , $
 		'0\Polarimetric scatterer analysis', $
 		'0\Point target', $
@@ -713,9 +706,8 @@ PRO rat,STARTFILE=startfile,BLOCK=block, $
 			'0\Speckle filtering'      , $
 			'0\Scattering vector -> Entropy/Alpha/Anisotropy',$
 			'2\Scattering vector -> Wishart classification'$
-		],/MBAR,/RETURN_FULL_NAME, UVALUE = 'polsar')
-
-	m_polin = CW_PDMENU(polin_menu,[ $
+		]
+        desc_polinsar_menu = [ $
                   '5\Inspect'   , $
                   '0\Classical SB-coherence analysis', $
                   '0\MB coherence optimization analysis', $
@@ -816,11 +808,10 @@ PRO rat,STARTFILE=startfile,BLOCK=block, $
                   '2\POLINSAR data -> HaA-Wishart classification' $
 ;                '5\For developers',$
 ;                '2\Data info' $
-	],/MBAR,/RETURN_FULL_NAME, UVALUE = 'polinsar')
+                                  ]
 
-
-	m_insar = CW_PDMENU(insar_menu,[ $
-		'1\Coregistration', $
+        desc_insar_menu = [ $
+		'5\Coregistration', $
 		'0\Coarse (global)'   , $
 		'0\Subpixel (global)' , $
 		'2\Array of patches'	, $
@@ -860,28 +851,56 @@ PRO rat,STARTFILE=startfile,BLOCK=block, $
 		'0\Image pair -> interferogram' , $
 		'0\Extract amplitude' , $
 		'2\Extract phase'  $
-		],/MBAR,/RETURN_FULL_NAME, UVALUE = 'insar')
-
-;  	m_subap = CW_PDMENU(subap_menu,[ $
-;  		'1\Generate', $
-;                  '0\Sub-apertures', $
-;                  '2\Sub-aperture covariace matrix', $
-;                  '1\Multi-channel SubAp', $
-;                  '2\Vector -> Covarince matrix for every Sub-aperture', $
-;                  '1\Nonstationarity', $
-;                  '0\Calculate', $
-;                  '2\Eliminate', $
-;  		'1\Extract'   , $
-;                  '0\Single Aperture', $
-;                  '2\Full Image' $
-;                   ],/MBAR,/RETURN_FULL_NAME, UVALUE = 'subap')
-;
-	m_help = CW_PDMENU(help_menu,[ $
-		'0\RAT User Guide', $
+		]
+        desc_help_menu = [ $
+		'4\RAT User Guide', $
 		'4\Contact', $
 		'0\License', $
 		'6\About RAT' $
-		],/MBAR,/RETURN_FULL_NAME,UVALUE = 'help')
+		]
+
+;;; menu adjustment for PlugIn's
+        menues = ["file","general","sar","polsar","polinsar","insar","help"]
+        if wid.plugins ne ptr_new() then begin
+           for i=0,n_elements(menues)-1 do begin
+              curr = where((*wid.plugins)[*].menu_pos eq menues[i],nr)
+              if nr ge 1 then case i of
+                 0: desc_file_menu = ['5\External plugins',(nr gt 1?['0\'+(*wid.plugins)[curr[0:nr-2]].menu_name, $
+                                                                     '2\'+(*wid.plugins)[curr[nr-1]].menu_name]: $
+                                                            '2\'+(*wid.plugins)[curr[nr-1]].menu_name),desc_file_menu]
+                 1: ; it' s ok like this.
+                 2: desc_sar_menu = ['5\External plugins',(nr gt 1?['0\'+(*wid.plugins)[curr[0:nr-2]].menu_name, $
+                                                                    '2\'+(*wid.plugins)[curr[nr-1]].menu_name]: $
+                                                           '2\'+(*wid.plugins)[curr[nr-1]].menu_name),desc_sar_menu]
+                 3: desc_polsar_menu = ['5\External plugins',(nr gt 1?['0\'+(*wid.plugins)[curr[0:nr-2]].menu_name, $
+                                                                  '2\'+(*wid.plugins)[curr[nr-1]].menu_name]: $
+                                                         '2\'+(*wid.plugins)[curr[nr-1]].menu_name),desc_polsar_menu]
+                 4: desc_polinsar_menu = ['5\External plugins',(nr gt 1?['0\'+(*wid.plugins)[curr[0:nr-2]].menu_name, $
+                                                                  '2\'+(*wid.plugins)[curr[nr-1]].menu_name]: $
+                                                         '2\'+(*wid.plugins)[curr[nr-1]].menu_name),desc_polinsar_menu]
+                 5: desc_insar_menu = ['5\External plugins',(nr gt 1?['0\'+(*wid.plugins)[curr[0:nr-2]].menu_name, $
+                                                                  '2\'+(*wid.plugins)[curr[nr-1]].menu_name]: $
+                                                         '2\'+(*wid.plugins)[curr[nr-1]].menu_name),desc_insar_menu]
+                 6: desc_help_menu = ['5\External plugins',(nr gt 1?['0\'+(*wid.plugins)[curr[0:nr-2]].menu_name, $
+                                                                  '2\'+(*wid.plugins)[curr[nr-1]].menu_name]: $
+                                                         '2\'+(*wid.plugins)[curr[nr-1]].menu_name),desc_help_menu]
+              endcase
+           endfor
+           curr=uniq((*wid.plugins)[sort((*wid.plugins)[*].menu_name)].menu_name)
+           nr = n_elements(curr)
+           desc_general_menu = ['5\All plugins',(nr gt 1?['0\'+(*wid.plugins)[curr[0:nr-2]].menu_name, $
+                                                                     '2\'+(*wid.plugins)[curr[nr-1]].menu_name]: $
+                                                            '2\'+(*wid.plugins)[curr[nr-1]].menu_name),desc_general_menu]
+        endif
+
+
+	m_file     = CW_PDMENU(file_menu,desc_file_menu,/MBAR,/RETURN_FULL_NAME,UVALUE = 'file')
+	m_general  = CW_PDMENU(general_menu,desc_general_menu,/MBAR,/RETURN_FULL_NAME, UVALUE = 'general')
+	m_sar      = CW_PDMENU(sar_menu,desc_sar_menu,/MBAR,/RETURN_FULL_NAME, UVALUE = 'sar')
+	m_polar    = CW_PDMENU(polar_menu,desc_polar_menu,/MBAR,/RETURN_FULL_NAME, UVALUE = 'polsar')
+	m_polinsar = CW_PDMENU(polinsar_menu,desc_polinsar_menu,/MBAR,/RETURN_FULL_NAME, UVALUE = 'polinsar')
+	m_insar    = CW_PDMENU(insar_menu,desc_insar_menu,/MBAR,/RETURN_FULL_NAME, UVALUE = 'insar')
+	m_help     = CW_PDMENU(help_menu,desc_help_menu,/MBAR,/RETURN_FULL_NAME,UVALUE = 'help')
 
 ; Button bar
 
