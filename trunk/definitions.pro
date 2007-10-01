@@ -306,11 +306,13 @@ pro definitions,update_pref=update_pref
 
 ;;; load plugins
         plugin_dirs  = [config.prefdir,file_dirname((routine_info('definitions',/source)).path,/mark)]+'plugins'+path_sep()
+        heap_free,wid.plugins
+        wid.plugins=ptr_new()
         if ~strmatch(!path,"*"+strjoin(plugin_dirs+':')+"*") then $
            !path=strjoin(plugin_dirs+':')+!path
 ;        if ~strmatch(!path,"*"+strjoin(':'+plugin_dirs)+"*") then $
 ;           !path=strjoin(':'+plugin_dirs)+!path
-        plugins = {pro_name:'',menu_name:'',menu_pos:''}
+        plugins = [{pro_name:'',menu_name:'',menu_pos:''}]
         plugin_files = file_search(plugin_dirs,'rat_plugin_*.{sav,pro}',/FOLD_CASE,/TEST_READ)
         if (size(plugin_files))[0] ne 0 then $
            for i=0,n_elements(plugin_files)-1 do begin
@@ -326,12 +328,13 @@ pro definitions,update_pref=update_pref
            for j=0,n_elements(plugin_info.menu_pos)-1 do $
               plugins = [plugins,{pro_name:plugin_name,menu_name:plugin_info.menu_name,menu_pos:strlowcase(plugin_info.menu_pos[j])}]
         endfor
-        if n_elements(plugins) gt 1 then $
+        if n_elements(plugins) gt 1 then begin
            wid.plugins=ptr_new(plugins[1:*])
 ;;; delete similar entries
         sorted=sort((*wid.plugins)[*].menu_name+(*wid.plugins)[*].menu_pos)
         curr=uniq((*wid.plugins)[sorted].menu_name+(*wid.plugins)[sorted].menu_pos)
         *wid.plugins=(*wid.plugins)[curr]
+     endif
 
 ;         plugin_sav_files = file_search(plugin_dirs,'rat_plugin_*.sav',/FOLD_CASE,/TEST_READ)
 ;         plugin_pro_files = file_search(plugin_dirs,'rat_plugin_*.pro',/FOLD_CASE,/TEST_READ)

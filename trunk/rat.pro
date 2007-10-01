@@ -426,11 +426,14 @@ PRO rat_event, event
 ;PLUGINS
 		if wid.plugins ne ptr_new() && total(strcmp(tag_names(event),'value',/fold),/int) gt 0 then begin
                    for i=0,n_elements(*wid.plugins)-1 do $
-                      if strmatch(event.value,'*plugin*'+(*wid.plugins)[i].menu_name+'*') && $
+                      if uval eq 'help' && strmatch(event.value,'*plugin help*'+(*wid.plugins)[i].menu_name+'*',/Fold) then begin
+                      call_procedure,(*wid.plugins)[i].pro_name,/HELP
+                      break
+                   endif else if strmatch(event.value,'*plugin*'+(*wid.plugins)[i].menu_name+'*') && $
                       (strmatch(uval,(*wid.plugins)[i].menu_pos)|| uval eq 'general') then begin
-                         call_procedure,(*wid.plugins)[i].pro_name
-                         break
-                      endif
+                      call_procedure,(*wid.plugins)[i].pro_name
+                      break
+                   endif
                 endif
 
 		widget_control,wid.draw,draw_button_events=1, draw_motion_events = 1,event_pro='cw_rat_draw_ev',bad_id = dummy
@@ -891,6 +894,9 @@ PRO rat,STARTFILE=startfile,BLOCK=block, $
            desc_general_menu = ['5\All plugins',(nr gt 1?['0\'+(*wid.plugins)[curr[0:nr-2]].menu_name, $
                                                                      '2\'+(*wid.plugins)[curr[nr-1]].menu_name]: $
                                                             '2\'+(*wid.plugins)[curr[nr-1]].menu_name),desc_general_menu]
+           desc_help_menu = ['5\Plugin Help',(nr gt 1?['0\'+(*wid.plugins)[curr[0:nr-2]].menu_name, $
+                                                                     '2\'+(*wid.plugins)[curr[nr-1]].menu_name]: $
+                                                            '2\'+(*wid.plugins)[curr[nr-1]].menu_name),desc_help_menu]
         endif
 
 
