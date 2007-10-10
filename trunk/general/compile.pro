@@ -59,3 +59,4 @@
 @general/parameter_edit.pro
 @general/move_transpose_ratfile.pro
 @general/view_ratpdf.pro
+@general/tiling.pro

@@ -17,9 +17,9 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 pro definitions,update_pref=update_pref
-	common rat, types, file, wid, config
+	common rat, types, file, wid, config, tiling
 	common channel, channel_names, channel_selec, color_flag, palettes, pnames
-        common rit, parstruct, evolution
+	common rit, parstruct, evolution
 	
 	prefversion = 0.19 ; version .18 beta1
 ;;; please take note, that prefversion is closely related to version
@@ -238,6 +238,12 @@ pro definitions,update_pref=update_pref
 		show_preview : 1, $ ; should a preview be shown ?
                 batch    : 0, $ ; starting to implement the batch mode
                 debug    : 0 $
+	}
+
+	tiling = {$
+		nr_blocks  : 0l, $
+		blocksizes : ptr_new(), $
+		overlap    : 0l $
 	}
 
 	if config.os eq 'unix' then begin
