@@ -36,7 +36,7 @@ function scale_block,INBLOCK,xprev,yprev,trick,FULL=full
      end
      2: return, inblock
      3: return, atan(inblock,/phase)
-     else: return, abs(float(inblock))
+     else: return, float(inblock)
   endcase
 
   case file.dim of
@@ -60,7 +60,7 @@ function scale_block,INBLOCK,xprev,yprev,trick,FULL=full
            end
            2:    if keyword_set(full) then outblock = inblock else outblock = scale2dpha(inblock,xprev,yprev)
            3:    if keyword_set(full) then outblock = atan(inblock,/phase) else outblock = scale2dpha(atan(inblock,/phase),xprev,yprev)
-           else: if keyword_set(full) then outblock = float(abs(inblock)) else outblock = scale2d(float(abs(inblock)),xprev,yprev)
+           else: if keyword_set(full) then outblock = float(inblock) else outblock = scale2d(float(inblock),xprev,yprev)
         endcase
      end		
 ;  
@@ -102,9 +102,9 @@ function scale_block,INBLOCK,xprev,yprev,trick,FULL=full
            else: begin
               outblock = make_array([file.zdim,xprev,yprev],type=4l)
               if keyword_set(full) then $
-                 for i=0,file.zdim-1 do outblock[i,*,*] = float(abs(reform(inblock[i,*,*]))) $ 
+                 for i=0,file.zdim-1 do outblock[i,*,*] = float(reform(inblock[i,*,*])) $ 
               else $
-                 for i=0,file.zdim-1 do outblock[i,*,*] = scale2d(float(abs(reform(inblock[i,*,*]))),xprev,yprev)
+                 for i=0,file.zdim-1 do outblock[i,*,*] = scale2d(float(reform(inblock[i,*,*])),xprev,yprev)
            end
         endcase
      end		
@@ -143,9 +143,9 @@ function scale_block,INBLOCK,xprev,yprev,trick,FULL=full
            else: begin
               outblock = make_array([file.vdim,file.zdim,xprev,yprev],type=4l)
               if keyword_set(full) then $
-                 for i=0,file.vdim-1 do for j=0,file.zdim-1 do outblock[i,j,*,*] = float(abs(reform(inblock[i,j,*,*]))) $ 
+                 for i=0,file.vdim-1 do for j=0,file.zdim-1 do outblock[i,j,*,*] = float(reform(inblock[i,j,*,*])) $ 
               else $
-                 for i=0,file.vdim-1 do for j=0,file.zdim-1 do outblock[i,j,*,*] = scale2d(float(abs(reform(inblock[i,j,*,*]))),xprev,yprev)
+                 for i=0,file.vdim-1 do for j=0,file.zdim-1 do outblock[i,j,*,*] = scale2d(float(reform(inblock[i,j,*,*])),xprev,yprev)
            end
         endcase
      end

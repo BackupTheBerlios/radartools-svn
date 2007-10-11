@@ -199,6 +199,11 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
 			scaling = 0
 		end
 		
+		(type eq 303): begin
+			arr=bytscl(arr)
+			scaling = 0
+		end
+
 		(type eq 310): begin
 			arr=bytscl(arr,0.0,1.0)
 			scaling = 0

@@ -28,6 +28,13 @@ pro preview,infile,outfile,FULL=full,TRICK=trick,TYPE=type
 	head = 1l
 	rrat,infile,in,header=head,info=info,type=type		
 
+;---------------------------------
+; Scaling tricks
+; 0 = float
+; 1 = complex (amplitude / phase scaling independently)
+; 2 = phase
+; 3 = complex -> phase
+;---------------------------------
 	case type of
 		 52:  trick=2  ; phase
 		 55:  trick=4  ; complex phase

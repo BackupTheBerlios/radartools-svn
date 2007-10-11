@@ -48,6 +48,9 @@ pro generate_preview,REDISPLAY = redisplay, NODEFAULT = nodefault, color_table=c
 
         if ~file_test(file.name,/READ) then return
 
+;---------------------------------
+; Multiple files
+;---------------------------------
 	if file.mult gt 1 then begin
 		mfiles = extract_mtnames(file.name,anz=nfiles)
 
@@ -88,6 +91,9 @@ pro generate_preview,REDISPLAY = redisplay, NODEFAULT = nodefault, color_table=c
 		image = mimage
 		srat,file.name,image,/preview
 	endif else begin
+;---------------------------------
+; Single file
+;---------------------------------
 		rrat,file.name,image,/preview
 		dim = size(image)
 		if dim[0] ne 0 then begin
