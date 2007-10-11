@@ -104,10 +104,10 @@ pro definitions,update_pref=update_pref
 	types[320] = "shaded relief"
 	types[390] = "Flat-earth phase" 		  ;; 1d or 2d
 	types[391] = "Flat-earth phase (multiple tracks)" ;; 1d or 2d ;; especially for polin
-        types[392] = "Wavenumber" 			  ;; 1d or 2d e.g. kz or ky
-        types[393] = "Wavenumber (multiple tracks)" 	  ;; 1d or 2d ;; especially for polin
-        types[394] = "Baseline" 			  ;; 1d or 2d e.g. perpendicular baseline (in meters)
-        types[395] = "Baseline (multiple tracks)" 	  ;; 1d or 2d e.g. perpendicular baseline (in meters)
+	types[392] = "Wavenumber" 			  ;; 1d or 2d e.g. kz or ky
+	types[393] = "Wavenumber (multiple tracks)" 	  ;; 1d or 2d ;; especially for polin
+	types[394] = "Baseline" 			  ;; 1d or 2d e.g. perpendicular baseline (in meters)
+	types[395] = "Baseline (multiple tracks)" 	  ;; 1d or 2d e.g. perpendicular baseline (in meters)
 
 ; 400-499 Classification results
 

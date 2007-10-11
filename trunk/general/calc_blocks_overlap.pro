@@ -16,7 +16,7 @@
 ; The Initial Developer of the Original Code is the RAT development team.
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
-pro calc_blocks_overlap,ydim,bs,overlap,nrblocks,bs_last,FIX=fix
+pro calc_blocks_overlap,ydim,bs,overlap,nrblocks,bs_last
 
 recalculate:
 

@@ -60,3 +60,4 @@
 @general/move_transpose_ratfile.pro
 @general/view_ratpdf.pro
 @general/tiling.pro
+@general/rat_finalise.pro

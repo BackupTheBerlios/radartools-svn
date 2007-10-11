@@ -30,18 +30,17 @@ pro preview,infile,outfile,FULL=full,TRICK=trick,TYPE=type
 
 ;---------------------------------
 ; Scaling tricks
-; 0 = float
-; 1 = complex (amplitude / phase scaling independently)
-; 2 = phase
+; 0 = take abs()
+; 1 = float as it is
+; 2 = float phase (but considering wrapping)
 ; 3 = complex -> phase
 ;---------------------------------
 	case type of
 		 52:  trick=2  ; phase
 		 55:  trick=4  ; complex phase
 		 102: trick=2  ; phase
-;		 301: if file.dim eq 2 then trick=1 else trick=0  ; complex interferogram
 		 302: trick=2  ; phase
-;		 303: trick=2  ; phase
+		 303: trick=1  ; unwrapped phase
 		 320: trick=2  ; phase
 		 524: trick=2  ; phase
 		 525: trick=2  ; phase
@@ -79,8 +78,7 @@ pro preview,infile,outfile,FULL=full,TRICK=trick,TYPE=type
 
 ; reading and transforming data blockwise
 
-	if file.dim eq 2 and trick eq 1 then srat,outfile,out,header=[3l,2l,xprev,yprev,4l],info='preview' 	
-	if file.dim eq 2 and trick ne 1 then srat,outfile,out,header=[2l,xprev,yprev,4l],info='preview'
+	if file.dim eq 2 then srat,outfile,out,header=[2l,xprev,yprev,4l],info='preview'
 	if file.dim eq 3 then srat,outfile,out,header=[3l,file.zdim,xprev,yprev,4l],info='preview' 		
 	if file.dim eq 4 then srat,outfile,out,header=[4l,file.vdim,file.zdim,xprev,yprev,4l],info='preview' 		
 

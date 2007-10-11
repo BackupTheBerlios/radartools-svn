@@ -45,11 +45,11 @@ function lee,amp,smm,LOOKS=looks
 	return,(out > 0)
 end
 
-pro speck_lee,CALLED = called, SMM = smm, LOOKS=looks
-	common rat, types, file, wid, config
+pro speck_lee, CALLED = called, SMM = smm, LOOKS=looks
+	common rat, types, file, wid, config, tiling
 
 	if not keyword_set(called) then begin             ; Graphical interface
-		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=3,TITLE='Lee Speckle Filter',/floating,/tlb_kill_request_events,/tlb_frame_attr)
+		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=3,TITLE='Lee Speckle Filte',/floating,/tlb_kill_request_events,/tlb_frame_attr)
 		field1   = CW_FIELD(main,VALUE=7,/integer,  TITLE='Filter boxsize        : ',XSIZE=3)
 		field2   = CW_FIELD(main,VALUE='1.0',/float,TITLE='Effective No of Looks : ',XSIZE=3)
 		buttons  = WIDGET_BASE(main,column=3,/frame)
@@ -82,7 +82,7 @@ pro speck_lee,CALLED = called, SMM = smm, LOOKS=looks
 		widget_control,main,/destroy                        ; remove main widget
 		if event.id ne but_ok then return                   ; OK button _not_ clicked
 	endif else begin                                       ; Routine called with keywords
-		if not keyword_set(smm) then smm = 7l               ; Default values
+		if not keyword_set(smm)   then smm = 7l             ; Default values
 		if not keyword_set(looks) then looks = 1.0
 	endelse
 
@@ -102,6 +102,7 @@ pro speck_lee,CALLED = called, SMM = smm, LOOKS=looks
 	WIDGET_CONTROL,/hourglass
 
 ; undo function
+ 
    undo_prepare,outputfile,finalfile,CALLED=CALLED
 
 ; handling of complex and amplitude input data
@@ -118,62 +119,34 @@ pro speck_lee,CALLED = called, SMM = smm, LOOKS=looks
 ; read / write header
 
 	head = 1l
-	rrat,file.name,ddd,header=head,info=info,type=type		
+	rrat,file.name, ddd,header=head,info=info,type=type		
 	srat,outputfile,eee,header=head,info=info,type=type		
 		
-; calculating preview size and number of blocks
-		
-	bs = config.blocksize
-	overlap = (smm + 1) / 2
-	calc_blocks_overlap,file.ydim,bs,overlap,anz_blocks,bs_last 
-	blocksizes = intarr(anz_blocks)+bs
-	blocksizes[anz_blocks-1] = bs_last
+; Initialise tiling & progess bar
 
-	ypos1 = 0                       ; block start
-	ypos2 = bs - overlap            ; block end
-
-	byt=[0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8]	  ; bytelength of the different variable typos
-
-; pop up progress window
-
+	tiling_init,overlap=(smm+1)/2
 	progress,Message='Lee Speckle Filter...',/cancel_button
 
-;start block processing
+; start block processing
 
-	for i=0,anz_blocks-1 do begin   
-		progress,percent=(i+1)*100.0/anz_blocks,/check_cancel
+	for i=0,tiling.nr_blocks-1 do begin   
+		progress,percent=(i+1)*100.0/tiling.nr_blocks,/check_cancel
 		if wid.cancel eq 1 then return
+		tiling_read,ddd,i,block
 
-		block = make_array([file.vdim,file.zdim,file.xdim,blocksizes[i]],type=file.var)
-		readu,ddd,block
-
-; -------- THE FILTER ----------
 		if ampflag eq 1 then block = block^2
 		for j=0,file.vdim-1 do for k=0,file.zdim-1 do block[j,k,*,*] = lee(reform(block[j,k,*,*]),smm,looks=looks)
 		if ampflag eq 1 then block = sqrt(block)
-; -------- THE FILTER ----------
 
-		if i eq anz_blocks-1 then ypos2 = bs_last
-		writeu,eee,block[*,*,*,ypos1:ypos2-1]
-		ypos1 = overlap
-		point_lun,-ddd,file_pos
-		point_lun,ddd,file_pos - 2 * overlap * file.vdim * file.zdim * file.xdim * byt[file.var]
+		tiling_write,eee,i,temporary(block)
+		tiling_jumpback,ddd
 	endfor
 	free_lun,ddd,eee
 
-; update file information
+; update everything
 
-	file.name = finalfile
-	file_move,outputfile,finalfile,/overwrite
-
-	evolute,'Speckle filtering (Lee): '+strcompress(smm,/R)
-
-; generate preview
-
-	if not keyword_set(called) then begin
-		generate_preview
-		update_info_box
-	endif
+	rat_finalise,outputfile,finalfile,CALLED=called
+	evolute,'Speckle filtering (Lee). Looks: '+strcompress(looks,/R)+" Boxsize: '+strcompress(smm,/R)
 end
 
 
