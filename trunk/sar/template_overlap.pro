@@ -1,8 +1,7 @@
 ;------------------------------------------------------------------------
 ; RAT - Radar Tools
 ;------------------------------------------------------------------------
-; Example filter subroutine (EXAMPLE)
-; -> possibly you might want something more intelligent
+; Template function
 ;------------------------------------------------------------------------
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in
@@ -18,30 +17,21 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-function my_filter,arr,para1,para2
-	return,arr*para1+para2
+
+
+;------------------------------------------------------------
+; Your private filtering function
+;------------------------------------------------------------
+function myfilter,arr,boxsize
+	return,smooth(arr,[1,1,boxsize,boxsize])
 end
 
-
-
-
-
-;------------------------------------------------------------
-;------------------------------------------------------------
-;------------------------------------------------------------
 ;------------------------------------------------------------
 ; Main RAT module, to be called by rat.pro
 ; -> don't forget to:
 ;    add it to the 'compile.pro' in the respective subdirectory
 ;    change 'rat.pro' to be able to call the new module
-;------------------------------------------------------------
-;------------------------------------------------------------
-;------------------------------------------------------------
-;------------------------------------------------------------
-
-pro template_overlap,CALLED = called, PARA1 = para1, PARA2 = para2
-
-;------------------------------------------------------------
+;
 ; Global variables of RAT (FIXED)
 ; 
 ; Important:
@@ -53,18 +43,20 @@ pro template_overlap,CALLED = called, PARA1 = para1, PARA2 = para2
 ; file.var  = IDL variable type, following the values returned by the size() command
 ; file.type = RAT data type, for details have a look in definitions.pro
 ;------------------------------------------------------------
+pro template_overlap, CALLED = called, BOXSIZE = boxsize
 
-	common rat, types, file, wid, config
+	common rat, types, file, wid, config, tiling
 
 ;------------------------------------------------------------
 ; Error Handling 1 (EXAMPLE)
 ; -> check if the input file is suitable for the routine
+; -> all file type numbers can be found in definitions.pro
 ;------------------------------------------------------------
-
 	if file.type ne 100 then begin
 		error_button = DIALOG_MESSAGE(['Data have to be a SAR amplitude data'], DIALOG_PARENT = wid.base, TITLE='Error',/ERROR)
 		return
 	endif
+
 
 ;------------------------------------------------------------
 ; Graphical interface mode (FIXED+EXAMPLE)
@@ -72,80 +64,64 @@ pro template_overlap,CALLED = called, PARA1 = para1, PARA2 = para2
 ;    this is important as possibly other routines want to use
 ;    your routine as a batch process
 ;------------------------------------------------------------
-
-	if not keyword_set(called) then begin            
-		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=2,TITLE='Template Overlap',/modal)
-		field1   = CW_FIELD(main,VALUE=7,/integer,TITLE='Parameter 1     : ',XSIZE=3)
-		field2   = CW_FIELD(main,VALUE=7,/integer,TITLE='Parameter 2     : ',XSIZE=3)
+	if not keyword_set(called) then begin             ; Graphical interface
+		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=3,TITLE='Template Filter',/floating,/tlb_kill_request_events,/tlb_frame_attr)
+		field1   = CW_FIELD(main,VALUE=7,/integer,  TITLE='Filter boxsize        : ',XSIZE=3)
 		buttons  = WIDGET_BASE(main,column=3,/frame)
 		but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
 		but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
 		but_info = WIDGET_BUTTON(buttons,VALUE=' Info ',xsize=60)
-		WIDGET_CONTROL, main, /REALIZE, default_button = but_canc,tlb_get_size=toto
+		WIDGET_CONTROL, main, /REALIZE, default_button = but_ok,tlb_get_size=toto
 		pos = center_box(toto[0],drawysize=toto[1])
 		widget_control, main, xoffset=pos[0], yoffset=pos[1]
-
 	
 		repeat begin
 			event = widget_event(main)
 			if event.id eq but_info then begin               ; Info Button clicked
-				infotext = ['Template Overlap',$
+				infotext = ['TEMPLATE FILTER EXAMPLE',$
 				' ',$
-				'RAT module written 01/2004 by Andreas Reigber']
+				'RAT module written 10/2007 by Max Musterman',$
+				' ',$
+				'further information:',$
+				'M.S. Godroth: Advanced template filtering of ergodic signals',$
+				'IEEE Transactions on Template Programming, Vol.17, pp. 24-32, 1998']
 				info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
 			end
-		endrep until (event.id eq but_ok) or (event.id eq but_canc) 
-		widget_control,field1,GET_VALUE=para1
-		widget_control,field2,GET_VALUE=para2
-		widget_control,main,/destroy
-		if event.id ne  but_ok then return                    ; OK button _not_ clicked
-	endif else begin                                         ; Routine called with keywords
+		endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
+		widget_control,field1,GET_VALUE=boxsize
+		widget_control,main,/destroy                        ; remove main widget
+		if event.id ne but_ok then return                   ; OK button _not_ clicked
+	endif else begin                                       ; Routine called with keywords
+
 
 ;------------------------------------------------------------
 ; Batch mode (FIXED+EXAMPLE)
 ; -> take parameters from keywords or use default values
 ;------------------------------------------------------------
-
-		if not keyword_set(para1) then para1 = 7              ; Default values
-		if not keyword_set(para2) then para2 = 7              ; Default values
+		if not keyword_set(boxsize) then boxsize = 7l       ; Default values
 	endelse
+
 
 ;------------------------------------------------------------
 ; Error Handling 2 (EXAMPLE)
 ; -> check validity of parameters
 ;------------------------------------------------------------
-
-	if para1 le 1 then begin                                   ; Wrong box size ?
-		error = DIALOG_MESSAGE("Parameter 1 has to be > 1", DIALOG_PARENT = wid.base, TITLE='Error',/error)
+	if boxsize lt 3 then begin                                 ; Wrong box size ?
+		error = DIALOG_MESSAGE("Boxsize has to be >= 3", DIALOG_PARENT = wid.base, TITLE='Error',/error)
 		return
 	endif
 
 ;------------------------------------------------------------
 ; change mousepointer to hourglass (FIXED)
 ;------------------------------------------------------------
-
 	WIDGET_CONTROL,/hourglass
 
 ;------------------------------------------------------------
 ; Undo function (FIXED)
 ; -> save actual data set in temporary directory
 ;------------------------------------------------------------
-
-; undo function
    undo_prepare,outputfile,finalfile,CALLED=CALLED
-
-
-;------------------------------------------------------------
-; Error Handling 3 (EXAMPLE)
-; -> When input data is complex, convert it to floating point
-;------------------------------------------------------------
-
-	if file.var eq 6 or file.var eq 9 then begin         
-		error = DIALOG_MESSAGE(["Image is complex and has to","be converted to float first"], /cancel, DIALOG_PARENT = wid.base, TITLE='Warning')
-		if error eq "Cancel" then return
-		complex2abs,/called
-	endif
-
+	
 
 ;------------------------------------------------------------
 ; Read / write file header (FIXED+EXAMPLE)
@@ -153,104 +129,66 @@ pro template_overlap,CALLED = called, PARA1 = para1, PARA2 = para2
 ;    to the input data, a different (correct) header has to
 ;    be written
 ;------------------------------------------------------------
-
 	head = 1l
-	rrat,file.name,ddd,header=head,info=info,type=type		
+	rrat,file.name, ddd,header=head,info=info,type=type		
 	srat,outputfile,eee,header=head,info=info,type=type		
 		
-
 ;------------------------------------------------------------
-; Calculating preview size and number of blocks (FIXED)
-; -> overlap specifies the overlap between the vertical blocks
-;    at the end, blocksizes contains the individual blocksizes
+; Initialise vertical tiling with overlap (FIXED)
+; -> omit keyword if no overlap is desired
 ;------------------------------------------------------------
-		
-	bs = config.blocksize
-	overlap = (smm + 1) / 2
-	calc_blocks_overlap,file.ydim,bs,overlap,anz_blocks,bs_last 
-	blocksizes = intarr(anz_blocks)+bs
-	blocksizes[anz_blocks-1] = bs_last
-
-	ypos1 = 0                       ; block start
-	ypos2 = bs - overlap            ; block end
-
-	byt=[0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8]	  ; bytelength of the different variable typos
+	tiling_init,overlap=(boxsize+1)/2
 
 ;------------------------------------------------------------
 ; Pop up progress window (FIXED)
 ;------------------------------------------------------------
-
-	progress,Message='Median Speckle Filter...',/cancel_button
+	progress,Message='Template Filter...',/cancel_button
 
 ;------------------------------------------------------------
 ; Start block processing (FIXED)
 ;------------------------------------------------------------
-
-	for i=0,anz_blocks-1 do begin   
-		progress,percent=(i+1)*100.0/anz_blocks,/check_cancel
+	for i=0,tiling.nr_blocks-1 do begin   
+		progress,percent=(i+1)*100.0/tiling.nr_blocks,/check_cancel
 		if wid.cancel eq 1 then return
 
-
 ;------------------------------------------------------------
-; Create empty input array and read it from input file (FIXED)
+; Read tile from input file (FIXED)
 ; -> after reading the array is 4-dimensional. To get rid of
 ;    leading empty dimensions use the reform() command
 ;------------------------------------------------------------
-
-		block = make_array([file.vdim,file.zdim,file.xdim,blocksizes[i]],type=file.var)
-		readu,ddd,block
-
-;------------------------------------------------------------
-;------------------------------------------------------------
-; -------- THE FILTER ----------
-;
-;  Here you can do something with the data (EXAMPLE)
-;
-; -------- THE FILTER ----------
-;------------------------------------------------------------
-;------------------------------------------------------------
-
-		for j=0,file.vdim-1 do for k=0,file.zdim-1 do block[j,k,*,*] = my_filter(reform(block[j,k,*,*]),para1,para2)
+		tiling_read,ddd,i,block
+		
+; -------- YOUR FILTER CALL----------	
+		block = myfilter(block,boxsize)
+; -------- YOUR FILTER CALL----------	
 
 ;------------------------------------------------------------
-; Write block and jump back in input file due to block overlap (FIXED)
+; Write tile to output file (FIXED)
 ;------------------------------------------------------------
+		tiling_write,eee,i,temporary(block)
 
-		if i eq anz_blocks-1 then ypos2 = bs_last
-		writeu,eee,block[*,*,*,ypos1:ypos2-1]
-		ypos1 = overlap
-		point_lun,-ddd,file_pos
-		point_lun,ddd,file_pos - 2 * overlap * file.vdim * file.zdim * file.xdim * byt[file.var]
+;------------------------------------------------------------
+; Jump back in input file to solve overlap problems (FIXED)
+;------------------------------------------------------------
+ 		tiling_jumpback,ddd
+	
 	endfor
+;------------------------------------------------------------
+; Free LUNs (FIXED)
+;------------------------------------------------------------
 	free_lun,ddd,eee
 
 ;------------------------------------------------------------
-; Update file information (FIXED)
-; -> If the parameters of the output data are not identical
-;    to the input data, here all the new data parameters are
-;    to be set. Take care to write also a correct file header
+; Update RATs structures and windows information (FIXED)
+; -> Set keyword PALETTE to a number of a colour palette
+;    if omitted b/w colour is used
 ;------------------------------------------------------------
-	
-	file.name = finalfile
-	file_move,outputfile,finalfile,/overwrite
-	
+	rat_finalise,outputfile,finalfile,CALLED=CALLED
+
 ;------------------------------------------------------------
 ; For the text-history of the changes of the data files.
+; -> Content is found in the .rit file an via the RAT menue
 ;------------------------------------------------------------
-
-        evolute,'A short description what this procedure changes. Add the most important parameters'
-
-;------------------------------------------------------------
-; Generate and display preview image and info-text (FIXED)
-;------------------------------------------------------------
-
-	if not keyword_set(called) then begin
-		generate_preview
-		update_info_box
-	endif
-	
-;------------------------------------------------------------
-; Return to main program (FIXED)
-;------------------------------------------------------------
-
+	evolute,'Template filtering, boxsize : '+strcompress(boxsize,/R)
 end
+
