@@ -118,7 +118,6 @@ pro speck_lee, CALLED = called, SMM = smm, LOOKS=looks
 	
 ; read / write header
 
-	head = 1l
 	rrat,file.name, ddd,header=head,info=info,type=type		
 	srat,outputfile,eee,header=head,info=info,type=type		
 		
@@ -146,7 +145,7 @@ pro speck_lee, CALLED = called, SMM = smm, LOOKS=looks
 ; update everything
 
 	rat_finalise,outputfile,finalfile,CALLED=called
-	evolute,'Speckle filtering (Lee). Looks: '+strcompress(looks,/R)+" Boxsize: '+strcompress(smm,/R)
+	evolute,'Speckle filtering (Lee). Looks: '+strcompress(looks,/R)+' Boxsize: '+strcompress(smm,/R)
 end
 
 
