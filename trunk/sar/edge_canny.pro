@@ -39,12 +39,13 @@ function gauss_cernel,kx,ky,CORR_FACTOR=corr_factor
   return,cernel
 end
 
-pro edge_canny,CALLED = called, SMMX = smmx, SMMY = smmy
-  common rat, types, file, wid, config
+pro edge_canny,CALLED = called, BOXSIZEX = boxsizex, BOXSIZEY = boxsizey
+	common rat, types, file, wid, config, tiling
+  
+	if not keyword_set(boxsizex) then boxsizex = 11 				; Default values
+	if not keyword_set(boxsizey) then boxsizey = 11 				; Default values
 
-  if n_elements(smmx) eq 0 then smmx=11
-  if n_elements(smmy) eq 0 then smmy=11
-  kx = (smmx-1)/2 & ky = (smmy-1)/2
+  kx = (boxsizex-1)/2 & ky = (boxsizey-1)/2
   corr_factor = 2.5
   keep_phase  = 0
 
@@ -76,13 +77,13 @@ pro edge_canny,CALLED = called, SMMX = smmx, SMMY = smmy
         case event.id of
            field1: begin
               widget_control,field1,GET_VALUE=kx
-              smmx = kx*2+1
-              widget_control,text1,SET_VALUE='X mask-size= '+strcompress(smmx*2+1)+' sigma= '+strcompress(smmx/corr_factor)
+              boxsizex = kx*2+1
+              widget_control,text1,SET_VALUE='X mask-size= '+strcompress(boxsizex*2+1)+' sigma= '+strcompress(boxsizex/corr_factor)
            end
            field2: begin
               widget_control,field2,GET_VALUE=ky
-              smmy = ky*2+1
-              widget_control,text2,SET_VALUE='Y mask-size= '+strcompress(smmy*2+1)+' sigma= '+strcompress(smmy/corr_factor)
+              boxsizey = ky*2+1
+              widget_control,text2,SET_VALUE='Y mask-size= '+strcompress(boxsizey*2+1)+' sigma= '+strcompress(boxsizey/corr_factor)
            end
            else:
         endcase
@@ -94,19 +95,23 @@ pro edge_canny,CALLED = called, SMMX = smmx, SMMY = smmy
   endif
 
 ; Error Handling
-  if smmx le 0 or smmy le 0 then begin ; Wrong box sizes ?
+ 
+  if boxsizex le 0 or boxsizey le 0 then begin ; Wrong box sizes ?
      error = DIALOG_MESSAGE("Boxsizes has to be >= 1", DIALOG_PARENT = wid.base, TITLE='Error',/error)
      return
   endif
 
 ; Gauss Cernel
+
   gauss = gauss_cernel(kx,ky,CORR_FACTOR=corr_factor)
   
 ; change mousepointer
+
   WIDGET_CONTROL,/hourglass
 
 ; undo function
-   undo_prepare,outputfile,finalfile,CALLED=CALLED
+   
+	undo_prepare,outputfile,finalfile,CALLED=CALLED
 
 ; handling of complex and amplitude input data
 
@@ -117,6 +122,7 @@ pro edge_canny,CALLED = called, SMMX = smmx, SMMY = smmy
 
 
 ; read / write header
+
   head = 1l
   rrat,file.name,ddd,header=head,info=info,type=type
   if file.var eq 6 && ~keep_phase then newvar = 4L $
@@ -126,32 +132,23 @@ pro edge_canny,CALLED = called, SMMX = smmx, SMMY = smmy
   head[head[0]+1] = newvar
   srat,outputfile,eee,header=head,info=info,type=newtype
   
-; calculating preview size and number of blocks
-  bs = config.blocksize
-  overlap = (smmy + 1) / 2
-  calc_blocks_overlap,file.ydim,bs,overlap,anz_blocks,bs_last 
-  blocksizes = intarr(anz_blocks)+bs
-  blocksizes[anz_blocks-1] = bs_last
+; Initialise tiling & progess bar
 
-  ypos1 = 0                     ; block start
-  ypos2 = bs - overlap          ; block end
-  byt=[0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8] ; bytelength of the different variable typos
-
-; pop up progress window
-  progress,Message='Canny edge detection...',/cancel_button
+	tiling_init,overlap=(boxsizey+1)/2
+	progress,Message='Canny edge detection...',/cancel_button
 
 ;start block processing
-  for i=0,anz_blocks-1 do begin   
-     progress,percent=(i+1)*100.0/anz_blocks,/check_cancel
-     if wid.cancel eq 1 then return
 
-     block = make_array([file.vdim,file.zdim,file.xdim,blocksizes[i]],type=file.var)
-     oblock= make_array([file.vdim,file.zdim,file.xdim,blocksizes[i]],type=newvar)
-     readu,ddd,block
+  for i=0,tiling.nr_blocks-1 do begin   
+     progress,percent=(i+1)*100.0/tiling.nr_blocks,/check_cancel
+     if wid.cancel eq 1 then return
+     tiling_read,ddd,i,block
+
+     oblock= make_array([file.vdim,file.zdim,file.xdim,(*tiling.blocksizes)[i]],type=newvar)
 ; -------- THE FILTER ----------
      for v=0,file.vdim-1 do for z=0,file.zdim-1 do begin
         amp = convol(abs(reform(block[v,z,*,*])),gauss,/CENTER,/EDGE_TRUNCATE,/NAN,MISSING=0)
-;stop
+
         if keep_phase then begin
            pha = atan(reform(block[v,z,*,*]),/PHASE)
            oblock[v,z,*,*] = sobel(amp) * complex(cos(pha),sin(pha))
@@ -159,23 +156,13 @@ pro edge_canny,CALLED = called, SMMX = smmx, SMMY = smmy
            oblock[v,z,*,*] = sobel(amp)
      endfor
 ; -------- THE FILTER ----------
-     if i eq anz_blocks-1 then ypos2 = bs_last
-     writeu,eee,oblock[*,*,*,ypos1:ypos2-1]
-     ypos1 = overlap
-     point_lun,-ddd,file_pos
-     point_lun,ddd,file_pos - 2 * overlap * file.vdim * file.zdim * file.xdim * byt[file.var]
+		tiling_write,eee,i,temporary(oblock)
+		tiling_jumpback,ddd
   endfor
   free_lun,ddd,eee
 
-; update file information
-  file.var  = newvar
-  file.type = newtype
-  file.name = finalfile
-  file_move,outputfile,finalfile,/overwrite
+; update everything
 
-; generate preview
-  if not keyword_set(called) then begin
-     generate_preview
-     update_info_box
-  endif
+	rat_finalise,outputfile,finalfile,CALLED=called
+	evolute,'Canny edge detection. Boxsize in X: '+strcompress(boxsizex,/R)+' Boxsize in Y: '+strcompress(boxsizey,/R)
 end

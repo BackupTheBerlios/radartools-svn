@@ -185,11 +185,11 @@ another_filter:
   case filter of
 ;;; BOXCAR
      0: if data_type eq 0 $
-     then speck_mean,/called,smmx=*field_value[0],smmy=*field_value[1] $
+     then speck_mean,/called,boxsizex=*field_value[0],boxsizey=*field_value[1] $
      else speck_polmean,/called,smmx=*field_value[0],smmy=*field_value[1]
 ;;; LEE
      1: if data_type eq 0 $
-     then speck_lee,/called,smm=*field_value[0],looks=*field_value[1] $
+     then speck_lee,/called,boxsize=*field_value[0],looks=*field_value[1] $
      else speck_pollee,/called,smm=*field_value[0],looks=*field_value[1]
 ;;; REF-LEE
      2: if data_type eq 0 $
@@ -200,17 +200,17 @@ another_filter:
 ;;; SIM-ANNEALING
      4: speck_pol_anneal,/called,IterNum=*field_value[0],cooling=*field_value[1],initTemp=*field_value[2],lookNum=*field_value[3],singularCovar=*field_value[4]
 ;;; GAMMA-MAP
-     5: speck_gammamap,/called,SMM=*field_value[0],LOOKS=*field_value[1]
+     5: speck_gammamap,/called,BOXSIZE=*field_value[0],LOOKS=*field_value[1]
 ;;; SIGMA
-     6: speck_sigma,/called,SMM=*field_value[0],SIGFAC=*field_value[1],LOOKS=*field_value[2]
+     6: speck_sigma,/called,BOXSIZE=*field_value[0],SIGFAC=*field_value[1],LOOKS=*field_value[2]
 ;;; MEDIAN
-     7: speck_median,/called,SMM=*field_value[0]
+     7: speck_median,/called,BOXSIZE=*field_value[0]
 ;;; GAUSS
-     8: speck_gauss,/called,SMMX=*field_value[0],SMMY=*field_value[1]
+     8: speck_gauss,/called,BOXSIZEX=*field_value[0],BOXSIZEY=*field_value[1]
 ;;; KUAN
-     9: speck_kuan,/called,SMM=*field_value[0],LOOKS=*field_value[1]
+     9: speck_kuan,/called,BOXSIZE=*field_value[0],LOOKS=*field_value[1]
 ;;; FROST
-     10: speck_frost,/called,SMM=*field_value[0],LOOKS=*field_value[1]
+     10: speck_frost,/called,BOXSIZE=*field_value[0],LOOKS=*field_value[1]
   endcase
   ptr_free, field_value
   if wid.cancel eq 1 then return

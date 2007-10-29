@@ -45,13 +45,16 @@ function lee,amp,smm,LOOKS=looks
 	return,(out > 0)
 end
 
-pro speck_lee, CALLED = called, SMM = smm, LOOKS=looks
+pro speck_lee, CALLED = called, BOXSIZE = boxsize, LOOKS=looks
 	common rat, types, file, wid, config, tiling
 
+	if not keyword_set(boxsize) then boxsize = 7l             ; Default values
+	if not keyword_set(looks) then looks = 1.0
+	
 	if not keyword_set(called) then begin             ; Graphical interface
 		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=3,TITLE='Lee Speckle Filte',/floating,/tlb_kill_request_events,/tlb_frame_attr)
-		field1   = CW_FIELD(main,VALUE=7,/integer,  TITLE='Filter boxsize        : ',XSIZE=3)
-		field2   = CW_FIELD(main,VALUE='1.0',/float,TITLE='Effective No of Looks : ',XSIZE=3)
+		field1   = CW_FIELD(main,VALUE=boxsize,/integer,  TITLE='Filter boxsize        : ',XSIZE=3)
+		field2   = CW_FIELD(main,VALUE=looks,/float,TITLE='Effective No of Looks : ',XSIZE=3)
 		buttons  = WIDGET_BASE(main,column=3,/frame)
 		but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
 		but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
@@ -59,7 +62,6 @@ pro speck_lee, CALLED = called, SMM = smm, LOOKS=looks
 		WIDGET_CONTROL, main, /REALIZE, default_button = but_ok,tlb_get_size=toto
 		pos = center_box(toto[0],drawysize=toto[1])
 		widget_control, main, xoffset=pos[0], yoffset=pos[1]
-
 	
 		repeat begin
 			event = widget_event(main)
@@ -77,18 +79,15 @@ pro speck_lee, CALLED = called, SMM = smm, LOOKS=looks
 				info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
 			end
 		endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
-		widget_control,field1,GET_VALUE=smm
+		widget_control,field1,GET_VALUE=boxsize
 		widget_control,field2,GET_VALUE=looks
 		widget_control,main,/destroy                        ; remove main widget
 		if event.id ne but_ok then return                   ; OK button _not_ clicked
-	endif else begin                                       ; Routine called with keywords
-		if not keyword_set(smm)   then smm = 7l             ; Default values
-		if not keyword_set(looks) then looks = 1.0
-	endelse
+	endif 
 
 ; Error handling
 
-	if smm lt 3 then begin                                 ; Wrong box size ?
+	if boxsize lt 3 then begin                                 ; Wrong box size ?
 		error = DIALOG_MESSAGE("Boxsize has to be >= 3", DIALOG_PARENT = wid.base, TITLE='Error',/error)
 		return
 	endif
@@ -118,12 +117,13 @@ pro speck_lee, CALLED = called, SMM = smm, LOOKS=looks
 	
 ; read / write header
 
+	head = 1l
 	rrat,file.name, ddd,header=head,info=info,type=type		
 	srat,outputfile,eee,header=head,info=info,type=type		
 		
 ; Initialise tiling & progess bar
 
-	tiling_init,overlap=(smm+1)/2
+	tiling_init,overlap=(boxsize+1)/2
 	progress,Message='Lee Speckle Filter...',/cancel_button
 
 ; start block processing
@@ -134,7 +134,7 @@ pro speck_lee, CALLED = called, SMM = smm, LOOKS=looks
 		tiling_read,ddd,i,block
 
 		if ampflag eq 1 then block = block^2
-		for j=0,file.vdim-1 do for k=0,file.zdim-1 do block[j,k,*,*] = lee(reform(block[j,k,*,*]),smm,looks=looks)
+		for j=0,file.vdim-1 do for k=0,file.zdim-1 do block[j,k,*,*] = lee(reform(block[j,k,*,*]),boxsize,looks=looks)
 		if ampflag eq 1 then block = sqrt(block)
 
 		tiling_write,eee,i,temporary(block)
@@ -145,7 +145,7 @@ pro speck_lee, CALLED = called, SMM = smm, LOOKS=looks
 ; update everything
 
 	rat_finalise,outputfile,finalfile,CALLED=called
-	evolute,'Speckle filtering (Lee). Looks: '+strcompress(looks,/R)+' Boxsize: '+strcompress(smm,/R)
+	evolute,'Speckle filtering (Lee). Looks: '+strcompress(looks,/R)+' Boxsize: '+strcompress(boxsize,/R)
 end
 
 

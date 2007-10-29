@@ -20,15 +20,20 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-pro slant2ground,CALLED=called
-	common rat, types, file, wid, config
+pro slant2ground,CALLED=called, HEIGHT = height, RANGE = range, PSIN = psin, PSOUT = psout
+	common rat, types, file, wid, config, tiling
+
+	if not keyword_set(height) then height = 5000.0             ; Default values
+	if not keyword_set(range)  then range  = 7000.0             ; Default values
+	if not keyword_set(psin)   then psin   = 3.0             ; Default values
+	if not keyword_set(psout)  then psout  = 3.0             ; Default values
 
 	if not keyword_set(called) then begin             ; Graphical interface
 		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=3,TITLE='Slant Range Projection',/floating,/tlb_kill_request_events,/tlb_frame_attr)
-		field1 = CW_FIELD(main,VALUE=0.0,/floating,TITLE='Sensor height           : ',XSIZE=5)
-		field2 = CW_FIELD(main,VALUE=0.0,/floating,TITLE='Minimum range distance  : ',XSIZE=5)
-		field3 = CW_FIELD(main,VALUE=0.0,/floating,TITLE='Range pixel spacing     : ',XSIZE=5)
-		field4 = CW_FIELD(main,VALUE=0.0,/floating,TITLE='Output pixel spacing    : ',XSIZE=5)
+		field1 = CW_FIELD(main,VALUE=height,/floating,TITLE='Sensor height          [m] : ',XSIZE=7)
+		field2 = CW_FIELD(main,VALUE=range ,/floating,TITLE='Minimum range distance [m] : ',XSIZE=7)
+		field3 = CW_FIELD(main,VALUE=psin  ,/floating,TITLE='Range pixel spacing    [m] : ',XSIZE=7)
+		field4 = CW_FIELD(main,VALUE=psout ,/floating,TITLE='Output pixel spacing   [m] : ',XSIZE=7)
 		buttons = WIDGET_BASE(main,column=3,/frame)
 		but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
 		but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
@@ -76,7 +81,8 @@ pro slant2ground,CALLED=called
 	WIDGET_CONTROL,/hourglass
 
 ; undo function
-   undo_prepare,outputfile,finalfile,CALLED=CALLED
+   
+	undo_prepare,outputfile,finalfile,CALLED=CALLED
 
 
 ; read / write header
@@ -86,42 +92,26 @@ pro slant2ground,CALLED=called
 	head[head[0]-1] = anz_out
 	srat,outputfile,eee,header=head,info=info,type=type		
 	
-; calculating preview size and number of blocks
+; Initialise tiling & progess bar
 
-	bs = config.blocksize
-	calc_blocks_normal,file.ydim,bs,anz_blocks,bs_last 
-	blocksizes = intarr(anz_blocks)+bs
-	blocksizes[anz_blocks-1] = bs_last
-	
-; pop up progress window
-
+	tiling_init
 	progress,Message='Slant-Range to Ground Range...',/cancel_button
 
 ;start block processing
 
-	for i=0,anz_blocks-1 do begin   ; normal blocks
-		progress,percent=(i+1)*100.0/anz_blocks,/check_cancel
+	for i=0,tiling.nr_blocks-1 do begin   ; normal blocks
+		progress,percent=(i+1)*100.0/tiling.nr_blocks,/check_cancel
 		if wid.cancel eq 1 then return
-
-		block  = make_array([file.vdim,file.zdim,file.xdim,blocksizes[i]],type=file.var)
-		oblock = make_array([file.vdim,file.zdim,anz_out,blocksizes[i]],type=file.var)
-		readu,ddd,block
-		for k=0,file.vdim-1 do for l=0,file.vdim-1 do for j=0,blocksizes[i]-1 do $
+		tiling_read,ddd,i,block
+		oblock = make_array([file.vdim,file.zdim,anz_out,(*tiling.blocksizes)[i]],type=file.var)
+		for k=0,file.vdim-1 do for l=0,file.vdim-1 do for j=0,(*tiling.blocksizes)[i]-1 do $
 			oblock[k,l,*,j] = interpolate(reform(block[k,l,*,j]),tout,cubic=-0.5)
-		writeu,eee,oblock
+		tiling_write,eee,i,temporary(oblock)
 	endfor
 	free_lun,ddd,eee
 
-; update file information
+; update everything
 
-	file.name = finalfile
-	file.xdim = anz_out
-	file_move,outputfile,finalfile,/overwrite
-
-; generate preview
-
-	if not keyword_set(called) then begin
-		generate_preview
-		update_info_box
-	endif
+	rat_finalise,outputfile,finalfile,CALLED=called
+	evolute,'Slant range to ground range projection'
 end

@@ -69,8 +69,11 @@ end
 
 
 
-pro edge_maxgrad,CALLED = called, SMM = smm
-	common rat, types, file, wid, config
+pro edge_maxgrad,CALLED = called, BOXSIZE = boxsize
+	common rat, types, file, wid, config, tiling
+	
+	if not keyword_set(boxsize) then boxsize = 3                 ; Default value
+
 	if not keyword_set(called) then begin             ; Graphical interface
 		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=2,TITLE='RoA Edge Detector',/floating,/tlb_kill_request_events,/tlb_frame_attr)
 		field1   = CW_FIELD(main,VALUE=3,/integer,TITLE='Filter boxsize     : ',XSIZE=3)
@@ -81,7 +84,6 @@ pro edge_maxgrad,CALLED = called, SMM = smm
 		WIDGET_CONTROL, main, /REALIZE, default_button = but_canc,tlb_get_size=toto
 		pos = center_box(toto[0],drawysize=toto[1])
 		widget_control, main, xoffset=pos[0], yoffset=pos[1]
-
 	
 		repeat begin
 			event = widget_event(main)
@@ -95,16 +97,14 @@ pro edge_maxgrad,CALLED = called, SMM = smm
 				info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
 			end
 		endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
-		widget_control,field1,GET_VALUE=smm
+		widget_control,field1,GET_VALUE=boxsize
 		widget_control,main,/destroy
 		if event.id ne but_ok then return                    ; OK button _not_ clicked
-	endif else begin                                         ; Routine called with keywords
-		if not keyword_set(smm) then smm = 3                 ; Default value
-	endelse
+	endif 
 
 ; Error Handling
 
-	if smm lt 3 then begin                                   ; Wrong box size ?
+	if boxsize lt 3 then begin                                   ; Wrong box size ?
 		error = DIALOG_MESSAGE("Boxsizes has to be >= 3", DIALOG_PARENT = wid.base, TITLE='Error',/error)
 		return
 	endif
@@ -114,6 +114,7 @@ pro edge_maxgrad,CALLED = called, SMM = smm
 	WIDGET_CONTROL,/hourglass
 
 ; undo function
+ 
    undo_prepare,outputfile,finalfile,CALLED=CALLED
 
 ; handling of complex and amplitude input data
@@ -129,56 +130,31 @@ pro edge_maxgrad,CALLED = called, SMM = smm
 	rrat,file.name,ddd,header=head,info=info,type=type		
 	srat,outputfile,eee,header=head,info=info,type=type		
 		
-; calculating preview size and number of blocks
-		
-	bs = config.blocksize
-	overlap = smm 
-	calc_blocks_overlap,file.ydim,bs,overlap,anz_blocks,bs_last 
-	blocksizes = intarr(anz_blocks)+bs
-	blocksizes[anz_blocks-1] = bs_last
+; Initialise tiling & progess bar
 
-	ypos1 = 0                       ; block start
-	ypos2 = bs - overlap            ; block end
-
-	byt=[0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8]	  ; bytelength of the different variable typos
-
-; pop up progress window
-
-	progress,Message='Detecting Edges...',/cancel_button
+	tiling_init,overlap=(boxsize+1)
+	progress,Message='Lee-RoA Edge Detector...',/cancel_button
 
 ;start block processing
 
-	for i=0,anz_blocks-1 do begin   
-		progress,percent=(i+1)*100.0/anz_blocks,/check_cancel
+	for i=0,tiling.nr_blocks-1 do begin   
+		progress,percent=(i+1)*100.0/tiling.nr_blocks,/check_cancel
 		if wid.cancel eq 1 then return
 
-		block = make_array([file.vdim,file.zdim,file.xdim,blocksizes[i]],type=file.var)
-		readu,ddd,block
-
+		tiling_read,ddd,i,block
 ; -------- THE FILTER ----------
-		for j=0,file.vdim-1 do for k=0,file.zdim-1 do block[j,k,*,*] = maxgrad(reform(block[j,k,*,*]),smm)    
+		for j=0,file.vdim-1 do for k=0,file.zdim-1 do block[j,k,*,*] = maxgrad(reform(block[j,k,*,*]),boxsize)    
 ; -------- THE FILTER ----------
-
-		if i eq anz_blocks-1 then ypos2 = bs_last
-		writeu,eee,block[*,*,*,ypos1:ypos2-1]
-		ypos1 = overlap
-		point_lun,-ddd,file_pos
-		point_lun,ddd,file_pos - 2 * overlap * file.vdim * file.zdim * file.xdim * byt[file.var]
+		tiling_write,eee,i,temporary(block)
+		tiling_jumpback,ddd
 	endfor
 	free_lun,ddd,eee
 
-; update file information
-	
-	file.name = finalfile
-	file.type = 110l
-	file_move,outputfile,finalfile,/overwrite
-	
-; generate preview
+; update everything
 
-	if not keyword_set(called) then begin
-		generate_preview
-		update_info_box
-	endif
+	rat_finalise,outputfile,finalfile,CALLED=called
+	evolute,'Lee-RoA Edge Detector. Boxsize: '+strcompress(boxsize,/R)
+
 end
 
 

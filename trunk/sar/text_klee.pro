@@ -16,7 +16,7 @@
 ; The Initial Developer of the Original Code is the RAT development team.
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
-function klee,arr,smm,LOOKS=looks,THRESHOLD=threshold,METHOD=method,AMPLITUDE=amplitude
+function klee,arr,boxsize,LOOKS=looks,THRESHOLD=threshold,METHOD=method,AMPLITUDE=amplitude
 	if not keyword_set(looks) then looks=1
 	if not keyword_set(threshold) then threshold=0.5
 	if not keyword_set(method) then method=0
@@ -34,8 +34,8 @@ function klee,arr,smm,LOOKS=looks,THRESHOLD=threshold,METHOD=method,AMPLITUDE=am
 	case method of
 	
 		0: begin
-			m2arr  = smooth(amp^2,smm)
-			marr   = smooth(amp,smm)
+			m2arr  = smooth(amp^2,boxsize)
+			marr   = smooth(amp,boxsize)
 			vary   = m2arr - marr^2 
 			varx   = (vary - marr^2*sig2)/sfak > 0
 			k      = varx / vary
@@ -44,7 +44,7 @@ function klee,arr,smm,LOOKS=looks,THRESHOLD=threshold,METHOD=method,AMPLITUDE=am
 		end
 		
 		1: begin
-			sigma = float(smm)/3.0
+			sigma = float(boxsize)/3.0
 			len = 6*sigma
 			x   = shift((findgen(len)-len/2),len/2)
 			box = fltarr(len,len)
@@ -61,14 +61,14 @@ function klee,arr,smm,LOOKS=looks,THRESHOLD=threshold,METHOD=method,AMPLITUDE=am
 		end
 		
 		2: begin
-			delta = (smm-1)/2
+			delta = (boxsize-1)/2
 			dsh   = (delta+1)/2
 			
-			cbox = fltarr(9,smm,smm)
-			chbox = fltarr(smm,smm)
-			chbox[*,0:delta] = 1./smm/delta
-			cvbox = fltarr(smm,smm)
-			for i=0,smm-1 do cvbox[0:i,i] = 1.
+			cbox = fltarr(9,boxsize,boxsize)
+			chbox = fltarr(boxsize,boxsize)
+			chbox[*,0:delta] = 1./boxsize/delta
+			cvbox = fltarr(boxsize,boxsize)
+			for i=0,boxsize-1 do cvbox[0:i,i] = 1.
 	
 			cbox[0,*,*] = rotate(chbox,1)
 			cbox[1,*,*] = rotate(cvbox,3)
@@ -115,8 +115,13 @@ function klee,arr,smm,LOOKS=looks,THRESHOLD=threshold,METHOD=method,AMPLITUDE=am
 	return,out
 end
 
-pro text_klee,CALLED = called, SMM = smm, LOOKS = looks, METHOD=method
-	common rat, types, file, wid, config
+pro text_klee,CALLED = called, BOXSIZE = boxsize, LOOKS = looks, METHOD=method, AMPLITUDE=amplitude
+	common rat, types, file, wid, config, tiling
+
+	if not keyword_set(boxsize) then boxsize = 7                ; Default values
+	if not keyword_set(looks) then looks = 1.0
+	if not keyword_set(method) then method = 0
+	if not keyword_set(amplitude) then amplitude = 1
 
 	; Check inputfile
 
@@ -128,10 +133,10 @@ pro text_klee,CALLED = called, SMM = smm, LOOKS = looks, METHOD=method
 
 	if not keyword_set(called) then begin             ; Graphical interface
 		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=5,TITLE='Texture inhomogenity',/floating,/tlb_kill_request_events,/tlb_frame_attr)
-		field1   = CW_FIELD(main,VALUE=7,/integer,  TITLE='Filter boxsize        : ',XSIZE=3)
+		field1   = CW_FIELD(main,VALUE=boxsize,/integer,  TITLE='Filter boxsize        : ',XSIZE=3)
 		field2   = CW_FIELD(main,VALUE='1.0',/float,TITLE='Effective No of Looks : ',XSIZE=3)
-		field3   = cw_bgroup(main,[' No ',' Yes '],label_left=' Use amplitude damping ',set_value=0,/exclusive,/row)
-		field4   = CW_BGROUP(main,["Boxcar","Gauss","refined Lee"],/frame,set_value=0,row=3,label_top='Mask selection:',/exclusive)
+		field3   = cw_bgroup(main,[' No ',' Yes '],label_left=' Use amplitude damping ',set_value=amplitude,/exclusive,/row)
+		field4   = CW_BGROUP(main,["Boxcar","Gauss","refined Lee"],/frame,set_value=method,row=3,label_top='Mask selection:',/exclusive)
 		buttons  = WIDGET_BASE(main,column=3,/frame)
 		but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
 		but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
@@ -154,23 +159,18 @@ pro text_klee,CALLED = called, SMM = smm, LOOKS = looks, METHOD=method
 				info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
 			end
 		endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
-		widget_control,field1,GET_VALUE=smm
+		widget_control,field1,GET_VALUE=boxsize
 		widget_control,field2,GET_VALUE=looks
 		widget_control,field3,GET_VALUE=amplitude
 		widget_control,field4,GET_VALUE=method
 		
 		widget_control,main,/destroy
 		if event.id ne but_ok then return                   ; OK button _not_ clicked
-	endif else begin                                       ; Routine called with keywords
-		if not keyword_set(smm) then smm = 7                ; Default values
-		if not keyword_set(looks) then looks = 1.0
-		if not keyword_set(method) then method = 0
-		if not keyword_set(amplitude) then amplitude = 0
-	endelse
+	endif 
 
 ; Error Handling
 
-	if smm le 0 and not keyword_set(called) then begin                   ; Wrong box sizes ?
+	if boxsize le 0 and not keyword_set(called) then begin                   ; Wrong box sizes ?
 		error = DIALOG_MESSAGE("Boxsizes has to be >= 1", DIALOG_PARENT = wid.base, TITLE='Error',/error)
 		return
 	endif
@@ -180,7 +180,8 @@ pro text_klee,CALLED = called, SMM = smm, LOOKS = looks, METHOD=method
 	WIDGET_CONTROL,/hourglass
 
 ; undo function
-   undo_prepare,outputfile,finalfile,CALLED=CALLED
+   
+	undo_prepare,outputfile,finalfile,CALLED=CALLED
 
 ; handling of single channel
 	
@@ -199,58 +200,29 @@ pro text_klee,CALLED = called, SMM = smm, LOOKS = looks, METHOD=method
 	rrat,file.name,ddd,header=head,info=info,type=type		
 	srat,outputfile,eee,header=head,info=info,type=51l		
 		
-; calculating preview size and number of blocks
-		
-	bs = config.blocksize
-	overlap = (smm + 1) / 2
-	if method eq 1 then overlap = (2*smm + 1) / 2 
-	calc_blocks_overlap,file.ydim,bs,overlap,anz_blocks,bs_last 
-	blocksizes = intarr(anz_blocks)+bs
-	blocksizes[anz_blocks-1] = bs_last
+; Initialise tiling & progess bar
 
-	ypos1 = 0                       ; block start
-	ypos2 = bs - overlap            ; block end
-
-	byt=[0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8]	  ; bytelength of the different variable typos
- 
-; pop up progress window
-
+	tiling_init,overlap=(boxsize+1)/2
 	progress,Message='Texture inhomogenity...',/cancel_button
 
 ;start block processing
 
-	for i=0,anz_blocks-1 do begin   
-		progress,percent=(i+1)*100.0/anz_blocks,/check_cancel
+	for i=0,tiling.nr_blocks-1 do begin   
+		progress,percent=(i+1)*100.0/tiling.nr_blocks,/check_cancel
 		if wid.cancel eq 1 then return
+		tiling_read,ddd,i,block
 
-		block = make_array([file.vdim,file.zdim,file.xdim,blocksizes[i]],type=file.var)
-		readu,ddd,block
 ;		if ampflag eq 1 then block = block^2
+		for j=0,file.vdim-1 do for k=0,file.zdim-1 do block[j,k,*,*] = klee(block[j,k,*,*],boxsize,LOOKS=looks,METHOD=method,AMPLITUDE=amplitude)
 
-		block = klee(block,smm,LOOKS=looks,METHOD=method,AMPLITUDE=amplitude)
-
-; -------- THE FILTER ----------
-		if i eq anz_blocks-1 then ypos2 = bs_last
-		writeu,eee,block[*,ypos1:ypos2-1]
-		ypos1 = overlap
-		point_lun,-ddd,file_pos
-		point_lun,ddd,file_pos - 2 * overlap * file.vdim * file.zdim * file.xdim * byt[file.var]
+		tiling_write,eee,i,temporary(block)
+		tiling_jumpback,ddd
 	endfor
 	free_lun,ddd,eee
 
-; update file information
-	
-	file_move,outputfile,finalfile,/overwrite
-	file.name = finalfile
+; update everything
 
-	evolute,'Texture inhomogenity: boxsize'+strcompress(smm,/R)+' looks: '+strcompress(looks,/R)+ ' Method: '+strcompress(method,/R)
+	rat_finalise,outputfile,finalfile,CALLED=called
+	evolute,'Texture inhomogenity: boxsize'+strcompress(boxsize,/R)+' looks: '+strcompress(looks,/R)+ ' Method: '+strcompress(method,/R)
 
-; generate preview
-	
-	file.type = 51l
-
-	if not keyword_set(called) then begin
-		generate_preview
-		update_info_box
-	endif
 end

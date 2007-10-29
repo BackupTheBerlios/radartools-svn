@@ -23,14 +23,14 @@
 ;------------------------------------------------------------------------
 
 
-pro speck_median,CALLED = called, SMM = smm
-	common rat, types, file, wid, config
+pro speck_median,CALLED = called, BOXSIZE = boxsize
+	common rat, types, file, wid, config, tiling
 	
-	if not keyword_set(smm) then smm = 7                  ; Default values
+	if not keyword_set(boxsize) then boxsize = 7                  ; Default values
 	
 	if not keyword_set(called) then begin             ; Graphical interface
 		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=2,TITLE='Median Filter',/floating,/tlb_kill_request_events,/tlb_frame_attr)
-		field1   = CW_FIELD(main,VALUE=smm,/integer,TITLE='Filter boxsize     : ',XSIZE=3)
+		field1   = CW_FIELD(main,VALUE=boxsize,/integer,TITLE='Filter boxsize     : ',XSIZE=3)
 		buttons  = WIDGET_BASE(main,column=3,/frame)
 		but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
 		but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
@@ -50,14 +50,14 @@ pro speck_median,CALLED = called, SMM = smm
 				info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
 			end
 		endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
-		widget_control,field1,GET_VALUE=smm
+		widget_control,field1,GET_VALUE=boxsize
 		widget_control,main,/destroy
 		if event.id ne  but_ok then return                    ; OK button _not_ clicked
 	endif
 	
 ; Error Handling
 
-	if smm le 1 then begin                                   ; Wrong box size ?
+	if boxsize le 1 then begin                                   ; Wrong box size ?
 		error = DIALOG_MESSAGE("Boxsizes has to be > 1", DIALOG_PARENT = wid.base, TITLE='Error',/error)
 		return
 	endif
@@ -67,6 +67,7 @@ pro speck_median,CALLED = called, SMM = smm
 	WIDGET_CONTROL,/hourglass
 
 ; undo function
+
    undo_prepare,outputfile,finalfile,CALLED=CALLED
 
 ; Complex input data ????
@@ -84,56 +85,29 @@ pro speck_median,CALLED = called, SMM = smm
 	rrat,file.name,ddd,header=head,info=info,type=type		
 	srat,outputfile,eee,header=head,info=info,type=type		
 		
+; Initialise tiling & progess bar
 
-; calculating preview size and number of blocks
-		
-	bs = config.blocksize
-	overlap = (smm + 1) / 2
-	calc_blocks_overlap,file.ydim,bs,overlap,anz_blocks,bs_last 
-	blocksizes = intarr(anz_blocks)+bs
-	blocksizes[anz_blocks-1] = bs_last
-
-	ypos1 = 0                       ; block start
-	ypos2 = bs - overlap            ; block end
-
-	byt=[0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8]	  ; bytelength of the different variable typos
-
-; pop up progress window
-
+	tiling_init,overlap=(boxsize+1)/2
 	progress,Message='Median Speckle Filter...',/cancel_button
 
 ;start block processing
 
-	for i=0,anz_blocks-1 do begin   
-		progress,percent=(i+1)*100.0/anz_blocks,/check_cancel
+	for i=0,tiling.nr_blocks-1 do begin   
+		progress,percent=(i+1)*100.0/tiling.nr_blocks,/check_cancel
 		if wid.cancel eq 1 then return
 
-		block = make_array([file.vdim,file.zdim,file.xdim,blocksizes[i]],type=file.var)
-		readu,ddd,block
-
+		tiling_read,ddd,i,block
 ; -------- THE FILTER ----------
-		for j=0,file.vdim-1 do for k=0,file.zdim-1 do block[j,k,*,*] = median(reform(block[j,k,*,*]),smm)    
+		for j=0,file.vdim-1 do for k=0,file.zdim-1 do block[j,k,*,*] = median(reform(block[j,k,*,*]),boxsize)    
 ; -------- THE FILTER ----------
-
-		if i eq anz_blocks-1 then ypos2 = bs_last
-		writeu,eee,block[*,*,*,ypos1:ypos2-1]
-		ypos1 = overlap
-		point_lun,-ddd,file_pos
-		point_lun,ddd,file_pos - 2 * overlap * file.vdim * file.zdim * file.xdim * byt[file.var]
+		tiling_write,eee,i,temporary(block)
+		tiling_jumpback,ddd
 	endfor
 	free_lun,ddd,eee
 
-; update file information
-	
-	file.name = finalfile
-	file_move,outputfile,finalfile,/overwrite
-	
-	evolute,'Speckle filtering (median)'
+; update everything
 
-; generate preview
+	rat_finalise,outputfile,finalfile,CALLED=called
+	evolute,'Speckle filtering (Median). Boxsize: '+strcompress(boxsize,/R)
 
-	if not keyword_set(called) then begin
-		generate_preview
-		update_info_box
-	endif
 end
