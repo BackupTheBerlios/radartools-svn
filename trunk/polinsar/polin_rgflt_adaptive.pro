@@ -20,7 +20,7 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-pro polin_rgflt_adaptive,CALLED = called
+pro polin_rgflt_adaptive,CALLED = called, FE=FE, BANDWIDTH=bw, SAMPLING=rs
   common rat, types, file, wid, config
 
   if ~(file.type ge 500 && file.type le 503) then begin
@@ -28,9 +28,17 @@ pro polin_rgflt_adaptive,CALLED = called
      return
   endif
   n_tr = file.zdim
-  fe   = fltarr(file.xdim,n_tr)
+  but1=1
+  but2=1
+  but3=1
+  alpha1=0.54
+  alpha2=0.54
+  conj_fe=0
+  if n_elements(bw) eq 0 then bw=100.
+  if n_elements(rs) eq 0 then rs=100.
 
-  if not keyword_set(called) then begin ; Graphical interface
+  if ~keyword_set(called) then begin ; Graphical interface
+     fe   = fltarr(file.xdim,n_tr)
      single_file = 1
      files = strarr(n_TR)
      lines = lonarr(n_TR)
@@ -164,7 +172,14 @@ pro polin_rgflt_adaptive,CALLED = called
      widget_control,main,/destroy ; remove main widget
      if event.id ne but_ok then return ; OK button _not_ clicked
      
-  endif
+  endif else begin
+     if n_elements(fe) eq 0 then begin
+        ignore  = get_par('fe_file',fe_file)
+        if ignore eq 0 && file_test(fe_file,/READ) then rrat,fe_file,fe
+     endif
+     if n_elements(fe) eq 0 then $
+        message, "Please provide an appropriate Flat Earth file!" 
+  endelse
 
 
 ; calculate parameters

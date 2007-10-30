@@ -22,11 +22,11 @@
 
 
 
-pro construct_polinsar,NOGUI=nogui
+pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_get, fe_get=fe_get, kz_get=kz_get, blp_get=blp_get
   common rat, types, file, wid, config
 
 
-  if ~keyword_set(nogui) then begin ; Graphical interface
+  if ~keyword_set(nogui) && ~keyword_set(called)  then begin ; Graphical interface
      MAX_TR = 20
      cur_tr = 2
      files = strarr(MAX_TR)
@@ -96,7 +96,11 @@ pro construct_polinsar,NOGUI=nogui
      widget_control, fld, get_value=afterwards
      WIDGET_CONTROL, /DESTROY, main
      if event.id ne but_ok then return
-  endif
+  endif else begin
+     cur_tr=n_elements(files)
+     if cur_tr le 1 then message,"Please provide an array of at least two PolSAR RAT data files."
+     afterwards=[info_get,fe_get=fe_get,kz_get,blp_get] eq 1
+  endelse
 
 ; change mousepointer
   WIDGET_CONTROL,/hourglass

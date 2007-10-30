@@ -443,7 +443,8 @@ end
 
 
 
-PRO rat,STARTFILE=startfile,BLOCK=block, $
+PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
+	BLOCK=block, $
         nw=batch, $ ; nw == no window
         no_preview_image=no_preview_image
 	common rat, types, file, wid, config
@@ -982,6 +983,7 @@ PRO rat,STARTFILE=startfile,BLOCK=block, $
 
 ;	print,config.workdir+'test.rat'
 
+        if n_elements(startfile_tmp) ne 0 then startfile=startfile_tmp
 	if not keyword_set(startfile) then startfile = config.workdir+'/default.rat'
 
 ;;; it shouldn't be obligatory, to provide the suffix ".rat" to open a

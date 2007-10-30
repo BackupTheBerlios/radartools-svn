@@ -61,3 +61,5 @@
 @io/import_info_esar.pro
 @io/import_info_ramses.pro
 @io/import_info_generic.pro
+@io/import_var.pro
+@io/export_var.pro
