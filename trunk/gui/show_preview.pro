@@ -29,11 +29,13 @@ pro show_preview, ON=ON, OFF=OFF
      if ~config.show_preview then begin
         config.show_preview = ~config.show_preview
         generate_preview
+        widget_control,wid.button_show_preview,set_value=config.imagedir+'show_preview_on.bmp',/BITMAP
      endif
   endif else if keyword_set(OFF) then begin ; switch off
      if config.show_preview then begin
         config.show_preview = ~config.show_preview
         generate_preview
+        widget_control,wid.button_show_preview,set_value=config.imagedir+'show_preview_off.bmp',/BITMAP
      endif
   endif else begin ;;; toggle
 ;;; to provide this funtionality, include wid.button_show_preview into the system!

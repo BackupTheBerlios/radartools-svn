@@ -1,7 +1,11 @@
 ;------------------------------------------------------------------------
 ; RAT - Radar Tools
 ;------------------------------------------------------------------------
-; RAT Module: compile
+; RAT Module: show_gui
+; written by    : Maxim Neumann
+; last revision : October 2007
+;
+; Show GUI (from shell)
 ;------------------------------------------------------------------------
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in
@@ -16,39 +20,12 @@
 ; The Initial Developer of the Original Code is the RAT development team.
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
-@gui/palette_read.pro
-@gui/palette_write.pro
-@gui/rat_display_small_preview
-@gui/cw_rat_draw
-@gui/center_box
-@gui/display_default_preview
-@gui/cw_rat_dialog_pickfile_prev
-@gui/cw_rat_dialog_pickfile
-@gui/cw_rat_filesel
-@gui/about
-@gui/contact
-@gui/license
-@gui/exit_rat
-@gui/dummy
-@gui/inwork
-@gui/float2bytes
-@gui/update_info_box
-@gui/generate_preview
-@gui/whatisthis
-@gui/preferences
-@gui/progress
-@gui/scale2d
-@gui/scale2dpha
-@gui/scale3d
-@gui/scale_block
-@gui/preview
-@gui/rat_tv
-@gui/multi_layer_image
-@gui/file_image
-@gui/channel_default
-@gui/select_channels
-@gui/toolbox/compile
-@gui/dialog_resize
-@gui/show_preview
-@gui/show_gui
-@gui/hide_gui
+
+pro show_GUI
+  common rat, types, file, wid, config
+	
+  config.batch=0
+  widget_control,wid.base,map=1
+  show_preview,/ON
+
+end

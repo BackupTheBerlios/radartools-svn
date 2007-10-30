@@ -99,7 +99,7 @@ pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_ge
   endif else begin
      cur_tr=n_elements(files)
      if cur_tr le 1 then message,"Please provide an array of at least two PolSAR RAT data files."
-     afterwards=[info_get,fe_get=fe_get,kz_get,blp_get] eq 1
+     afterwards=[info_get,fe_get,kz_get,blp_get] eq 1
   endelse
 
 ; change mousepointer
