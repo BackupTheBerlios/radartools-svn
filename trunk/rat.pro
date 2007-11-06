@@ -52,7 +52,8 @@ PRO rat_event, event
 				widget_id = widget_info(wid.base,/sibling)
 				if widget_info(widget_id,/valid_id) then widget_control,widget_id,/destroy
 			endwhile
-
+			close,/all
+			
 			goto,out
 		endif
 	endif
