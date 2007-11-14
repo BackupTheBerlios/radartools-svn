@@ -37,6 +37,7 @@
 @io/open_asar.pro
 @io/open_asf_slcs.pro
 @io/open_palsar.pro
+@io/open_cosar.pro
 @io/open_polsarpro.pro
 @io/open_emisar.pro
 @io/open_radarsat2.pro
@@ -60,6 +61,7 @@
 @io/construct_blp.pro
 @io/import_info_esar.pro
 @io/import_info_ramses.pro
+@io/import_info_terrasarx.pro
 @io/import_info_generic.pro
 @io/import_var.pro
 @io/export_var.pro

@@ -105,6 +105,7 @@ PRO rat_event, event
 				'Open external.ASF SAR DATA.DETECTED DATA.JERS'				: open_asf_slcs
 				'Open external.ENVISAT-ASAR (ESA)'			: open_envisat
 				'Open external.ALOS-PALSAR  (JAXA)'			: open_palsar
+				'Open external.TERRASAR-X   (DLR)'			: open_cosar
 				'Open external.RADARSAT-2   (CSA)'		   : open_radarsat2
 				'Open external.RAMSES       (ONERA)'		: open_ramses
 				'Open external.POLSARPRO 2.0/3.0'			: open_polsarpro
@@ -115,6 +116,7 @@ PRO rat_event, event
 				'Open pixmap.Open TIFF'							: open_image,/tiff
 				'Import system info.E-SAR        (DLR)'				: import_info_esar
 				'Import system info.RAMSES       (ONERA)'			: import_info_ramses
+				'Import system info.TERRASAR-X   (DLR)'				: import_info_terrasarx
 				'Import system info.Generic'				: import_info_generic
 				'Save external.Generic binary'			: save_generic
 				'Save external.ENVI Standard'				: save_generic,/envi
@@ -519,6 +521,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                          '0\CONVAIR      (CCRS)', $
                          '4\ENVISAT-ASAR (ESA)', $
                          '0\ALOS-PALSAR  (JAXA)', $
+                         '0\TERRASAR-X   (DLR)',$
                          '0\RADARSAT-2   (CSA)', $
                          '1\ASF SAR DATA', $
                          '1\SLC DATA', $
@@ -543,6 +546,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                          '1\Import system info', $
                          '0\E-SAR        (DLR)', $
                          '0\RAMSES       (ONERA)', $
+                         '0\TERRASAR-X   (DLR)',$
                          '2\Generic',$
                          '4\Save RAT file', $
                          '1\Save external' , $
