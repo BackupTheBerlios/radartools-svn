@@ -37,13 +37,52 @@ pro import_info_terrasarx,INPUTFILE_FIRST=inputfile0
 
   ;Read relevant XML tags
   oDocument = OBJ_NEW('IDLffXMLDOMDocument', FILENAME=xml_file,/EXCLUDE_IGNORABLE_WHITESPACE)
-  oNodeList = oDocument->GetElementsByTagName('gml:name')
-  namelen = oNodeList->GetLength()
-  for i=0,namelen-1 do begin
-  	leafnode = (oNodeList->Item(i))->GetFirstChild()
+
+  ;read statevectors
+  oNodeList = oDocument->GetElementsByTagName('stateVec')
+  veclen = oNodeList->GetLength()
+
+  for i=0,veclen-1 do begin
+  	posx = (((oNodeList->Item(i))->GetElementsByTagName('posX'))->Item(0))->GetFirstChild()
+  	posy = (((oNodeList->Item(i))->GetElementsByTagName('posY'))->Item(0))->GetFirstChild()
+  	posz = (((oNodeList->Item(i))->GetElementsByTagName('posZ'))->Item(0))->GetFirstChild()
   	;Test null nodes
-  	if leafnode ne obj_new() then begin
-  		print,leafnode->GetNodeValue()
-  	endif
+  	if posx ne obj_new() and posy ne obj_new() and posz ne obj_new() then begin
+  		x = double(posx->GetNodeValue())
+  		y = double(posy->GetNodeValue())
+  		z = double(posz->GetNodeValue())
+  		print,"Radius:"+string(sqrt(x^2+y^2+z^2))
+  	endif else begin
+  		print,'Null node'
+  	endelse
   endfor
+
+  ;read corner coordinates
+  oNodeList = oDocument->GetElementsByTagName('sceneCornerCoord')
+  cornlen = oNodeList->GetLength()
+
+  for i=0,cornlen-1 do begin
+    lat = (((oNodeList->Item(i))->GetElementsByTagName('lat'))->Item(0))->GetFirstChild()
+    lon = (((oNodeList->Item(i))->GetElementsByTagName('lon'))->Item(0))->GetFirstChild()
+    ang = (((oNodeList->Item(i))->GetElementsByTagName('incidenceAngle'))->Item(0))->GetFirstChild()
+    ;Test null nodes
+  	if posx ne obj_new() and posy ne obj_new() and ang ne obj_new() then begin
+  		latitude = double(lat->GetNodeValue())
+  		longitude = double(lon->GetNodeValue())
+  		incidenceAngle = double(ang->GetNodeValue())
+  		print,"Latitude:"+string(latitude)
+  		print,"Longitude:"+string(longitude)
+  		print,"IncidenceAngle:"+string(incidenceAngle)
+  	endif else begin
+  		print,'Null node'
+  	endelse
+  endfor
+
+  ;read scene average height over the ellipsoid
+  oNodeList = oDocument->GetElementsByTagName('sceneAverageHeight')
+  if oNodeList->GetLength() gt 0 then begin
+  	averageheight = double(((oNodeList->Item(0))->GetFirstChild())->GetNodeValue())
+  	print,"SceneAverageHeight:"+string(averageheight)
+  endif
+
 end
