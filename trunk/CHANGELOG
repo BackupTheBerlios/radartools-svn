@@ -2,6 +2,15 @@
   CHANGELOG
 =============
 
+Version 0.20:
+
+- Framework for external plugins
+- Framework for batch processing without GUI
+- Simplified tiling code
+- Various small improvements and bug fixes
+
+
+
 Version 0.19:
 
 - Change to the MPL 1.1 license
