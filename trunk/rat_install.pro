@@ -328,6 +328,7 @@ PRE_INSTALL:
 		restore,config1
 	endif else begin
 		file_mkdir,homedir
+		file_mkdir,homedir+'icons'
 		definitions,/update_pref
 		restore,config1
 		config_old = config
