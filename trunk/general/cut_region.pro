@@ -258,14 +258,14 @@ pro cut_region
 ;  
 
 	head = 1l
-	rrat,file.name,ddd,header=head,info=info,type=type		
+	rrat,file.name,ddd,header=head,info=info,type=type
 	head[head[0]-1] = xmaxf-xminf+1	
 	head[head[0]]   = ymaxf-yminf+1
 	byt=[0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8]	  ; bytelength of the different variable typos
 	point_lun,-ddd,file_pos
-	point_lun,ddd,file_pos + yminf * file.vdim * file.zdim * file.xdim * byt[file.var]
+	point_lun,ddd,file_pos + long64(yminf) * file.vdim * file.zdim * file.xdim * byt[file.var]
 	
-	srat,outputfile,eee,header=head,info=file.info,type=file.type		
+	srat,outputfile,eee,header=head,info=file.info,type=file.type
 
 ; calculating preview size and number of blocks
 

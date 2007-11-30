@@ -48,5 +48,3 @@
 @sar/mt_entropy
 @sar/mt_prop_of_change
 @sar/text_klee
-@sar/template_overlap_new
-@sar/template_nooverlap_new

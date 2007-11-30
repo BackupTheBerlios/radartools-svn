@@ -29,6 +29,52 @@ FUNCTION argmin, x, minimum=minimum
   IF arg_present(minimum) THEN minimum=m
   return, pos
 END
+pro polin_classif_wins, win, QUADRATIC = quadratic, S5 = s5, CLOSE=close, RANGE=range, POSITION=pos, XPOS=xpos, YPOS=ypos, $
+          TITLE=title, LARGE=large, LONG=long, GET=get, WIDE=wide
+  if keyword_set(CLOSE) then begin
+     DEVICE,window_state = wopen
+     if n_elements(win) eq 0 then begin
+        for i=0,n_elements(wopen)-1 do $
+          if wopen[i] then wdelete, i
+     endif else if wopen[win] then wdelete, win
+     return
+  endif
+  if (n_elements(win) eq 0) || (win lt 0) then begin
+     DEVICE,window_state=wopen
+     win = (where(~wopen))[0]
+  endif
+  if n_elements(RANGE) eq 2 then begin
+     xs = RANGE[0]
+     ys = RANGE[1]
+  endif else begin
+     xs = 500
+     ys = 350
+  endelse
+  if keyword_set(quadratic) then begin
+     xs=400
+     ys=400
+  endif
+  if keyword_set(s5) then begin
+     xs=512
+     ys=512
+  endif
+  if keyword_set(LARGE) then begin
+     xs=1024 & ys=1024
+  endif
+  if keyword_set(LONG) then begin
+     xs=512  & ys=1024
+  endif
+  if keyword_set(WIDE) then begin
+     xs=1024 & ys=512
+  endif
+  if n_elements(TITLE) eq 0 then title='IDL'+strcompress(win)
+  if n_elements(pos) gt 1 then xpos=pos[0]
+  if n_elements(pos) eq 2 then ypos=pos[1]
+  window,win,xs=xs,ys=ys,TITLE=title,FREE=(win lt 0 || win gt 31),xpos=xpos,ypos=ypos
+  if arg_present(GET) ne 0 then GET=!D.WINDOW
+  win = !D.WINDOW
+  return
+end
 pro sa_reform, a, orig_size
   orig_size = size(a,/DIMEN)
   N_DIM     = size(a,/N_DIM)
@@ -169,7 +215,7 @@ function polin_scc_wishart, T, initialization, iteration_Nr, MIN_POINTS=min_poin
      h_stats[0:(n_elements(hcl)-1),it] = hcl
      print,'it '+strcompress(it,/R)+': ',strcompress(hcl)
      tek_color
-     wins,/s
+     polin_classif_wins,/s
      max_cl = min(where(total(h_stats,2) eq 0))
      plot,indgen(iteration_nr),h_stats[0,*],color=2,yrange=[0,max(h_stats)]
      for i=1,max_cl-1 do $
