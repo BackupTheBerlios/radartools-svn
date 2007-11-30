@@ -1002,3 +1002,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
 	XMANAGER, 'rat', wid.base, no_block = ~wid.block
 
 END
+
+;;;  $MAIN$ Program ;;;
+  rat,startfile=startfile,/block
+end

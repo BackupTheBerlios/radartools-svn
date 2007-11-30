@@ -458,7 +458,7 @@ PRE_INSTALL:
            openw, 1,sourcedir+'rat'
            printf,1,'cd '+sourcedir
            printf,1,'idl << final'
-           printf,1,'.r rat'
+           printf,1,'.compile rat'
            printf,1,'rat,startfile="$1",/block'
            printf,1,'final'
            printf,1,'echo $1'
