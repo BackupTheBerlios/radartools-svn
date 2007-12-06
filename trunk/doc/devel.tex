@@ -1,12 +1,15 @@
-\chapter{Development Guide}
+\chapter{Developer's Guide}
 
 This section is meant as a reference for the developers of RAT, as well as for
-those of you, who would like to understand better RAT was programmed.
+those of you, who would like to understand better how RAT was programmed and how
+to modify it by yourself.
 
 
 \section{Import Template}
 
-\section{Data Parameter Handling}
+\subsection{Block Processing (Tiling)}
+
+\section{Data Parameters Handling (Metadata)}
 This section answers the questions:
 \begin{itemize}
   \item How can I get access to parameters, resp. read/write them?
@@ -73,3 +76,167 @@ Z: begin                ; MY-FILTER
 \end{verbatim}
    \end{enumerate}
 And that's it!
+
+
+\section{Batch processing with RAT}
+
+This section describes the possibilities of batch processing with RAT. The
+batch processing should provide the possibilities for
+
+\begin{itemize}
+  \item fast data processing from the shell without graphical output (which can
+  be very time consuming in case of big data sets).
+  \item writing of IDL batch
+  programs for automatic and fully operational SAR data processing with RAT
+  procedures.
+  \item shell-only radar data processing, without any mouse.
+\end{itemize}
+
+\subsection{Basic Concepts}
+General processing chain:
+\begin{enumerate}
+  \item Open IDL shell
+  \item Compile RAT
+\begin{verbatim}
+  .compile rat
+\end{verbatim}
+  \item Start RAT in the batch mode with
+\begin{verbatim}
+  rat, /nw ;;   nw for NoWindow
+\end{verbatim}
+  \begin{itemize}
+    \item As usual with RAT, if a data set with the name "default.rat" can be
+    found in the working directory, RAT opens it automatically.
+    \item Alternatively, one can provide a file name to open at the start with
+\begin{verbatim}
+    rat, /nw, startfile="my_data.rat"
+\end{verbatim}
+  \end{itemize}
+  \item One can open a new data set with
+\begin{verbatim}
+  open_rat, inputfile="my_data.rat"
+\end{verbatim}
+  \item And, similarly, one can save the current working data
+  set with
+\begin{verbatim}
+  save_rat, outputfile="my_modified_data.rat"
+\end{verbatim}
+  \item The current data set can
+  also be exported to an IDL variable, and used further without interaction with
+  RAT: 
+\begin{verbatim}
+  export_var, variable_name
+\end{verbatim}
+  \item At any moment, the GUI can be shown, and hidden
+  again, which makes it possible to switch between batch processing, and the
+  graphical representation: 
+\begin{verbatim}
+  show_gui
+  hide_gui
+\end{verbatim}
+  \item To exit RAT (batch processing or
+  GUI), write
+\begin{verbatim}
+  exit_rat
+\end{verbatim}
+\end{enumerate}
+
+In a similar fashion, one can import data from external file formats, apply
+various processing functions, and export it again.
+
+It is of importance to provide all the required parameters to the functions. To
+find out, which parameters these are, please see this documentation, or consult
+the IDL source codes of the functions.
+
+It is also important to use the keyword "/CALLED" when calling procedures from
+the shell, which act on the data.
+
+Note: This mode is still at an experimental stage. Therefore, it is possible
+that for some untested procedures, some windows will pop up. Also, some
+functions are not recommened to use in the batch mode, for instance, there is no
+reason to call a zoom procedure within the batch processing.
+
+In the following, two examples of RAT batch scripts are presented:
+
+1) Simple steps to open a PolSAR data, to do speckle filtering, and to decompose
+into Entropy/Alpha/Anisotropy. The data is then exported to an IDL variable,
+which can be further examined, even after exiting RAT.
+
+
+\begin{verbatim}
+  .compile rat		;; compile RAT
+  rat, /nw, startfile="some_polarimetric_C_or_T_matrix_data.rat"
+  speck_polreflee, smm=7, looks=9, /CALLED
+  decomp_entalpani, /CALLED
+  show_gui	;; just to see, what did come out
+  hide_gui	;; hide the GUI again
+  export_var, HAA  	;; export the data into the given variable "haa"
+  exit_rat	;; quit rat batch processing
+  help,HAA  	;; shows the structure of the still existent variable "haa"
+\end{verbatim}
+
+2) Advanced automatic processing: A function to construct a MB PolInSAR data set
+from a given set of PolSAR data files. Chain flow: construct the MB data set,
+remove the flat earth phase, conduct adaptive range spectral filtering,
+construct a coherency matrix, apply simultaneously a specified presuming, and do
+speckle filtering with the Refind-Lee filter. The file is finally saved in the
+rat format.
+
+
+\begin{verbatim}
+  pro mbpolinsar_data_processing, polsar_files, fe_file, outputfile, $
+                                  smmx=smmx, smmy=smmy, Lee_box=box
+    rat,/nw
+    construct_polinsar, /CALLED, FILES=polsar_files
+    rrat, fe_file, fe
+    polin_rgflt_adaptive, /CALLED, fe
+    polin_k2m, /CALLED, SMMX=smmx,SMMY=smmy
+    polin_c2t
+    speck_polreflee, /CALLED, SMM=Lee_box, LOOKS=smmx*smmy
+    save_rat,outputfile=outputfile
+    exit_rat
+  end
+\end{verbatim}
+
+This function can then be used for automatic data processing, e.g. with:
+\begin{verbatim}
+  .compile rat
+  mbpolinsar_data_processing, ["track1.rat","track2.rat","track3.rat"], $
+      "fe_1x2x3.rat", "mb_tracks_1x2x3.rat", smmx=3, smmy=9, Lee=7
+\end{verbatim}
+These two examples should only show the possibilities of batch processing with RAT.
+
+
+\section{Mini Howto on RAT-SVN via Linux shell}
+Attention! To have a direct access to the subversion repository, as desribed in
+the following, you need the status of a RAT--developer on the server.
+
+Checkout of the whole trunk from the server to the current directory:
+\begin{verbatim}
+  svn checkout https://YOUR_NICK@svn.berlios.de/svnroot/repos/radartools/trunk
+\end{verbatim}
+The following operations can be executed in the trunk directory or any
+subdirectory.
+
+Current status:
+\begin{verbatim}
+  svn status -u
+\end{verbatim}
+Update the local copy from the server:
+\begin{verbatim}
+  svn update
+\end{verbatim}
+Commit your changes (do ALWAYS add useful comments to the changes after $-m$):
+\begin{verbatim}
+  svn commit -m "Change Log: ..."
+\end{verbatim}
+
+
+\section{Building a Binary for the Release}
+IDL:
+\begin{verbatim}
+  .compile rat
+  resolve_all
+  save,filename="rat.sav",/routines
+\end{verbatim}
+Pack together with \emph{icons} and \emph{preferences} into a single archive.
