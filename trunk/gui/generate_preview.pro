@@ -100,7 +100,7 @@ pro generate_preview,REDISPLAY = redisplay, NODEFAULT = nodefault, color_table=c
 			xdim = dim[dim[0]-1]
 			if xdim ne wid.base_xsize then recalculate=1
 		endif else recalculate=1 
-		if keyword_set(recalculate) then begin
+		if keyword_set(recalculate) || keyword_set(redisplay) then begin
 			;--> Generate the preview file
 			preview,file.name,config.tempdir+config.lookfile
 			;--> Read image and transform to byte

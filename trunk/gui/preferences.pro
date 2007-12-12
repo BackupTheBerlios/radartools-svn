@@ -39,11 +39,16 @@ pro preferences
 	field3 = CW_FIELD(main,VALUE=wid.base_xsize,/integer,TITLE ='Size of RAT window in x    : ',XSIZE=4)
 	field4 = CW_FIELD(main,VALUE=wid.base_ysize,/integer,TITLE ='Size of RAT window in y    : ',XSIZE=4)
 	field5 = CW_FIELD(main,VALUE=config.blocksize,/integer,TITLE='Blocksize for processing   : ',XSIZE=4)
-	field6 = CW_FIELD(main,VALUE=config.sar_scale,/floating,TITLE='SAR image contrast scaling : ',XSIZE=4)
+
+	sub6   = WIDGET_BASE(main,column=2)
+	field6 = CW_FIELD(sub6,VALUE=config.sar_scale,/floating,TITLE='SAR image contrast scaling : ',XSIZE=4)
+        field6a= cw_bgroup(sub6,' ',label_left='        logarithmic scale ', $
+                           /nonexclusive,set_value=config.log_scale)
+        widget_control,field6,sensitive=~config.log_scale
 
 	sub    = WIDGET_BASE(main,column=2)
 	field7 = CW_FIELD(sub,VALUE=config.pha_gamma,/floating,TITLE='Phase image gamma factor   : ',XSIZE=4)
-	field8 = cw_bgroup(sub,' ',label_left='         redisplay image ',/nonexclusive)
+	field8 = cw_bgroup(sub ,' ',label_left='        redisplay image   ',/nonexclusive)
 
 
 
@@ -69,6 +74,11 @@ pro preferences
 
 	repeat begin                                        ; Event loop
 		event = widget_event(mainx)
+                if event.id eq field6a then begin
+                   widget_control,field6a,GET_VALUE=val
+                   config.log_scale = val
+                   widget_control,field6,sensitive=~config.log_scale
+                endif
 		if event.id eq but_save or event.id eq but_ok then begin
 			widget_control,field1,GET_VALUE=val
 			if strmid(val,strlen(val)-1,1) ne path_sep() then val=val+path_sep()
@@ -111,7 +121,7 @@ pro preferences
 
 	if redisp eq 1 then begin
 		WIDGET_CONTROL,/hourglass
-		generate_preview
+		generate_preview,/redisplay
 		update_info_box
 	endif
 	

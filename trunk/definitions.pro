@@ -230,6 +230,7 @@ pro definitions,update_pref=update_pref
                 redofile : "", $
                 blocksize: 128l, $
 		sar_scale: 2.5, $
+		log_scale: 0, $
 		pha_gamma: 1.5, $
 		test     : 0.0, $
 		os       : strlowcase(!version.os_family), $

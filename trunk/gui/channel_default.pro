@@ -260,18 +260,8 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                 411 : begin
                     names = ['Mean intensity', 'Homogeneity mask']
                     select = [0,1,1]
-                end
-;  		500 : begin
-;  			str1 = ['HH Track 1','VV Track 1','HV Track 1','VH Track 1']
-;  			str2 = ['HH Track 2','VV Track 2','HV Track 2','VH Track 2']
-;  			if file.zdim eq 3 then begin
-;  				str1 = str1[0:2]
-;  				str2 = str2[0:2]
-;  			endif
-;  			channel_names = [str1, str2] 
-;  			channel_selec = [1,2,0]
-
-
+                 end
+;;; PolInSAR scattering vectors
                 500 : begin
                    str1 = ['HH','VV',(vdim eq 3?'sq2HV':['HV','VH'])]
                    names = str1 + '0'
@@ -300,40 +290,7 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                       names = [names,str1+strcompress(i,/R)]
                    select = [1,2,0]
                 end
-
-; 		500 : begin
-; 			str1 = ['HH Track 1','VV Track 1','HV Track 1','VH Track 1']
-; 			str2 = ['HH Track 2','VV Track 2','HV Track 2','VH Track 2']
-; 			if zdim eq 3 then begin
-; 				str1 = str1[0:2]
-; 				str2 = str2[0:2]
-; 			endif
-; 			names = [str1, str2] 
-; 			select = [1,2,0]
-; 		end
-;                 501 : begin
-;                    str1 = (zdim EQ 3) ? ['HH1+VV1','HH1-VV1','2*HV1'] : ['HH1+VV1','HH1-VV1','HV1+VH1','i*(HV1-VH1)']
-;                    str2 = (zdim EQ 3) ? ['HH2+VV2','HH2-VV2','2*HV2'] : ['HH2+VV2','HH2-VV2','HV2+VH2','i*(HV2-VH2)']
-;                    names  = [str1,str2]
-;                    select =[1,2,0]
-;                 end
-; 		502 : begin
-; 			str1 = ['XX1','YY1','XY1','YX1']
-; 			str2 = ['XX2','YY2','XY2','YX2']
-; 			if zdim eq 3 then begin
-; 				str1 = str1[0:2]
-; 				str2 = str2[0:2]
-; 			endif
-; 			names = [str1, str2] 
-; 			select = [1,2,0]
-; 		end
-;                 503 : begin
-;                    str1 = (zdim EQ 3) ? ['XX1+YY1','XX1-YY1','2*XY1'] : ['XX1+YY1','XX1-YY1','XY1+YX1','i*(XY1-YX1)']
-;                    str2 = (zdim EQ 3) ? ['XX2+YY2','XX2-YY2','2*XY2'] : ['XX2+YY2','XX2-YY2','XY2+YX2','i*(XY2-YX2)']
-;                    names  = [str1,str2]
-;                    select =[1,2,0]
-;                 end
-
+;;; PolInSAR cov/coh matrices
 		510 : begin
                    n_pol  = vdim mod 3 eq 0? 3L: 4L & n_tr = zdim/n_pol ;file.zdim/n_pol
                    pol = ['HH','VV',(n_pol eq 3?'sq2HV':['HV','VH'])]
@@ -370,6 +327,7 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                    for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+' '+str[z]
                    select = [zdim+1,2*zdim+2,0]
                 end
+;;; Normalized coherency matrix
 		514 : begin
                    n_pol  = vdim mod 3 eq 0? 3L: 4L & n_tr = zdim/n_pol
                    pol = 'Pol'+strcompress(indgen(n_pol),/R)
@@ -379,100 +337,39 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                    for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+' '+str[z]
                    select = [zdim+1+n_pol,2*zdim+2+n_pol,n_pol]
                 end
-; 		510 : begin
-; 			pol = ['HH','VV','HV','VH']
-; 			str1 = ''
-; 			str2 = ''
-; 			for i=0,zdim/2-1 do str1 = [str1,pol[i]+'1']
-; 			for i=0,zdim/2-1 do str1 = [str1,pol[i]+'2']
-; 			str1 = str1[1:*]
-; 			for i=0,vdim-1 do for j=0,zdim-1 do str2 = [str2,str1[i]+' * conj('+str1[j]+')']
-; 			names = str2[1:*]
-; 			select = [file.zdim+1,2*file.zdim+2,0]
-;                      end
-; 		511 : begin
-; 			pol = ['HH+VV','HH-VV','HV+VH','i(HV-VH)']
-; 			str1 = '' & str2 = ''
-; 			for i=0,zdim/2-1 do str1 = [str1,pol[i]+'1']
-; 			for i=0,zdim/2-1 do str1 = [str1,pol[i]+'2']
-; 			str1 = str1[1:*]
-; 			for i=0,vdim-1 do for j=0,zdim-1 do str2 = [str2,str1[i]+' * conj('+str1[j]+')']
-; 			names = str2[1:*]
-; 			select = [file.zdim+1,2*file.zdim+2,0]
-;                      end
-; 		512 : begin
-; 			pol = ['XX','YY','XY','YX']
-; 			str1 = '' & str2 = ''
-; 			for i=0,zdim/2-1 do str1 = [str1,pol[i]+'1']
-; 			for i=0,zdim/2-1 do str1 = [str1,pol[i]+'2']
-; 			str1 = str1[1:*]
-; 			for i=0,vdim-1 do for j=0,zdim-1 do str2 = [str2,str1[i]+' * conj('+str1[j]+')']
-; 			names = str2[1:*]
-; 			select = [file.zdim+1,2*file.zdim+2,0]
-;                      end
-; 		513 : begin
-; 			pol = ['XX+YY','XX-YY','XY+YX','i(XY-YX)']
-; 			str1 = '' & str2 = ''
-; 			for i=0,zdim/2-1 do str1 = [str1,pol[i]+'1']
-; 			for i=0,zdim/2-1 do str1 = [str1,pol[i]+'2']
-; 			str1 = str1[1:*]
-; 			for i=0,vdim-1 do for j=0,zdim-1 do str2 = [str2,str1[i]+' * conj('+str1[j]+')']
-; 			names = str2[1:*]
-; 			select = [file.zdim+1,2*file.zdim+2,0]
-;                      end
-; 		514 : begin ; polin + mb
-; 			npol= vdim mod 3 eq 0? 3L: 4L
-; 			pol = 'Pol'+strcompress(indgen(npol),/R) 
-;                         str = pol+'0'
-;                         for i=1,vdim/npol-1 do str = [str,pol+strcompress(i,/R)]
-;                         names = strarr(vdim,zdim)
-;                         for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+str[z]
-;                         select = [file.zdim+1+npol,2*file.zdim+2+npol,npol]
-;                      end
-
-                530 : begin
+;;; PolInSAR coherences
+                530 : begin ;; coherence (complex and real)
                    names = strarr(zdim*vdim)
                    cohName=vdim eq 3?['XX','YY','XY']: $
                            vdim eq 4?['XX','YY','XY','YX']:strcompress(indgen(vdim),/R) 
                    for i=0,vdim-1 do for j=0,zdim-1 do $
-                      names[i*zdim+j]='coh'+cohName[i]+' baseline '+mb_ind(j,/T)
-;strcompress(j,/r)
+                      names[i*zdim+j]='coh'+cohName[i]+' baseline '+ $
+                      strjoin(strcompress(mb_ind(j)+1,/r),'x')
                    if zdim*vdim ge 3 then select = [0,1,2]
                 end
-;                 530 : begin
-;                    names = strarr(zdim*vdim)
-;                    for j=0,zdim-1 do for i=0,vdim-1 do names[i+j*vdim]='coh'+strcompress(i,/r)+strcompress(j,/r)
-;                    if zdim*vdim ge 3 then select = [0,1,2]
-;                 end
-                532 : begin  ;; besause of alternative channel selection (mn,08/06)
-                   names = strarr(zdim*vdim)
-                   cohName=vdim eq 3?['XX','YY','XY']: $
-                           vdim eq 4?['XX','YY','XY','YX']:strcompress(indgen(vdim),/R) 
-                   for j=0,zdim-1 do for i=0,vdim-1 do $
-                      names[i*zdim+j]='optcoh'+cohName[i]+' baseline '+mb_ind(j,/T)
-                   if zdim*vdim ge 3 then select = [1,0,2]  ;; besause of alternative channel selection (mn,08/06)
-                end
-;                 530 : begin
-;                    names = strarr(zdim*vdim)
-;                    for j=0,zdim-1 do for i=0,vdim-1 do names[i+j*vdim]='coh'+strcompress(i,/r)+strcompress(j,/r)
-;                    if zdim*vdim ge 3 && vdim ne zdim then select = [1,2,0]
-;                 end
-                531 : begin
+                531 : begin ;;; obsolete !!! only for compatibility with older data sets (mn,2006)
                    names = strarr(zdim*vdim)
                    for j=0,zdim-1 do for i=0,vdim-1 do names[i+j*vdim]='coh'+strcompress(i,/r)+strcompress(j,/r)
                    if zdim*vdim ge 3 && vdim ne zdim then select = [1,2,0]
                 end
-;                 532 : begin  ;; besause of alternative channel selection (mn,08/06)
-;                    names = strarr(zdim*vdim)
-;                    for j=0,zdim-1 do for i=0,vdim-1 do names[i+j*vdim]='coh'+strcompress(i,/r)+strcompress(j,/r)
-;                    if zdim*vdim ge 3 then select = [1,0,2]  ;; besause of alternative channel selection (mn,08/06)
-;                 end
+;;; Optimal coherences (keep it besause of the alternative channel selection in
+;;; comparison with general coherence! (mn,08/06))
+                532 : begin  
+                   names = strarr(zdim*vdim)
+                   cohName=vdim eq 3?['XX','YY','XY']: $
+                           vdim eq 4?['XX','YY','XY','YX']:strcompress(indgen(vdim),/R) 
+                   for j=0,zdim-1 do for i=0,vdim-1 do $
+                      names[i*zdim+j]='optcoh'+cohName[i]+' baseline '+ $
+                      strjoin(strcompress(mb_ind(j)+1,/r),'x')
+                   if zdim*vdim ge 3 then select = [1,0,2]
+                end
                 540 : begin
                    names1 = ['A1','A2','Hint','Aint']
                    names = strarr(zdim*vdim)
                    for j=0,zdim-1 do for i=0,vdim-1 do names[i+j*vdim]=names1[i]+'bl'+strcompress(j,/R) 
                    select = [1,0,0]
                 end
+;;; Time-frequency sub-app data types.
                 600 : begin
                    names = 'SubAp '+strcompress(indgen(zdim),/R) 
                 end
@@ -517,95 +414,16 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                    select = [vdim+1,2*vdim+2,0]
                 end
 
-;                 800 : begin
-;                    str1 = ['HH','VV',(vdim eq 3?'HV':['HV','VH'])]
-;                    names = str1 + ' Track0'
-;                    for i=1,zdim-1 do $
-;                       names = [names,str1+' Track'+strcompress(i,/R)]
-;                    select = [1,2,0]
-;                 end
-;                 801 : begin
-;                    str1 = 'Pol'+strcompress(indgen(vdim),/R)
-;                    names = str1 + ' Track0'
-;                    for i=1,zdim-1 do $
-;                       names = [names,str1+' Track'+strcompress(i,/R)]
-;                    select = [1,2,0]
-;                 end
-;                 802 : begin
-;                    str1 = 'Pol'+strcompress(indgen(vdim),/R)
-;                    names = str1 + ' Track0'
-;                    for i=1,zdim-1 do $
-;                       names = [names,str1+' Track'+strcompress(i,/R)]
-;                    select = [1,2,0]
-;                 end
-;                 803 : begin
-;                    str1 = 'Pol'+strcompress(indgen(vdim),/R)
-;                    names = str1 + ' Track0'
-;                    for i=1,zdim-1 do $
-;                       names = [names,str1+' Track'+strcompress(i,/R)]
-;                    select = [1,2,0]
-;                 end
-
-; 		810 : begin
-; 			pol = ['HH','VV','HV']
-;                         str = pol+'0'
-;                         for i=1,vdim/3-1 do str = [str,pol+strcompress(i,/R)] 
-;                         names = strarr(vdim,zdim)
-;                         for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+str[z]
-;                         select = [file.zdim+1,2*file.zdim+2,0]
-;                      end
-; 		811 : begin
-; 			pol = ['Pol0','Pol1','Pol2']
-;                         str = pol+'0'
-;                         for i=1,vdim/3-1 do str = [str,pol+strcompress(i,/R)]
-;                         names = strarr(vdim,zdim)
-;                         for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+str[z]
-;                         select = [file.zdim+1,2*file.zdim+2,0]
-;                      end
-; 		812 : begin
-; 			pol = ['Pol0','Pol1','Pol2']
-;                         str = pol+'0'
-;                         for i=1,vdim/3-1 do str = [str,pol+strcompress(i,/R)]
-;                         names = strarr(vdim,zdim)
-;                         for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+str[z]
-;                         select = [file.zdim+1,2*file.zdim+2,0]
-;                      end
-; 		813 : begin
-; 			pol = ['Pol0','Pol1','Pol2']
-;                         str = pol+'0'
-;                         for i=1,vdim/3-1 do str = [str,pol+strcompress(i,/R)]
-;                         names = strarr(vdim,zdim)
-;                         for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+str[z]
-;                         select = [file.zdim+1,2*file.zdim+2,0]
-;                      end
-; 		814 : begin
-; 			npol= vdim mod 3 eq 0? 3L: 4L
-; 			pol = 'Pol'+strcompress(indgen(npol),/R) 
-;                         str = pol+'0'
-;                         for i=1,vdim/npol-1 do str = [str,pol+strcompress(i,/R)]
-;                         names = strarr(vdim,zdim)
-;                         for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+str[z]
-;                         select = [file.zdim+1+npol,2*file.zdim+2+npol,npol]
-;                      end
-;                 830 : begin
-;                    names = strarr(zdim*vdim)
-;                    for j=0,zdim-1 do for i=0,vdim-1 do names[i+j*vdim]='coh'+strcompress(i,/r)+strcompress(j,/r)
-;                    if zdim*vdim ge 3 then select = [0,1,2]
-;                 end
-;                 832 : begin  ;; besause of alternative channel selection (mn,08/06)
-;                    names = strarr(zdim*vdim)
-;                    for j=0,zdim-1 do for i=0,vdim-1 do names[i+j*vdim]='coh'+strcompress(i,/r)+strcompress(j,/r)
-;                    if zdim*vdim ge 3 then select = [1,0,2]  ;; besause of alternative channel selection (mn,08/06)
-;                 end
-
-
+;;; all other data types
 		else : begin
-;  			for i=0,file.vdim-1 do $
-;  				for j=0,file.zdim-1 do $
-;  					channel_names[i*file.zdim+j] = 'Channel '+strcompress(i*file.zdim+j+1)
-			for i=0,vdim-1 do $
-				for j=0,zdim-1 do $
-					names[i*zdim+j] = 'Channel '+strcompress(i*zdim+j+1)
+                   if vdim le 1 || zdim le 1 then $
+                      for i=0,vdim-1 do $
+                         for j=0,zdim-1 do $
+                            names[i*zdim+j] = 'Channel '+strcompress(i*zdim+j+1) $
+                   else for i=0,vdim-1 do $
+                      for j=0,zdim-1 do $
+                         names[i*zdim+j] = 'Channel ['+strcompress(i+1,/r)+';' $
+                                           +strcompress(j+1,/R)+']'
 		end
 	endcase
 	

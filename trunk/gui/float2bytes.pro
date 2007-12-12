@@ -360,8 +360,12 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
 ; SAR scaling
 
 		if sar_scl eq 1 then begin
-			mm = total(arr)/n_elements(arr)	
-			arr=bytscl(temporary(arr),0,config.sar_scale*mm)
+                   if config.log_scale then $
+                      arr = bytscl(temporary(10*alog10(arr)),min=0) $
+                   else begin
+                      mm = total(arr)/n_elements(arr)	
+                      arr=bytscl(temporary(arr),0,config.sar_scale*mm)
+                   endelse
 		endif else begin
 			mm = max(arr)
 			arr=bytscl(temporary(arr),0,mm)
