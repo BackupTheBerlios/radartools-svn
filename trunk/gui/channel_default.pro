@@ -432,12 +432,24 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
 
                 530 : begin
                    names = strarr(zdim*vdim)
-                   for j=0,zdim-1 do for i=0,vdim-1 do names[i+j*vdim]='coh'+strcompress(i,/r)+strcompress(j,/r)
+                   cohName=vdim eq 3?['XX','YY','XY']: $
+                           vdim eq 4?['XX','YY','XY','YX']:strcompress(indgen(vdim),/R) 
+                   for i=0,vdim-1 do for j=0,zdim-1 do $
+                      names[i*zdim+j]='coh'+cohName[i]+' baseline '+mb_ind(j,/T)
+;strcompress(j,/r)
                    if zdim*vdim ge 3 then select = [0,1,2]
                 end
+;                 530 : begin
+;                    names = strarr(zdim*vdim)
+;                    for j=0,zdim-1 do for i=0,vdim-1 do names[i+j*vdim]='coh'+strcompress(i,/r)+strcompress(j,/r)
+;                    if zdim*vdim ge 3 then select = [0,1,2]
+;                 end
                 532 : begin  ;; besause of alternative channel selection (mn,08/06)
                    names = strarr(zdim*vdim)
-                   for j=0,zdim-1 do for i=0,vdim-1 do names[i+j*vdim]='optcoh'+strcompress(i,/r)+strcompress(j,/r)
+                   cohName=vdim eq 3?['XX','YY','XY']: $
+                           vdim eq 4?['XX','YY','XY','YX']:strcompress(indgen(vdim),/R) 
+                   for j=0,zdim-1 do for i=0,vdim-1 do $
+                      names[i*zdim+j]='optcoh'+cohName[i]+' baseline '+mb_ind(j,/T)
                    if zdim*vdim ge 3 then select = [1,0,2]  ;; besause of alternative channel selection (mn,08/06)
                 end
 ;                 530 : begin

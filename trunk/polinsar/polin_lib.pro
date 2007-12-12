@@ -542,7 +542,7 @@ function MB_sb, Tx, ind, ind2, POL=POL, THIRD_DIM=THIRD_DIM
                                       i[0]*pol:(i[0]+1)*pol-1,*,*,*,*,*,*]
   return, T6
 end
-function mb_ind, ind1, ind2, FIRST=FIRST, SECOND=SECOND
+function mb_ind, ind1, ind2, FIRST=FIRST, SECOND=SECOND,TOGETHER_STRING=TOGETHER_STRING
   n1=n_elements(ind1) & n2=n_elements(ind2)
   if ind1[0] lt 0 then message,'error in mb_ind: ind1 is <0 !!!'
   case n1+n2 of
@@ -551,7 +551,8 @@ function mb_ind, ind1, ind2, FIRST=FIRST, SECOND=SECOND
         for tr2=1,ind1[0]+1 do $
            for tr1=0,tr2-1 do $
               if ++i eq ind1[0] then return, $
-           keyword_set(FIRST)?tr1:keyword_set(SECOND)?tr2:[tr1,tr2]
+           keyword_set(FIRST)?tr1:keyword_set(SECOND)?tr2: $
+           keyword_set(TOGETHER_STRING)?strcompress(tr1,/r)+'x'+strcompress(tr2,/r):[tr1,tr2]
      end
      2: begin ;; ind2d ==> ind1d
         if n1 eq 2 then ind2=ind1[1]

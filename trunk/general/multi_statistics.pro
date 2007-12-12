@@ -62,8 +62,8 @@ pro multi_statistics,CALLED = called
   for v=0,file.vdim-1 do for z=0,file.zdim-1 do begin
      if file.var eq 6 || file.var eq 9 then begin
         ch = abs(block[v,z,*,*])
-        m = moment(ch,MDEV=mdev,SDEV=sdev)
-        mx= max(ch,mxpos,min=mn,sub=mnpos)
+        m = moment(ch,MDEV=mdev,SDEV=sdev,/NAN)
+        mx= max(ch,mxpos,min=mn,sub=mnpos,/NAN)
         md= median(ch)
         text1 += newline + $
                  'Channel ['+strcompress(v,/r)+','+strcompress(z,/r)+'] AMPLITUDE'+newline+ $
@@ -77,8 +77,8 @@ pro multi_statistics,CALLED = called
                  'MeanAbsDev:'+strcompress(mdev)+newline
         widget_control, tx1, SET_VALUE = text1
         ch = atan(block[v,z,*,*],/phase)
-        m = moment(ch,MDEV=mdev,SDEV=sdev)
-        mx= max(ch,mxpos,min=mn,sub=mnpos)
+        m = moment(ch,MDEV=mdev,SDEV=sdev,/NAN)
+        mx= max(ch,mxpos,min=mn,sub=mnpos,/NAN)
         md= median(ch)
         text2 += newline + $
                  'Channel ['+strcompress(v,/r)+','+strcompress(z,/r)+'] PHASE'+newline+ $
@@ -93,8 +93,8 @@ pro multi_statistics,CALLED = called
      widget_control, tx2, SET_VALUE = text2
      endif else begin
         ch = block[v,z,*,*]
-        m = moment(ch,MDEV=mdev,SDEV=sdev)
-        mx= max(ch,mxpos,min=mn,sub=mnpos)
+        m = moment(ch,MDEV=mdev,SDEV=sdev,/NAN)
+        mx= max(ch,mxpos,min=mn,sub=mnpos,/NAN)
         md= median(ch)
         text1 += newline + $
                  'Channel ['+strcompress(v,/r)+','+strcompress(z,/r)+']'+newline+ $

@@ -63,7 +63,9 @@ pro complex2pha,CALLED=called
 
 		block = make_array([file.vdim,file.zdim,file.xdim,blocksizes[i]],type=file.var)
 		readu,ddd,block
-		writeu,eee,atan(block,/phase)
+		oblock=atan(block,/phase)
+                rmnanq,oblock
+		writeu,eee,oblock
 	endfor
 
 ; update file information

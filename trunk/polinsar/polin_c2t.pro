@@ -51,7 +51,7 @@ pro polin_c2t,CALLED=called;, TO_PAULI=TO_PAULI, TO_LEX=TO_LEX
   srat,outputfile,eee,header=[4l,file.zdim,file.zdim,file.xdim,file.ydim,file.var],info=info,type=newtype
 
 ; calculating preview size and number of blocks
-  bs = config.blocksize
+  bs = config.blocksize / file.zdim
   calc_blocks_normal,file.ydim,bs,anz_blocks,bs_last
   blocksizes = intarr(anz_blocks)+bs
   blocksizes[anz_blocks-1] = bs_last

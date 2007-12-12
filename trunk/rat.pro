@@ -330,6 +330,7 @@ PRO rat_event, event
                       'Phase optimisation.Phase diversity'			: polin_coh_div		; done !
                       'Correlation.Total'					: polin_cor,/TOTAL	; done !
                       'Correlation.Over baselines'				: polin_cor		; done !
+                      'Correlation.Incoherent MB stationarity'			: polin_stationarity	; done !
                       'Parameters.Entropy / Alpha / Anisotropy'			: polin_deco_haa	; done !
                       'Parameters.Mean Alpha / Beta / Gamma / Delta angles'	: polin_deco_abgd,/M	; done !
                       'Parameters.All Alpha / Beta / Gamma / Delta angles'	: polin_deco_abgd	; done !
@@ -765,7 +766,8 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                   '2\Phase diversity', $
                   '1\Correlation', $
                   '0\Total', $
-                  '2\Over baselines', $
+                  '0\Over baselines', $
+                  '6\Incoherent MB stationarity', $
                   '5\Parameters', $
                   '0\Entropy / Alpha / Anisotropy',$
                   '0\Mean Alpha / Beta / Gamma / Delta angles',$
@@ -950,7 +952,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
 ;---- info box ----
 
 		lower    = widget_base(widinner,/row)
-		wid.info = WIDGET_TEXT(lower,SCR_XSIZE=wid.base_xsize-135, YSIZE=3)
+		wid.info = WIDGET_TEXT(lower,SCR_XSIZE=(wid.base_xsize-135)>300, YSIZE=3)
 ;	  	image_rat_draw = widget_draw(lower,xsize=130,ysize=57)
 
 

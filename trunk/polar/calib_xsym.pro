@@ -123,7 +123,7 @@ pro calib_xsym,CALLED=called,METHOD = method
   blocksizes[anz_blocks-1] = bs_last
 
   if polin then begin
-     n_tr=matrix? file.vdim mod 4: file.zdim
+     n_tr=matrix? file.vdim / 4: file.zdim
      choice = [0,1,2]
      ch1    = 2L + lindgen(n_tr)*4L
      ch2    = 3L + lindgen(n_tr)*4L

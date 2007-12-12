@@ -25,6 +25,11 @@
 pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_get, fe_get=fe_get, kz_get=kz_get, blp_get=blp_get
   common rat, types, file, wid, config
 
+  if n_elements(info_get) eq 0 then info_get=0
+  if n_elements(fe_get) eq 0 then fe_get=0
+  if n_elements(kz_get) eq 0 then kz_get=0
+  if n_elements(blp_get) eq 0 then blp_get=0
+  afterwards=[info_get,fe_get,kz_get,blp_get] eq 1
 
   if ~keyword_set(nogui) && ~keyword_set(called)  then begin ; Graphical interface
      MAX_TR = 20
@@ -33,7 +38,6 @@ pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_ge
      lines = lonarr(MAX_TR)
      texts = lonarr(MAX_TR)
      brows = lonarr(MAX_TR)
-     afterwards = [0,0,0,0]
 
      tryagain:
      main = WIDGET_BASE(GROUP_LEADER=wid.base,/column,TITLE='Construct polarimetric multibaseline SAR dataset', $
@@ -99,7 +103,6 @@ pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_ge
   endif else begin
      cur_tr=n_elements(files)
      if cur_tr le 1 then message,"Please provide an array of at least two PolSAR RAT data files."
-     afterwards=[info_get,fe_get,kz_get,blp_get] eq 1
   endelse
 
 ; change mousepointer
@@ -117,7 +120,7 @@ pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_ge
      files[0]=''
      goto,tryagain
   endif
-  if type0 lt 200 || type0 gt 210 || head0[0] ne 3 || head0[1] ne 3 then begin
+  if type0 lt 200 || type0 gt 210 || head0[0] ne 3 then begin
      error = DIALOG_MESSAGE('0: Data has to be a polarimetric (3-pol) scattering vector', $
                             DIALOG_PARENT = wid.base, TITLE='Error',/error)
      files[0]=''

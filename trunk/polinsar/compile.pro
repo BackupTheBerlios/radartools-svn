@@ -59,3 +59,4 @@
 @polinsar/polin_calib_natural.pro
 @polinsar/polin_basis_indiv.pro
 @polinsar/polin_din_phases.pro
+@polinsar/polin_stationarity.pro
