@@ -16,6 +16,8 @@
 ; The Initial Developer of the Original Code is the RAT development team.
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
+@io/get_par.pro
+@io/set_par.pro
 @io/rrat.pro
 @io/srat.pro
 @io/rarr.pro
@@ -43,15 +45,14 @@
 @io/open_radarsat2.pro
 @io/open_pisar.pro
 @io/open_convair.pro
+@io/open_ramses.pro
+@io/open_gbsar_upc.pro
 @io/rit_read.pro
 @io/rit_write.pro
 @io/open_rit.pro
 @io/save_rit.pro
-@io/get_par.pro
-@io/set_par.pro
 @io/undo_prepare.pro
 @io/evolute.pro
-@io/open_ramses.pro
 @io/construct_multi.pro
 @io/save_multi.pro
 @io/extract_mtfiles.pro

@@ -108,6 +108,7 @@ PRO rat_event, event
 				'Open external.TERRASAR-X   (DLR)'			: open_cosar
 				'Open external.RADARSAT-2   (CSA)'		   : open_radarsat2
 				'Open external.RAMSES       (ONERA)'		: open_ramses
+				'Open external.GB-SAR       (UPC)'		: open_gbsar_upc
 				'Open external.POLSARPRO 2.0/3.0'			: open_polsarpro
 				'Open external.Generic binary'				: open_generic
 				'Open external.ENVI standard'					: open_envi
@@ -533,6 +534,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                          '0\RADARSAT-1', $
                          '0\ERS-1/2', $
                          '2\JERS', $
+                         '4\GB-SAR       (UPC)', $
                          '4\POLSARPRO 2.0/3.0', $
                          '0\Generic binary', $
                          '2\ENVI standard', $
