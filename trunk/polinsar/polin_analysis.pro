@@ -120,7 +120,7 @@ pro polin_analysis
   endif
 
 ;;; Data variables and constants
-  Dbl_list  = strcompress(indgen(n_bl),/R)+': tracks '+strjoin(strcompress(mb_ind(indgen(n_bl)),/R),'x')
+  Dbl_list  = strcompress(indgen(n_bl),/R)+': tracks '+strjoin(strcompress(mb_ind(indgen(n_bl))+1,/R),'x')
   Dtab_labels_col = ['Lex','Pauli','SB-MSM','SB-MSM 1SM','SB-ESM', $
                      'MB-MSM','MB-MSM 1SM','MB-ESM']
 ;                      'SUMCOR(A)','SC(A) 1MC','SUMCOR(B)','SC(B) 1MC','SUMCOR(C)','SC(C) 1MC','SUMCOR(D)','SC(D) 1MC', $

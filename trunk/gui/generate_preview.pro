@@ -32,6 +32,12 @@ pro generate_preview,REDISPLAY = redisplay, NODEFAULT = nodefault, color_table=c
 		widget_control,wid.base,base_set_title='RAT - Radar Tools: '+file.window_name+ ' (modified)'
 	endelse	
 
+        if ~file_test(file.name) then return
+;       if ~file_test(file.name,/READ) then return
+
+;;;-----------------------------------
+;;;		NO PREVIEW
+;;;-----------------------------------
         if ~config.show_preview then begin
            read_png,config.imagedir+'rat.png',image
            isiz = size(image)
@@ -43,10 +49,11 @@ pro generate_preview,REDISPLAY = redisplay, NODEFAULT = nodefault, color_table=c
            erase,190
            if size(image,/n_dim) le 2 then tv,image,ipos[0],ipos[1] else tv,image,ipos[0],ipos[1],true=1
            progress,/destroy
+           if ~keyword_set(nodefault) then channel_default
+           if not keyword_set(noupdate) then tool_box_update
            return
         endif
 
-        if ~file_test(file.name,/READ) then return
 
 ;---------------------------------
 ; Multiple files

@@ -51,7 +51,7 @@ pro polin_extract_polsar,CALLED = called,channelvector=channelvector
      text = widget_label(main,value='Select polarimetric vector to extract:')
      if file.type ge 500 && file.type le 503 then $
         ch_groups = 'Vector '+strcompress(indgen(n_tr),/R) $
-     else ch_groups = 'T'+strcompress(indgen(n_tr),/R)+strcompress(indgen(n_tr),/R)
+     else ch_groups = 'T'+strcompress(indgen(n_tr)+1,/R)+strcompress(indgen(n_tr)+1,/R)
      butt = cw_bgroup(main,ch_groups,/exclusive,column=1,SET_VALUE=0)
      buttons  = WIDGET_BASE(main,column=3,/frame)
      but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)

@@ -263,66 +263,66 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                  end
 ;;; PolInSAR scattering vectors
                 500 : begin
-                   str1 = ['HH','VV',(vdim eq 3?'sq2HV':['HV','VH'])]
-                   names = str1 + '0'
-                   for i=1,zdim-1 do $
+                   str1 = ['HH','VV',(vdim eq 3?'sr2HV':['HV','VH'])]
+                   names = str1 + '1'
+                   for i=2,zdim do $
                       names = [names,str1+strcompress(i,/R)]
                    select = [1,2,0]
                 end
                 501 : begin
-                   str1 = ['HH+VV','HH-VV',(vdim eq 3?'2*HV':['HV+VH','i(HV-VH)'])]
-                   names = str1 + '0'
-                   for i=1,zdim-1 do $
+                   str1 = ['HH+VV','HH-VV',(vdim eq 3?'sr2*HV':['HV+VH','i(HV-VH)'])]
+                   names = str1 + '1'
+                   for i=2,zdim do $
                       names = [names,str1+strcompress(i,/R)]
                    select = [1,2,0]
                 end
                 502 : begin
-                   str1 = ['XX','YY',(vdim eq 3?'sq2XY':['XY','YX'])]
-                   names = str1 + ' 0'
-                   for i=1,zdim-1 do $
+                   str1 = ['XX','YY',(vdim eq 3?'sr2*XY':['XY','YX'])]
+                   names = str1 + ' 1'
+                   for i=2,zdim do $
                       names = [names,str1+strcompress(i,/R)]
                    select = [1,2,0]
                 end
                 503 : begin
-                   str1 = ['XX+YY','XX-YY',(vdim eq 3?'2*XY':['XY+YX','i(XY-YX)'])]
-                   names = str1 + '0'
-                   for i=1,zdim-1 do $
+                   str1 = ['XX+YY','XX-YY',(vdim eq 3?'sr2*XY':['XY+YX','i(XY-YX)'])]
+                   names = str1 + '1'
+                   for i=2,zdim do $
                       names = [names,str1+strcompress(i,/R)]
                    select = [1,2,0]
                 end
 ;;; PolInSAR cov/coh matrices
 		510 : begin
                    n_pol  = vdim mod 3 eq 0? 3L: 4L & n_tr = zdim/n_pol ;file.zdim/n_pol
-                   pol = ['HH','VV',(n_pol eq 3?'sq2HV':['HV','VH'])]
-                   str = pol+'0'
-                   for i=1,n_tr-1 do str = [str,pol+strcompress(i,/R)] 
+                   pol = ['HH','VV',(n_pol eq 3?'sr2*HV':['HV','VH'])]
+                   str = pol+'1'
+                   for i=2,n_tr do str = [str,pol+strcompress(i,/R)] 
                    names = strarr(vdim,zdim)
                    for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+' '+str[z]
                    select = [zdim+1,2*zdim+2,0]
                 end
 		511 : begin
                    n_pol  = vdim mod 3 eq 0? 3L: 4L & n_tr = zdim/n_pol
-                   pol = ['HH+VV','HH-VV',(n_pol eq 3?'2*HV':['HV+VH','i(HV-VH)'])]
-                   str = pol+'0'
-                   for i=1,n_tr-1 do str = [str,pol+strcompress(i,/R)]
+                   pol = ['HH+VV','HH-VV',(n_pol eq 3?'sr2*HV':['HV+VH','i(HV-VH)'])]
+                   str = pol+'1'
+                   for i=2,n_tr do str = [str,pol+strcompress(i,/R)]
                    names = strarr(vdim,zdim)
                    for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+' '+str[z]
                    select = [zdim+1,2*zdim+2,0]
                 end
                 512 : begin
                    n_pol  = vdim mod 3 eq 0? 3L: 4L & n_tr = zdim/n_pol
-                   pol = ['XX','YY',(n_pol eq 3?'sq2XY':['XY','YX'])]
-                   str = pol+'0'
-                   for i=1,n_tr-1 do str = [str,pol+strcompress(i,/R)]
+                   pol = ['XX','YY',(n_pol eq 3?'sr2*XY':['XY','YX'])]
+                   str = pol+'1'
+                   for i=2,n_tr do str = [str,pol+strcompress(i,/R)]
                    names = strarr(vdim,zdim)
                    for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+' '+str[z]
                    select = [zdim+1,2*zdim+2,0]
                 end
                 513 : begin
                    n_pol  = vdim mod 3 eq 0? 3L: 4L & n_tr = zdim/n_pol
-                   pol = ['XX+YY','XX-YY',(n_pol eq 3?'2*XY':['XY+YX','i(XY-YX)'])]
-                   str = pol+'0'
-                   for i=1,n_tr-1 do str = [str,pol+strcompress(i,/R)]
+                   pol = ['XX+YY','XX-YY',(n_pol eq 3?'sr2*XY':['XY+YX','i(XY-YX)'])]
+                   str = pol+'1'
+                   for i=2,n_tr do str = [str,pol+strcompress(i,/R)]
                    names = strarr(vdim,zdim)
                    for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+' '+str[z]
                    select = [zdim+1,2*zdim+2,0]
@@ -331,8 +331,8 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
 		514 : begin
                    n_pol  = vdim mod 3 eq 0? 3L: 4L & n_tr = zdim/n_pol
                    pol = 'Pol'+strcompress(indgen(n_pol),/R)
-                   str = pol+'0'
-                   for i=1,n_tr-1 do str = [str,pol+strcompress(i,/R)]
+                   str = pol+'1'
+                   for i=2,n_tr do str = [str,pol+strcompress(i,/R)]
                    names = strarr(vdim,zdim)
                    for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+' '+str[z]
                    select = [zdim+1+n_pol,2*zdim+2+n_pol,n_pol]
@@ -356,8 +356,7 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
 ;;; comparison with general coherence! (mn,08/06))
                 532 : begin  
                    names = strarr(zdim*vdim)
-                   cohName=vdim eq 3?['XX','YY','XY']: $
-                           vdim eq 4?['XX','YY','XY','YX']:strcompress(indgen(vdim),/R) 
+                   cohName=strcompress(indgen(vdim)+1,/r)
                    for j=0,zdim-1 do for i=0,vdim-1 do $
                       names[i*zdim+j]='optcoh'+cohName[i]+' baseline '+ $
                       strjoin(strcompress(mb_ind(j)+1,/r),'x')

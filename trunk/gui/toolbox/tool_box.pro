@@ -1028,7 +1028,7 @@ pro tool_box,select_channel=select_channel, data_management=data_management,colo
 	state.select_wTab = widget_base(state.wTab, title='Select channel', /column)
 	
 	; --> Define the select channel tree
-	state.select_tree = widget_tree(state.select_wTab,ysize=320)
+	state.select_tree = widget_tree(state.select_wTab,ysize=360)
 		
 	; --> Define the main text for the tree
 ;	main_text = (file.info ne '') ? file.info : file_basename(file.name)

@@ -4,6 +4,10 @@
 
 Version 0.20:
 
+- New routines: TerraSAR-X loader
+- New routines: GB-SAR (UPC) loader
+- New routines: MB incoherent PolInSAR stationarity
+- New option: logarithmic scaling of amplitude
 - Framework for external plugins
 - Framework for batch processing without GUI
 - Simplified tiling code
