@@ -88,6 +88,9 @@ pro preview,infile,outfile,FULL=full,TRICK=trick,TYPE=type
 		inblock = make_array([file.vdim,file.zdim,file.xdim,blocksizes[i]],type=file.var)
 		readu,in,inblock
 
+;;; to test (in some cases it is important!)
+rmnanq,inblock
+
 		if keyword_set(full) then outblock = scale_block(inblock,xprev,scalesizes[i],trick,/full) $
 		else outblock = scale_block(inblock,xprev,scalesizes[i],trick)
 

@@ -121,7 +121,7 @@ pro preferences
 
 	if redisp eq 1 then begin
 		WIDGET_CONTROL,/hourglass
-		generate_preview,/redisplay
+		generate_preview,/recalculate
 		update_info_box
 	endif
 	

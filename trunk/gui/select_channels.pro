@@ -184,7 +184,7 @@ pro select_channels
 				channel_selec = [chnr1,chnr2,chnr3] 
 				color_flag = 1
 			endelse
-			generate_preview,/redisplay,/nodefault
+			generate_preview,/nodefault ;;; ,/redisplay
 		endif
 		
 		if event.id eq but_info then begin               ; Info Button clicked
@@ -200,12 +200,12 @@ pro select_channels
 	if (event.id eq but_ok) and (flag_display eq 0) then begin
 		channel_selec = [chnr1] 
 		color_flag = 0
-		generate_preview,/redisplay,/nodefault
+		generate_preview,/nodefault  ;;; ,/redisplay
 	endif
 	if (event.id eq but_ok) and (flag_display eq 1) then begin
 		channel_selec = [chnr1,chnr2,chnr3] 
 		color_flag = 1
-		generate_preview,/redisplay,/nodefault
+		generate_preview,/nodefault  ;;; ,/redisplay
 	endif
 	
 end

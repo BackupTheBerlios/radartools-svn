@@ -20,7 +20,7 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-pro generate_preview,REDISPLAY = redisplay, NODEFAULT = nodefault, color_table=color_table, noupdate=noupdate,recalculate=recalculate, window_title=window_title
+pro generate_preview, NODEFAULT = nodefault, color_table=color_table, noupdate=noupdate,recalculate=recalculate, window_title=window_title ;;; obsolete: REDISPLAY = redisplay
 	common rat, types, file, wid, config
 	common channel, channel_names, channel_selec, color_flag
         forward_function extract_mtnames
@@ -107,9 +107,10 @@ pro generate_preview,REDISPLAY = redisplay, NODEFAULT = nodefault, color_table=c
 			xdim = dim[dim[0]-1]
 			if xdim ne wid.base_xsize then recalculate=1
 		endif else recalculate=1 
-		if keyword_set(recalculate) || keyword_set(redisplay) then begin
+		if keyword_set(recalculate) then begin
 			;--> Generate the preview file
 			preview,file.name,config.tempdir+config.lookfile
+                        progress,Message='Finalizing preview...'
 			;--> Read image and transform to byte
 			rrat,config.tempdir+config.lookfile,image
 			image = float2bytes(temporary(image),/OVERWRITE)

@@ -63,7 +63,7 @@ pro tool_box_event, event
 				state.select_chnr3 = chnr
 				channel_selec = [state.select_chnr1] 
 				color_flag = 0
-				generate_preview,/redisplay,/nodefault,/noupdate
+				generate_preview,/nodefault,/noupdate;;; obsolete: ,/redisplay
 			end
 			1 : begin
 				case state.select_flag_rgb of
@@ -145,7 +145,7 @@ pro tool_box_event, event
 				channel_selec = [state.select_chnr1,state.select_chnr2,state.select_chnr3] 
 				color_flag = 1
 			endelse
-				generate_preview,/redisplay,/nodefault,/noupdate
+				generate_preview,/nodefault,/noupdate ;;; ,/redisplay
 		endif
 ;*******************************************************************************
 		
@@ -827,7 +827,7 @@ try_again:
 		; --> Allocate the chosen color table to the first palette array
 		if index ne -1 then palettes[0,*,*] = palettes[index,*,*]
 		
-		generate_preview,/redisplay,/nodefault,/noupdate
+		generate_preview,/nodefault,/noupdate ;;; ,/redisplay
 		widget_control, event.top, set_uvalue=state, /no_copy
 		tool_box_update
 		return
