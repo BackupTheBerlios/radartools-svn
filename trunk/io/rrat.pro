@@ -151,6 +151,11 @@ pro rrat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,BLOCK=block,TYPE=type,PRE
 		endcase
 	   readu,ddd,bild
 	   free_lun,ddd
-		if keyword_set(block) then bild = reform(bild[*,*,block[0]:block[0]+block[2]-1,*])
+           if keyword_set(block) then $
+              case dim of
+              2: bild = reform(bild[block[0]:block[0]+block[2]-1,*])
+              3: bild = reform(bild[*,block[0]:block[0]+block[2]-1,*])
+              4: bild = reform(bild[*,*,block[0]:block[0]+block[2]-1,*])
+           endcase
 	endelse
 end
