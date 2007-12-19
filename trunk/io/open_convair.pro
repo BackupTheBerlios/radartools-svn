@@ -2,6 +2,8 @@
 ; RAT - Radar Tools
 ;------------------------------------------------------------------------
 ; RAT Module: open_convair
+; written 08/2005 by Andreas Reigber
+; extended 12/2007 by Maxim Neumann
 ;------------------------------------------------------------------------
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in

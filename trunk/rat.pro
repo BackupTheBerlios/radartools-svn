@@ -152,6 +152,7 @@ PRO rat_event, event
 				'Measure value/location'                  : measure_value
 				'Mirror vertical'									: mirror_vert
 				'Mirror horizontal'								: mirror_hor
+				'Mirror diagonal'								: mirror_diag
 				'Cut out region'									: cut_region
 				'Resize image'										: image_resize
 				'Presumming'										: image_presumming
@@ -573,6 +574,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                              '0\Cut out region' , $
                              '4\Mirror vertical' , $
                              '0\Mirror horizontal', $
+                             '0\Mirror diagonal', $
                              '4\Select channels', $
                              '0\Extract channels', $
                              '4\Colour palettes',$

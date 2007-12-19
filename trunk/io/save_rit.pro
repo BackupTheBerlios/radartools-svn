@@ -49,6 +49,9 @@ pro save_rit, FILENAME=FILENAME,UNDO_PREPARE=UNDO_PREPARE
 
   if file_test(filename) then file_delete,/quiet,filename
 
+;;; do nothing if no write rights!
+  if ~file_test(file_dirname(filename),/write) then return
+
   if n_elements(evolution) ne 1 || strlen(evolution[0]) ne 0 then $
      rit_write,FILENAME,RAT_PAR=pars,RAT_EVO=evolution,RAT_PALETTE=reform(palettes[0,*,*]) $
   else rit_write,FILENAME,RAT_PAR=pars,RAT_PALETTE=reform(palettes[0,*,*])

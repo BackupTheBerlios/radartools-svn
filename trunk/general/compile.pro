@@ -27,6 +27,7 @@
 @general/int2float.pro
 @general/mirror_hor.pro
 @general/mirror_vert.pro
+@general/mirror_diag.pro
 @general/image_resize.pro
 @general/image_presumming.pro
 @general/undo.pro
