@@ -85,4 +85,26 @@ pro import_info_terrasarx,INPUTFILE_FIRST=inputfile0
   	print,"SceneAverageHeight:"+string(averageheight)
   endif
 
+  ;read slant and ground range + azimuth resolutions
+  oNodeList = oDocument->GetElementsByTagName('slantRangeResolution')
+  if oNodeList->GetLength() gt 0 then begin
+  	sr_res = double(((oNodeList->Item(0))->GetFirstChild())->GetNodeValue())
+  	print,"Slant Range Resolution:"+string(sr_res)
+  	err=set_par('res_sr',sr_res)
+  endif
+
+  oNodeList = oDocument->GetElementsByTagName('groundRangeResolution')
+  if oNodeList->GetLength() gt 0 then begin
+  	gr_res = double(((oNodeList->Item(0))->GetFirstChild())->GetNodeValue())
+  	print,"Ground Range Resolution:"+string(gr_res)
+  	err=set_par('res_gr',gr_res)
+  endif
+
+  oNodeList = oDocument->GetElementsByTagName('azimuthResolution')
+  if oNodeList->GetLength() gt 0 then begin
+  	az_res = double(((oNodeList->Item(0))->GetFirstChild())->GetNodeValue())
+  	print,"Azimuth Resolution:"+string(gr_res)
+  	err=set_par('res_az',az_res)
+  endif
+
 end
