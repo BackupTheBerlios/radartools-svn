@@ -4,6 +4,7 @@
 ; RAT Module: coreg_one
 ; written by    : Andreas Reigber
 ; last revision : 13. Oct 2004
+; last modified : Jan'08 (Maxim Neumann)
 ; Interferometric coregistration based on amplitude correlation
 ; one value for the whole image only
 ;------------------------------------------------------------------------
@@ -46,6 +47,7 @@ pro coreg_one,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 	if not keyword_set(offsetx) then offsetx = 0 				 ; Default values
 	if not keyword_set(offsety) then offsety = 0
 	
+        if n_elements(offset_method) eq 0 then offset_method = 0
 	if not keyword_set(called) then begin             ; Graphical interface
 		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=4,TITLE='Coarse image registration',/floating,/tlb_kill_request_events,/tlb_frame_attr)
 		manual = WIDGET_BASE(main,row=3,/frame)
@@ -57,13 +59,16 @@ pro coreg_one,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 		field3 = CW_FIELD(auto,VALUE=128,/integer,TITLE='Maximum offset in x to check : ',XSIZE=5)
 		field4 = CW_FIELD(auto,VALUE=2048,/integer,TITLE='Maximum offset in y to check : ',XSIZE=5)
 		but_estimate = WIDGET_BUTTON(auto,VALUE=' Start estimation (memory intensive)')
+                pixhand = WIDGET_BASE(main,/column,/frame)
+                dummy  = widget_label(pixhand,value='Offset pixel handling')
+                pixhandB = cw_bgroup(pixhand,/exclusive,['Shift slave image','Shift and set offset pixels to zero','Cut out offset pixels'],set_value=offset_method,/col)
 		buttons = WIDGET_BASE(main,column=3,/frame)
 		but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
-		but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
-		but_info = WIDGET_BUTTON(buttons,VALUE=' Info ',xsize=60)
-		WIDGET_CONTROL, main, /REALIZE, default_button = but_canc,tlb_get_size=toto
-		pos = center_box(toto[0],drawysize=toto[1])
-		widget_control, main, xoffset=pos[0], yoffset=pos[1]
+                but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
+                but_info = WIDGET_BUTTON(buttons,VALUE=' Info ',xsize=60)
+                WIDGET_CONTROL, main, /REALIZE, default_button = but_canc,tlb_get_size=toto
+                pos = center_box(toto[0],drawysize=toto[1])
+                widget_control, main, xoffset=pos[0], yoffset=pos[1]
 
 		repeat begin                                        ; Event loop
 			event = widget_event(main)
@@ -112,6 +117,7 @@ pro coreg_one,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 		endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
 		widget_control,field1,GET_VALUE=offsetx             ; read widget fields
 		widget_control,field2,GET_VALUE=offsety
+		widget_control,pixhandB,GET_VALUE=offset_method
 		widget_control,main,/destroy                        ; remove main widget
 		if event.id ne but_ok then return                   ; OK button _not_ clicked
 	endif else begin                                       ; Routine called with keywords
@@ -126,14 +132,7 @@ pro coreg_one,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 ; undo function
    undo_prepare,outputfile,finalfile,CALLED=CALLED
 
-; read / write header
-
-	head = 1l
-	rrat,file.name,ddd,header=head,info=info,type=type		
-	srat,outputfile,eee,header=head,info=info,type=type		
-		
 ; calculating preview size and number of blocks
-
 	bs = config.blocksize > 4*floor(abs(offsety) + 1) 
 	overlap = floor(abs(offsety)) + 1
 
@@ -145,9 +144,12 @@ pro coreg_one,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 	ypos2 = bs - overlap            ; block end
 
 	byt=[0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8]	  ; bytelength of the different variable typos
+
+; read / write header
+	rrat,file.name,ddd,header=head,info=info,type=type
+	srat,outputfile,eee,header=head,info=info,type=type
 	
 ; pop up progress window
-
 	progress,Message='Shifting...',/cancel_button
 
 ;start block processing
@@ -159,12 +161,20 @@ pro coreg_one,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 
 		block = make_array([file.zdim,file.xdim,blocksizes[i]],type=file.var)
 		readu,ddd,block
+		if i eq anz_blocks-1 then ypos2 = bs_last
 
 ; -------- THE FILTER ----------
 		block[1,*,*] = shift(block[1,*,*],0,offsetx,offsety)
+                if offset_method eq 1 then begin
+                   if offsetx gt 0 then block[*,0:offsetx,*]=0
+                   if offsetx lt 0 then block[*,file.xdim-offsetx:*,*]=0
+                   if offsety gt 0 && total(blocksizes[0:i]-overlap)-(blocksizes[i]-overlap) lt offsety then $
+                      block[*,*,0:0>(offsety-1-(total(blocksizes[0:i]-overlap)-(blocksizes[i]-overlap)))<(ypos2-1)]=0
+                   if offsety lt 0 && total(blocksizes[i:*]-overlap)-(blocksizes[i]-overlap) lt -offsety then $
+                      block[*,*,0>(offsety-overlap+1+total(blocksizes[i:*]-overlap))<(ypos2-1):*]=0
+                endif
 ; -------- THE FILTER ----------
 
-		if i eq anz_blocks-1 then ypos2 = bs_last
 		writeu,eee,block[*,*,ypos1:ypos2-1]
 		ypos1 = overlap
 		point_lun,-ddd,file_pos
@@ -173,9 +183,14 @@ pro coreg_one,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 	free_lun,ddd,eee
 
 ; update file information
-		
-	file_move,outputfile,finalfile,/overwrite
+        file_move,outputfile,finalfile,/overwrite
 	file.name = finalfile
+        
+        evolute,'Coarse interferometric coregistration with offsets '+strcompress([offsetx,offsety])+' and pixel offset handling method '+strcompress(offset_method)  
+
+; cut out the offset pixels, if selected
+        if offset_method eq 2 then $
+           cut_region,/called, xmin=offsetx > 0, xmax=file.xdim-1 + (offsetx<0), ymin=offsety, ymax=file.ydim-1+ (offsety<0)
 
 ; generate preview
 
