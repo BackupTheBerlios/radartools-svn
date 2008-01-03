@@ -47,7 +47,7 @@ pro coreg_one,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 	if not keyword_set(offsety) then offsety = 0
 	
 	if not keyword_set(called) then begin             ; Graphical interface
-		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=4,TITLE='Course image registration',/floating,/tlb_kill_request_events,/tlb_frame_attr)
+		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=4,TITLE='Coarse image registration',/floating,/tlb_kill_request_events,/tlb_frame_attr)
 		manual = WIDGET_BASE(main,row=3,/frame)
 		dummy  = widget_label(manual,value='Manual offset correction')
 		field1 = CW_FIELD(manual,VALUE=offsetx,/integer,TITLE='Offset in x : ',XSIZE=5)
@@ -68,7 +68,7 @@ pro coreg_one,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 		repeat begin                                        ; Event loop
 			event = widget_event(main)
 			if event.id eq but_info then begin               ; Info Button clicked
-				infotext = ['COURSE IMAGE COREGISTRATION',$
+				infotext = ['COARSE IMAGE COREGISTRATION',$
 				' ',$
 				'RAT module written 2003 by Andreas Reigber']
 				info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
@@ -99,7 +99,7 @@ pro coreg_one,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 				arr[*,*,i*bsx:i*bsx+bsx-1] = dummy
 			endfor
 
-			ret = coreg_amp(reform(arr[0,*,*]),reform(arr[1,*,*]),k)			
+			ret = coreg_amp(reform(arr[0,*,*]),reform(arr[1,*,*]),k)
 			offsetx = ret[0]
 			offsety = ret[1]
 			

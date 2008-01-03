@@ -26,40 +26,44 @@
 ; 	return,arr
 ; end
 
-pro open_convair,INPUTFILE = inputfile
+;;; channels: [0: quad-pol; 1: single-pol]
+pro open_convair,INPUTFILE = inputfile, CALLED=CALLED, channels=channels
 	common rat, types, file, wid, config
 	common channel, channel_names, channel_selec, color_flag, palettes, pnames
 
-	main = WIDGET_BASE(GROUP_LEADER=wid.base,row=4,TITLE='CONVAIR import',/floating,/tlb_kill_request_events,/tlb_frame_attr )
-	butt = cw_bgroup(main,[' Load quad-pol data set (MPG)',' Load single-pol data set (MGP)'],set_value=0,row=2,/exclusive)		
-	buttons  = WIDGET_BASE(main,column=3,/frame)
-	but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
-	but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
-	but_info = WIDGET_BUTTON(buttons,VALUE=' Info ',xsize=60)
-	WIDGET_CONTROL, main, /REALIZE, default_button = but_canc, tlb_get_size=toto
-	pos = center_box(toto[0],drawysize=toto[1])
-	widget_control, main, xoffset=pos[0], yoffset=pos[1]
+        if ~(keyword_set(CALLED) && n_elements(inputfile) ne 0 && file_test(inputfile,/READ) && n_elements(channels) ne 0 ) then begin
+           main = WIDGET_BASE(GROUP_LEADER=wid.base,row=4,TITLE='CONVAIR import',/floating,/tlb_kill_request_events,/tlb_frame_attr )
+           butt = cw_bgroup(main,[' Load quad-pol data set (MPG)',' Load single-pol data set (MGP)'],set_value=0,row=2,/exclusive)		
+           buttons  = WIDGET_BASE(main,column=3,/frame)
+           but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
+           but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
+           but_info = WIDGET_BUTTON(buttons,VALUE=' Info ',xsize=60)
+           WIDGET_CONTROL, main, /REALIZE, default_button = but_canc, tlb_get_size=toto
+           pos = center_box(toto[0],drawysize=toto[1])
+           widget_control, main, xoffset=pos[0], yoffset=pos[1]
 
-	repeat begin
-		event = widget_event(main)
-		if event.id eq but_info then begin               ; Info Button clicked
-			infotext = ['CONVAIR IMPORT',$
-			' ',$
-			'RAT module written 08/2005 by Andreas Reigber', $
-                        '           extended 12/2007 by Maxim Neumann']
-			info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
-		end
-	endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
-	widget_control,butt,GET_VALUE=channels
-	widget_control,main,/destroy
-	if event.id ne but_ok then return                   ; OK button _not_ clicked
+           repeat begin
+              event = widget_event(main)
+              if event.id eq but_info then begin ; Info Button clicked
+                 infotext = ['CONVAIR IMPORT',$
+                             ' ',$
+                             'RAT module written 08/2005 by Andreas Reigber', $
+                             '           extended 12/2007 by Maxim Neumann']
+                 info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
+              endif
+           endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
+           widget_control,butt,GET_VALUE=channels
+           widget_control,main,/destroy
+           if event.id ne but_ok then return ; OK button _not_ clicked
 
-	if not keyword_set(inputfile) then begin    ; GUI for file selection
-		path = config.workdir
-		inputfile = cw_rat_dialog_pickfile(TITLE='Open CONVAIR file', $
-		DIALOG_PARENT=wid.base, FILTER = '*.hdr', /MUST_EXIST, PATH=path, GET_PATH=path)
-		if strlen(inputfile) gt 0 then config.workdir = path
-	endif
+           if not keyword_set(inputfile) then begin ; GUI for file selection
+              path = config.workdir
+              inputfile = cw_rat_dialog_pickfile(TITLE='Open CONVAIR file', $
+                                                 DIALOG_PARENT=wid.base, FILTER = '*.hdr', /MUST_EXIST, PATH=path, GET_PATH=path)
+              if strlen(inputfile) gt 0 then config.workdir = path
+           endif
+        endif else $
+           path = file_dirname(inputfile,/mark)
 
 	if strlen(inputfile) gt 0 then begin
            inputfile_hdr=inputfile

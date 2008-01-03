@@ -113,7 +113,7 @@ pro k_to_m,CALLED=called,SMMX=smmx,SMMY=smmy
 
 ; calculating span
 	
-	for i=0,anz_blocks-1 do begin
+	for i=0L,anz_blocks-1 do begin
 		progress,percent=(i+1)*100.0/anz_blocks,/check_cancel
 		if wid.cancel eq 1 then return
 

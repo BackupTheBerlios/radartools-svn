@@ -25,7 +25,7 @@
 function coreg_ampsub,arr1,arr2,quality
 	bs = (size(arr1))[1]
 	auxcor = abs(fft(fft(arr1,-1)*conj(fft(arr2,-1)),+1))
-	aux    = max(auxcor, auxpos )      
+	aux    = max(auxcor, auxpos )
 	
 	offsetx = auxpos mod bs
 	offsety = auxpos  /  bs
@@ -113,7 +113,10 @@ pro coreg_patch,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 		if not keyword_set(paty) then paty = 10
 		if not keyword_set(pats) then pats = 128
 	endelse
-	
+	patx >= 1
+	paty >= 1
+	pats >= 1
+
 ; change mousepointer
 
 	WIDGET_CONTROL,/hourglass
@@ -128,10 +131,10 @@ pro coreg_patch,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 	yp = fltarr(patx,paty)
 	
 	
-	for j=0,paty-1 do begin
+	for j=0L,paty-1 do begin
 		ypos = j*stpy
 		rrat,file.name,arr,block=[0,ypos,file.xdim,pats]
-		for i=0,patx-1 do begin
+		for i=0L,patx-1 do begin
 			progress,percent=(i+j*patx)*100.0/(patx*paty),/check_cancel
 			if wid.cancel eq 1 then return
 
@@ -211,9 +214,8 @@ pro coreg_patch,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 
 ; read / write header
 
-	head = 1l
-	rrat,file.name,ddd,header=head,info=info,type=type		
-	srat,outputfile,eee,header=head,info=info,type=type		
+	rrat,file.name,ddd,header=head,info=info,type=type
+	srat,outputfile,eee,header=head,info=info,type=type
 		
 ; calculating preview size and number of blocks
 
@@ -267,10 +269,10 @@ pro coreg_patch,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 
 		if overx eq 1 then begin
 			res    += (dblarr(blocksizes[i]) + 1) ## dindgen(file.xdim) 
-			for k=0,blocksizes[i]-1 do arr[*,k] = interpolate(arr[*,k],res[*,k],cubic=-0.5)
+			for k=0L,blocksizes[i]-1 do arr[*,k] = interpolate(arr[*,k],res[*,k],cubic=-0.5)
 		endif else begin
 
-			for k=0,blocksizes[i]-1 do begin
+			for k=0L,blocksizes[i]-1 do begin
 				line = complexarr(bsx1)
 				line[0]   = arr[*,k]
 				fline     = fft(line,-1)
@@ -299,7 +301,7 @@ pro coreg_patch,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 			res    += dindgen(blocksizes[i])  ## (dblarr(file.xdim)+1) 
 			for k=0,file.xdim-1 do arr[k,*] = interpolate(arr[k,*],res[k,*],cubic=-0.5)
 		endif else begin
-			for k=0,file.xdim-1 do begin			
+			for k=0L,file.xdim-1 do begin			
 				line = complexarr(bsy1)
 				line[0]   = reform(arr[k,*])
 				fline     = fft(line,-1)

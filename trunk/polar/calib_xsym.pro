@@ -74,10 +74,11 @@ pro calib_xsym,CALLED=called,METHOD = method
 
 
 ; GUI
+  if n_elements(method) eq 0 then method = 1 
   if not keyword_set(called) then begin ; Graphical interface
      main = WIDGET_BASE(GROUP_LEADER=wid.base,row=3,TITLE='Cross-polar symmetrisation',/floating,/tlb_kill_request_events,/tlb_frame_attr)
      field2 = widget_label(main,value='Select symmetrisation method:')
-     field1 = CW_BGROUP(main,['Average HV / VH','Take only HV','Take only VH'],/column,/exclusive,set_value=1)
+     field1 = CW_BGROUP(main,['Average HV / VH','Take only HV','Take only VH'],/column,/exclusive,set_value=method)
      buttons = WIDGET_BASE(main,column=3,/frame)
      but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
      but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
@@ -99,9 +100,7 @@ pro calib_xsym,CALLED=called,METHOD = method
      widget_control,field1,GET_VALUE=method ; read widget fields
      widget_control,main,/destroy ; remove main widget
      if event.id ne but_ok then return ; OK button _not_ clicked
-  endif else begin              ; Routine called with keywords
-     if not keyword_set(method) then method = 0 ; Default values
-  endelse
+  endif
 
 ; here we go
   WIDGET_CONTROL,/hourglass
@@ -122,12 +121,24 @@ pro calib_xsym,CALLED=called,METHOD = method
   blocksizes = intarr(anz_blocks)+bs
   blocksizes[anz_blocks-1] = bs_last
 
+;;; in Pauli matrix basis, the only one 'reasonable' and 'easy'
+;;; possibility for xsym is just to take the HV+VH term, which is the
+;;; third one.
+;   if polin then begin
+;      n_tr=matrix? file.vdim / 4: file.zdim
+;      choice = [0,1,2]
+;      ch1    = 2L + lindgen(n_tr)*4L
+;      ch2    = 3L + lindgen(n_tr)*4L
+;      if method eq 2 then choice=[0,1,3]
+;      choice = mm_v2m(choice,n_tr) + mm_s2v(lindgen(n_tr)*4L,3)
+;      choice = reform(choice,n_elements(choice))
+;   endif
   if polin then begin
      n_tr=matrix? file.vdim / 4: file.zdim
      choice = [0,1,2]
      ch1    = 2L + lindgen(n_tr)*4L
-     ch2    = 3L + lindgen(n_tr)*4L
-     if method eq 2 then choice=[0,1,3]
+;     ch2    = 3L + lindgen(n_tr)*4L
+     ch2    = ch1
      choice = mm_v2m(choice,n_tr) + mm_s2v(lindgen(n_tr)*4L,3)
      choice = reform(choice,n_elements(choice))
   endif

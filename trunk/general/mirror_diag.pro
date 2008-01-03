@@ -29,12 +29,11 @@ pro mirror_diag,CALLED=called
 
 ; read / write header
 
-	head = 1l
 	rrat,file.name,ddd,header=head,info=info,type=type
         free_lun,ddd
         newx = head[head[0]]
         newy = head[head[0]-1]
-        newhead = [head[0:head[0]-2],newx,newy,head[0]+1]
+        newhead = [head[0:head[0]-2],newx,newy,head[head[0]+1]]
 	srat,outputfile,eee,header=newhead,info=info,type=type
 	
 ; calculating preview size and number of blocks

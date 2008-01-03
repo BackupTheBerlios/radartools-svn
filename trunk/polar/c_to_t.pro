@@ -105,6 +105,8 @@ pro c_to_t,CALLED=called
 	file.type = newtype
 	file.dim  = 4l
 	file.vdim = file.zdim 
+
+        evolute,'Transform:  [C] <--> [T]'
 	
 ; generate preview
 
