@@ -4,15 +4,19 @@
 
 Version 0.20:
 
-- New routines: TerraSAR-X loader
-- New routines: GB-SAR (UPC) loader
-- New routines: MB incoherent PolInSAR stationarity
-- New option: logarithmic scaling of amplitude
+- New routines: TerraSAR-X and metadata loader
+- New routine : GB-SAR (UPC) loader
+- New routine : MB incoherent PolInSAR stationarity
+- New routine : diagonal image mirror (range/azimuth transpose)
+- New option  : logarithmic scaling of amplitude
+- Improved routine: offset pixel handling options for coarse corregistration
+- Improved routine: block processing support for CONVAIR loader
 - Framework for external plugins
 - Framework for batch processing without GUI
 - Simplified tiling code
+- Bugfix: Fixed crash for data > 2GB in cut_region
+- Bugfix: Fixed some preview bugs (still not completely clean)
 - Various small improvements and bug fixes
-
 
 
 Version 0.19:
