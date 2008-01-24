@@ -79,6 +79,9 @@ pro mirror_diag,CALLED=called
 
 ; generate preview
 
-	if not keyword_set(called) then generate_preview
-	
+	if not keyword_set(called) then begin
+		generate_preview
+		update_info_box
+	endif
+
 end
