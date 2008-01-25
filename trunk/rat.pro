@@ -36,10 +36,13 @@ PRO rat_event, event
 		catch, error_status
 
 		if error_status ne 0 then begin
+			help,/last_message,output=traceback_info
 			infotext = ['OOOPS: You have found a bug in RAT !!!',$
 			'',$
-			'Error message: ' + !error_state.msg ,$
-			'',$
+			'Error message: ', $ ;; + !error_state.msg ,$
+;;                        'Traceback information: ', $
+			traceback_info, $
+			'', $
 			'Please help improving RAT and report this problem to the forum on the RAT website.',$
 			'To find a solution, we need the precise error message and a description of what' ,$
 			'you did exactly (function, settings, data type, etc.).',$
@@ -57,7 +60,6 @@ PRO rat_event, event
 			goto,out
 		endif
 	endif
-
 
 	;delete the progress information to avoid some error in case of crach
 	file_delete,config.tempdir+'progressTimer.sav',/quiet
