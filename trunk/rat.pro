@@ -1012,5 +1012,5 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
 END
 
 ;;;  $MAIN$ Program ;;;
-  rat,startfile=startfile,/block
-end
+;;;  rat,startfile=startfile,/block
+;;; end
