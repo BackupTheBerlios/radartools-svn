@@ -24,7 +24,7 @@
 @io/sarr.pro
 @io/open_rat.pro
 @io/open_rarr.pro
-@io/open_rolf.pro
+@io/open_esardcslc.pro
 @io/open_2lcmp.pro
 @io/open_image.pro
 @io/save_rat.pro
