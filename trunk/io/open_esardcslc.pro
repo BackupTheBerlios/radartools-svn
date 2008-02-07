@@ -22,7 +22,7 @@ pro open_esardcslc,INPUTFILE = inputfile
 
 	if not keyword_set(inputfile) then begin
 		path = config.workdir
-		inputfile = cw_rat_dialog_pickfile(TITLE='Open E-SAR rk-file (Rolf format)', $
+		inputfile = cw_rat_dialog_pickfile(TITLE='Open E-SAR DCSLC file', $
 		DIALOG_PARENT=wid.base, FILTER = '*.dat', /MUST_EXIST, PATH=path, GET_PATH=path)
 		if strlen(inputfile) gt 0 then config.workdir = path
 	endif
@@ -32,10 +32,11 @@ pro open_esardcslc,INPUTFILE = inputfile
 ; change mousepointer
 	
 		WIDGET_CONTROL,/hourglass
-; undo function
-                undo_prepare,outputfile,finalfile,CALLED=CALLED
-                open_rit,/EMPTY ; no parameters are set: delete the odl ones!
 
+; undo function
+	
+	undo_prepare,outputfile,finalfile,CALLED=CALLED
+	open_rit,/EMPTY ; no parameters are set: delete the odl ones!
 
 ; converting Rolf's format to RAT
 	
