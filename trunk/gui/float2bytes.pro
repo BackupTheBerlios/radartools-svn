@@ -59,10 +59,11 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
 			arr=bytscl(arr,-!pi,!pi)				  
 			scaling = 0
 		end
+		
 		(type eq 120): begin          ; texture image
 			oarr = bytarr(file.zdim,xdim,ydim)
 			for i=0,file.zdim-1 do begin
-				mm = total(arr[i,*,*])/n_elements(arr[i,*,*])	
+				mm = float(total(arr[i,*,*],/double)/n_elements(arr[i,*,*]))	
 				oarr[i,*,*] = bytscl(arr[i,*,*],0,2.5*mm)
 			endfor
 			mval = moment(arr[2,*,*])
@@ -170,7 +171,7 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
  			   arr[0:2,*,*] = sqrt(arr[0:2,*,*] > 0)^0.7
  			   oarr = bytarr(zdim,xdim,ydim)
   				for i = 0,2 do begin
-				mm = total(arr[i,*,*])/n_elements(arr[i,*,*])	
+				mm = float(total(arr[i,*,*],/double)/n_elements(arr[i,*,*]))
 				oarr[i,*,*] = bytscl(arr[i,*,*],0,config.sar_scale*mm)
 			endfor
 			oarr[3,*,*] = bytscl(arr[3,*,*])
@@ -339,12 +340,12 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
 		if ch_scl eq 1 then begin
 			for i=0,file.vdim-1 do begin               
 				for j=0,file.zdim-1 do begin               
-					mm = total(arr[i,j,*,*])/n_elements(arr[i,j,*,*])	
+					mm = float(total(arr[i,j,*,*],/double)/n_elements(arr[i,j,*,*]))	
 					arr[i,j,*,*] = arr[i,j,*,*] / mm	
 				endfor
 			endfor
 		endif
-	
+
 		if ch_scl eq 2 then begin
 			for i=0,file.vdim-1 do begin               
 				for j=0,file.zdim-1 do begin               
@@ -356,22 +357,20 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
 ; Amplitude trick
 
 		if amp_scl eq 1 then arr = (arr > 0)^0.7 
-	
+
 ; SAR scaling
 
 		if sar_scl eq 1 then begin
-                   if config.log_scale then $
-                      arr = bytscl(temporary(10*alog10(arr)),min=0) $
-                   else begin
-                      mm = total(arr)/n_elements(arr)	
-                      arr=bytscl(temporary(arr),0,config.sar_scale*mm)
-                   endelse
+			if config.log_scale then $
+				arr = bytscl(temporary(10*alog10(arr)),min=0) $
+			else begin
+				mm = float(total(arr,/double)/n_elements(arr))	
+				arr=bytscl(temporary(arr),0,config.sar_scale*mm)
+			endelse
 		endif else begin
 			mm = max(arr)
 			arr=bytscl(temporary(arr),0,mm)
 		endelse
-		
-		
 	endif
    if ~keyword_set(OVERWRITE) then begin
    	result=arr
