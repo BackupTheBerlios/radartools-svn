@@ -191,6 +191,7 @@ PRO mt_coreg_coarse, called = called, offset_x = offset_x, offset_y = offset_y
 	temp_name = ''
 	FOR counter = 0, number-1 DO BEGIN
 		READU, inputfile, temp_name
+		temp_name = config.workdir+temp_name
 		names[counter] = temp_name
 		; remove write-protection (subfiles)
 		FILE_CHMOD, temp_name, /A_WRITE

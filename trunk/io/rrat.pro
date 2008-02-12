@@ -28,27 +28,28 @@
 
 pro rrat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,BLOCK=block,TYPE=type,PREVIEW=preview,FILETYPE=filetype,MT=mt,MULTI=multi, $
          VAR=var,N_DIMENSIONS=dim,DIMENSIONS=siz ;; to get easier some informatin, in accordance to size() (except of VAR) (mn,18.08.06)
-;	catch, error	
+    COMMON rat, config
+;	catch, error
 ;  	if error ne 0 then begin
 ;  		bild = -1
 ;  		return
 ;  	endif
-;  	
+;
 ;  	if keyword_set(header) and keyword_set(block) then begin
 ;  		print," Combination of /HEADER und /BLOCK is stupid"
 ;  		return
-;  	endif 
-;  
+;  	endif
+;
 	if keyword_set(noxdr) then xflag=0 else xflag=1
-	
- 	
+
+
 	dim  = 0l
 	var  = 0l
 	type = 0l
 	pointeur_preview = long64(0)
 	dummy= 0l
 	multi= 0l
-	info = bytarr(80)  
+	info = bytarr(80)
 	openr,ddd,file,/get_lun,xdr=xflag
 	readu,ddd,dim
         siz=lonarr(dim)
@@ -57,11 +58,11 @@ pro rrat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,BLOCK=block,TYPE=type,PRE
 	readu,ddd,type
 	readu,ddd,pointeur_preview
 	readu,ddd,multi
-        readu,ddd,info 
+        readu,ddd,info
         info = strtrim(string(info))
 	filetype=type
 	multi >= 1
-	
+
 	if keyword_set(preview) then begin
 		if pointeur_preview eq 0 then begin
 			bild = -1
@@ -73,7 +74,7 @@ pro rrat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,BLOCK=block,TYPE=type,PRE
 			ydim=0l
 			dummy=0l
 			readu,ddd,xdim,ydim,dummy,dummy,dummy,dummy,dummy,dummy
-			case dim of 
+			case dim of
 				2: bild = bytarr(multi,xdim,ydim)
 				3: bild = bytarr(multi,siz[0],xdim,ydim)
 				4: bild = bytarr(multi,siz[0],siz[1],xdim,ydim)
@@ -84,7 +85,7 @@ pro rrat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,BLOCK=block,TYPE=type,PRE
 		endelse
 		return
 	endif
-	
+
 	if arg_present(header) then begin
 		bild = ddd
 		header = [dim,siz,var]
@@ -119,7 +120,7 @@ pro rrat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,BLOCK=block,TYPE=type,PRE
 			mt = -1
 ;			multi = {file1 : "", file2 : "", lun1 : ddd, lun2 : 0l, dim : dim, size : siz, type : type, var : var, ptr : pointeur_preview, info : info }
 		endelse
-		
+
 	endif else begin
 		if keyword_set(block) then begin
 			bits=[0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8]
@@ -132,7 +133,7 @@ pro rrat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,BLOCK=block,TYPE=type,PRE
 			size[3] = block[3]
 			siz = size
 		endif
-		case var of 
+		case var of
 			1:  bild=make_array(/byte,dimension=siz)
 			2:  bild=make_array(/int,dimension=siz)
 			3:  bild=make_array(/long,dimension=siz)
