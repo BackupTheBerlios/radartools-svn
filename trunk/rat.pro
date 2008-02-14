@@ -302,7 +302,8 @@ PRO rat_event, event
                       'Calibration.Freeman volume power adjustment'		: ; polin_calib_natural,/VOL_CALIB
                       'RFI filter'                              		: rfi_filter		; done !
 ;                      'Edge detection.Polarimetric CFAR'			: edge_pol_cfar
-                      'Remove topography.From cov/coh matrix'           	: polin_remove_topo	; done !
+                      'Remove topography.Maximum likelihood estimation (MLE)'	: polin_remove_topo	; done !
+                      'Remove topography.Digital elevation model (DEM)'		: polin_remove_topo_dem	; done !
                       'Spectral filtering.Range (standard)'			: polin_rgflt_standard	; done !
                       'Spectral filtering.Range (adaptive)'			: polin_rgflt_adaptive	; done !
 ;                       'Spectral filtering.Range (standard)'			: rgflt_standard
@@ -736,7 +737,8 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
 ;                   '2\Freeman volume power adjustment', $
                   '0\RFI filter'   , $
                   '5\Remove topography',$
-                  '2\From cov/coh matrix',$
+                  '0\Maximum likelihood estimation (MLE)', $
+                  '2\Digital elevation model (DEM)', $
                   '1\Spectral filtering', $
                   '0\Range (standard)', $
                   '2\Range (adaptive)', $

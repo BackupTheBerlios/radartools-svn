@@ -22,12 +22,19 @@
 
 
 
-pro construct_flatearth, CONNECT=CONNECT, TRACKS_NR=cur_tr
+pro construct_flatearth, called=called, CONNECT=CONNECT, TRACKS_NR=cur_tr, files=fe_files, $
+                         include_master_track_at_pos=include_master_track_at_pos
   common rat, types, file, wid, config
+  compile_opt idl2
+
+;;; @param include_master_track_at_pos: implies to include a zero--valued fe
+;;; phase for the master track at this given position between the
+;;; provided files.
 
 
   MAX_TR = 20
   files = strarr(MAX_TR)
+  if n_elements(fe_files) ne 0 then files[0] = fe_files
   lines = lonarr(MAX_TR)
   texts = lonarr(MAX_TR)
   brows = lonarr(MAX_TR)

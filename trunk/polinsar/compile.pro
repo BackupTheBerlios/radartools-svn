@@ -26,6 +26,7 @@
 @polinsar/polin_flatearth_fft.pro
 @polinsar/polin_data_info.pro
 @polinsar/polin_remove_topo.pro
+@polinsar/polin_remove_topo_dem.pro
 @polinsar/polin_classif_wishart.pro
 @polinsar/polin_classif_params_lff.pro
 @polinsar/polin_wishart_em/compile.pro

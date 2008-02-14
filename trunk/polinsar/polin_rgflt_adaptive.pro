@@ -20,20 +20,21 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-pro polin_rgflt_adaptive,CALLED = called, FE=FE, BANDWIDTH=bw, SAMPLING=rs
+pro polin_rgflt_adaptive,CALLED = called, FE=FE, BANDWIDTH=bw, SAMPLING=rs, CONJ_FE=conj_fe
   common rat, types, file, wid, config
 
   if ~(file.type ge 500 && file.type le 503) then begin
      error = DIALOG_MESSAGE("This is not a multibaseline scattering vector", DIALOG_PARENT = wid.base, TITLE='Error',/error)
      return
   endif
-  n_tr = file.zdim
+  polin_get_info,pol=pol,tracks=n_tr,baselines=n_bl,matrix=is_matrix
+
   but1=1
   but2=1
   but3=1
   alpha1=0.54
   alpha2=0.54
-  conj_fe=0
+  if n_elements(conj_fe) eq 0 then conj_fe = 0
   if n_elements(bw) eq 0 then bw=100.
   if n_elements(rs) eq 0 then rs=100.
 
@@ -183,6 +184,7 @@ pro polin_rgflt_adaptive,CALLED = called, FE=FE, BANDWIDTH=bw, SAMPLING=rs
 
 
 ; calculate parameters
+  if array_equal(size(fe, /dim), [n_tr, file.xdim]) then fe = transpose(fe)
   dfe = fe
   for i=0,n_tr-1 do dfe[*,i]=deriv(fe[*,i])
   cut = floor(max(abs(dfe))/2/!pi*file.xdim)

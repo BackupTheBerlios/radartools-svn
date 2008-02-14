@@ -42,7 +42,8 @@ function remove_topo, input_T, REF_CHANNEL=topo_ch,BOX=box
 end
 
 pro polin_remove_topo,CALLED=called
-   common rat, types, file, wid, config
+  common rat, types, file, wid, config
+  compile_opt idl2
 
 ; check if array is complex
 
@@ -55,7 +56,7 @@ pro polin_remove_topo,CALLED=called
    show_intrf = 0
    if not keyword_set(called) then begin ; Graphical interface
       main = WIDGET_BASE(GROUP_LEADER=wid.base,row=4, $
-                         TITLE='Topography Removal',/modal,/tlb_kill_request_events,/tlb_frame_attr)
+                         TITLE='ML Topography Estimation and Removal',/modal,/tlb_kill_request_events,/tlb_frame_attr)
       field1 = CW_FIELD(main,VALUE=box,/integer, $
                         TITLE='Smooth box (default is sufficient) : ',XSIZE=3)
       intrfpha=cw_bgroup(main," generate interferometric phases afterwards",/nonexclusive,set_value=[show_intrf])
@@ -69,7 +70,7 @@ pro polin_remove_topo,CALLED=called
       repeat begin              ; Event loop
          event = widget_event(main)
          if event.id eq but_info then begin ; Info Button clicked
-            infotext = ['TOPOGRAPHY REMOVAL',$
+            infotext = ['MAXIMUM LIKELIHOOD TOPOGRAPHY REMOVAL',$
                         ' ',$
                         'RAT module written 2005 by Maxim Neumann']
             info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, $
