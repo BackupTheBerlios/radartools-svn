@@ -4,7 +4,7 @@
 ; Autor: Andreas Reigber
 ; Datum: 25.9.2003
 ; read an array in RAT (Radar Tool) format
-; Aufruf: 	rarr,filename,array
+; Aufruf: 	rrat,filename,array
 ; Keywords:	INFO  - here you find the comment (Default = "unknown content")
 ;           NOXDR - do not use /XDR
 ;           HEADER- read only header, in array you get the open LUN.
@@ -50,7 +50,11 @@ pro rrat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,BLOCK=block,TYPE=type,PRE
 	dummy= 0l
 	multi= 0l
 	info = bytarr(80)
-	openr,ddd,file,/get_lun,xdr=xflag
+        if file_test(file, /read) then $
+           openr,ddd,file,/get_lun,xdr=xflag $
+        else if file_test(file+'.rat', /read) then $
+           openr,ddd,file+'.rat',/get_lun,xdr=xflag $
+        else message, '% RRAT: Error opening file '+file+'. File not available or not readable'
 	readu,ddd,dim
         siz=lonarr(dim)
         readu,ddd,siz

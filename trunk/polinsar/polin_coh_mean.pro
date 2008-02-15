@@ -115,21 +115,22 @@ pro polin_coh_mean,CALLED = called, SMMX = smmx, SMMY = smmy, coh_complex=coh_co
      oblock= make_array([pol,n_bl,file.xdim,blocksizes[i]],type=newvar,/nozero)
      readu,ddd,block
 ; -------- THE FILTER ----------
+     NaN = (where(~finite(block)))[0] ne -1
      if ~matrix then $
         for bl=0,n_bl-1 do begin
         tracks = mb_ind(bl)
-        coh = smooth(block[*,tracks[0],*,*]*conj(block[*,tracks[1],*,*]),smm_box,/ed)/ $
-              sqrt(smooth(abs(block[*,tracks[0],*,*])^2,smm_box,/ed)* $
-                   smooth(abs(block[*,tracks[1],*,*])^2,smm_box,/ed))
+        coh = smooth(block[*,tracks[0],*,*]*conj(block[*,tracks[1],*,*]),smm_box,/ed, NaN=NaN)/ $
+              sqrt(smooth(abs(block[*,tracks[0],*,*])^2,smm_box,/ed, NaN=NaN)* $
+                   smooth(abs(block[*,tracks[1],*,*])^2,smm_box,/ed, NaN=NaN))
         oblock[*,bl,*,*]=coh_complex? coh: abs(coh)
      endfor
 
      if matrix then $
         for bl=0,n_bl-1 do begin
         tracks = mb_ind(bl)
-        coh = smooth(mm_diag(block[tracks[0]*pol:(tracks[0]+1)*pol-1,tracks[1]*pol:(tracks[1]+1)*pol-1,*,*]),smm_box[1:*],/ed)/ $
-              sqrt(smooth(mm_diag(block[tracks[0]*pol:(tracks[0]+1)*pol-1,tracks[0]*pol:(tracks[0]+1)*pol-1,*,*]),smm_box[1:*],/ed)* $
-                   smooth(mm_diag(block[tracks[1]*pol:(tracks[1]+1)*pol-1,tracks[1]*pol:(tracks[1]+1)*pol-1,*,*]),smm_box[1:*],/ed))
+        coh = smooth(mm_diag(block[tracks[0]*pol:(tracks[0]+1)*pol-1,tracks[1]*pol:(tracks[1]+1)*pol-1,*,*]),smm_box[1:*],/ed, NaN=NaN)/ $
+              sqrt(smooth(mm_diag(block[tracks[0]*pol:(tracks[0]+1)*pol-1,tracks[0]*pol:(tracks[0]+1)*pol-1,*,*]),smm_box[1:*],/ed, NaN=NaN)* $
+                   smooth(mm_diag(block[tracks[1]*pol:(tracks[1]+1)*pol-1,tracks[1]*pol:(tracks[1]+1)*pol-1,*,*]),smm_box[1:*],/ed, NaN=NaN))
         oblock[*,bl,*,*]=coh_complex? coh: abs(coh)
      endfor
 ; -------- THE FILTER ----------

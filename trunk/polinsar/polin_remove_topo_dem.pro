@@ -27,8 +27,8 @@ pro polin_remove_topo_dem,CALLED=called, dem=dem, kz=kz, file_dem=file_dem, file
   common rat, types, file, wid, config
   compile_opt idl2
 
-  if ~((file.type ge 500 && file.type le 513)) then begin
-     error_button = DIALOG_MESSAGE('Wrong input data type', DIALOG_PARENT = wid.base, TITLE='Error',/ERROR)
+  if ~((file.type ge 500 && file.type le 503)) then begin
+     error_button = DIALOG_MESSAGE('Wrong input data type. Needs PolInSAR scattering vectors.', DIALOG_PARENT = wid.base, TITLE='Error',/ERROR)
      return
   endif
   polin_get_info,pol=pol,tracks=n_tr,baselines=n_bl,matrix=is_matrix

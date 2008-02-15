@@ -20,7 +20,7 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-pro open_rat,INPUTFILE = inputfile,noupdate=noupdate,FROM_UNDO=FROM_UNDO
+pro open_rat,INPUTFILE = inputfile,noupdate=noupdate,FROM_UNDO=FROM_UNDO, CALLED=called
   common rat, types, file, wid, config
   common channel, channel_names, channel_selec, color_flag, palettes, pnames
 

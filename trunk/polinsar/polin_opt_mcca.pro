@@ -23,6 +23,7 @@
 
 pro polin_opt_mcca,CALLED = called, SM_FILE=sm_file, SMMX = smmx, SMMY = smmy
   common rat, types, file, wid, config
+  compile_opt idl2
 
   if ~(file.type ge 500 && file.type le 514) then begin
      error = DIALOG_MESSAGE("This is wrong data type.", $
@@ -66,7 +67,7 @@ pro polin_opt_mcca,CALLED = called, SM_FILE=sm_file, SMMX = smmx, SMMY = smmy
      repeat begin               ; Event loop
         event = widget_event(main)
         if event.id eq but_info then begin ; Info Button clicked
-           infotext = ['MULTIBASELINE COHERENCE OPTIMIZATION',$
+           infotext = ['MULTIBASELINE COHERENCE OPTIMIZATION (MB-MSM)',$
                        ' ',$
                        'RAT module written by Maxim Neumann']
            info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, $
@@ -120,7 +121,7 @@ pro polin_opt_mcca,CALLED = called, SM_FILE=sm_file, SMMX = smmx, SMMY = smmy
   blocksizes[anz_blocks-1] = bs_last
 
 ; pop up progress window
-  progress,Message='Multibaseline correlation optimization...',/cancel_button
+  progress,Message='Multibaseline coherence optimization...',/cancel_button
 
 ;start block processing
   for i=0,anz_blocks-1 do begin ; loop normal blocks
@@ -147,7 +148,7 @@ pro polin_opt_mcca,CALLED = called, SM_FILE=sm_file, SMMX = smmx, SMMY = smmy
   file.vdim = pol
   file.type = newtype
 
-  evolute,'Multibaseline correlation optimization with MSM.'
+  evolute,'Multibaseline coherence optimization with MSM.'
 
 ; generate preview
   if not keyword_set(called) then begin

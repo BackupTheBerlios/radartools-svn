@@ -7,6 +7,7 @@ Version 0.20:
 - New routines: TerraSAR-X and metadata loader
 - New routine : GB-SAR (UPC) loader
 - New routine : MB incoherent PolInSAR stationarity
+- New routine : DEM topography removal (for PolInSAR)
 - New routine : diagonal image mirror (range/azimuth transpose)
 - New option  : logarithmic scaling of amplitude
 - Improved routine: offset pixel handling options for coarse corregistration

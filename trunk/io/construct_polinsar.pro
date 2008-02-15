@@ -40,7 +40,7 @@ pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_ge
      brows = lonarr(MAX_TR)
 
      tryagain:
-     main = WIDGET_BASE(GROUP_LEADER=wid.base,/column,TITLE='Construct polarimetric multibaseline SAR dataset', $
+     main = WIDGET_BASE(GROUP_LEADER=wid.base,/column,TITLE='Construct MB-PolInSAR dataset', $
                         /floating,/tlb_kill_request_events,/tlb_frame_attr,/SCROLL,X_SCROLL=600,Y_SCROLL=500)
      but_tr = widget_droplist(main,value=strcompress(indgen(MAX_TR-1)+2),title='Number of tracks: ')
      for i=0,cur_tr-1 do begin
@@ -176,7 +176,7 @@ pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_ge
   blocksizes = intarr(anz_blocks)+bs
   blocksizes[anz_blocks-1] = bs_last
 ; pop up progress window
-  progress,Message='Construct PolMBSAR-image...'
+  progress,Message='Construct MB-PolInSAR-image...'
 
 ;do the transform
   for i=0,anz_blocks-1 do begin ; normal blocks

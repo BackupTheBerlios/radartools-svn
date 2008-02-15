@@ -31,8 +31,8 @@ pro save_rit, FILENAME=FILENAME,UNDO_PREPARE=UNDO_PREPARE
   if strmid(filename,strlen(filename)-4) eq '.rat'  then base=file_basename(filename, '.rat')
   if strmid(filename,strlen(filename)-4) eq '.rit'  then base=file_basename(filename, '.rit')
   if strmid(filename,strlen(filename)-5) eq '.mrat' then base=file_basename(filename,'.mrat')
-;  filename = file_dirname(filename,/mark)+base+'.rit'
-  FILENAME = strmid(FILENAME,0,strlen(FILENAME)-4)+'.rit'
+;  rit_file = file_dirname(filename,/mark)+base+'.rit'
+  rit_file = strmid(FILENAME,0,strlen(FILENAME)-4)+'.rit'
 
 
 ;;; system parameters
@@ -41,30 +41,30 @@ pro save_rit, FILENAME=FILENAME,UNDO_PREPARE=UNDO_PREPARE
 ;   par_names = tag_names(pars)
 ;   for i=0,par_nr-1 do $
 ;      if pars.(i) ne PN then $
-;         rit_write,FILENAME,par_names[i],*pars.(i), STATUS=STATUS
+;         rit_write,RIT_FILE,par_names[i],*pars.(i), STATUS=STATUS
 ;;; evolution
 ;   if n_elements(evolution) ne 1 || strlen(evolution[0]) ne 0 then $
 ;      for i=0,n_elements(evolution)-1 do $
-;         rit_write,FILENAME,'RAT_EVOLUTION_'+strcompress(i,/R),evolution[i]
+;         rit_write,RIT_FILE,'RAT_EVOLUTION_'+strcompress(i,/R),evolution[i]
 
-  if file_test(filename) then file_delete,/quiet,filename
+  if file_test(rit_file) then file_delete,/quiet,rit_file
 
 ;;; do nothing if no write rights!
-  if ~file_test(file_dirname(filename),/write) then return
+  if ~file_test(file_dirname(rit_file),/write) then return
 
   if n_elements(evolution) ne 1 || strlen(evolution[0]) ne 0 then $
-     rit_write,FILENAME,RAT_PAR=pars,RAT_EVO=evolution,RAT_PALETTE=reform(palettes[0,*,*]) $
-  else rit_write,FILENAME,RAT_PAR=pars,RAT_PALETTE=reform(palettes[0,*,*])
+     rit_write,RIT_FILE,RAT_PAR=pars,RAT_EVO=evolution,RAT_PALETTE=reform(palettes[0,*,*]) $
+  else rit_write,RIT_FILE,RAT_PAR=pars,RAT_PALETTE=reform(palettes[0,*,*])
 
 
 
-;;; save filename and timestamp information
+;;; save rit_file and timestamp information
 ;;; if ~.k(UNDO_PREPARE) then
   
 ;;; palette  --  save palette information
 ;;; !always! - because also multi-channel images can have own palettes for
 ;;;            single channel view
 ;;;          - and the change from color- to b/w- palette should also be saved
-;  palette_write,reform(palettes[0,*,*]),filename=filename
+;  palette_write,reform(palettes[0,*,*]),filename=rit_file
 
 end

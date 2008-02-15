@@ -102,6 +102,7 @@ pro polin_stationarity,CALLED=called, LOOKS_NUMBER=nrL
      dt    = REAL_PART(block_det(Tt))
      d     = reform(d,/overwrite) & dt = reform(dt,/overwrite)
      oblock= nrL*total(alog(d),1) - nt*alog(dt) ; log(L)
+     oblock = exp(oblock)
 
      writeu,eee,oblock
   endfor
