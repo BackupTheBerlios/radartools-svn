@@ -130,7 +130,8 @@ end
 
 
 
-pro calc_looks, CALLED = called, LOOK_NUM = lookNum, FFT_FILTER=fftFilter
+pro calc_looks, CALLED = called, LOOK_NUM = lookNum, FFT_FILTER=fftFilter, $
+                histLen=histLen, winRad=winRad
 common rat, types, file, wid, config
 
 ; keywords:
@@ -143,18 +144,18 @@ if (max(allowed-file.type eq 0) ne 1) then begin
     return
 endif
 
-histLen = 2048
-winRad=8
+if n_elements(histLen) eq 0 then histLen = 2048
+if n_elements(winRad) eq 0 then winRad=8
 histLim = [1e-4,500]
 
-if not keyword_set(called) then begin ; Graphical interface
+if ~keyword_set(called) then begin ; Graphical interface
     main = WIDGET_BASE(GROUP_LEADER=wid.base,row=4,TITLE='Number of Looks Calculation',/floating,/tlb_kill_request_events,/tlb_frame_attr)
 
     line1 = WIDGET_BASE(main,column=2)
     field1   = CW_FIELD(line1,VALUE=winRad,/integer,TITLE='Estimation window size  : ',XSIZE=2)
 
     line2 = WIDGET_BASE(main,column=2)
-    field2   = CW_FIELD(line2,VALUE=histLen,/float,TITLE='Histogram length  : ',XSIZE=7)
+    field2   = CW_FIELD(line2,VALUE=histLen,/int,TITLE='Histogram length  : ',XSIZE=7)
 
     buttons  = WIDGET_BASE(main,column=3,/frame)
     but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
@@ -196,7 +197,6 @@ endif
 
 WIDGET_CONTROL,/hourglass
 
-head = 1l
 rrat,file.name,inFD,header=head,info=info,type=type		
 
 ; calculating preview size and number of blocks
@@ -237,7 +237,7 @@ free_lun,inFD
 
 progress, /destroy
 
-if (not keyword_set(called)) then begin
+if ~keyword_set(called) then begin
     main = WIDGET_BASE(GROUP_LEADER=wid.base,row=2,TITLE='Estimated number of looks',/floating,/tlb_kill_request_events,/tlb_frame_attr)
     
     sub  = WIDGET_BASE(main,row=2,/frame)
@@ -271,8 +271,13 @@ if (not keyword_set(called)) then begin
 
     widget_control,wid.draw,get_value=index
     wset,index
-end
+ endif else $
+    print, 'The estimated number of looks in this image is: '+ $
+           strcompress(lookNum[0],/R) 
 
 lookNum = lookNum[0]
 
+evolute,'Effective number of looks (ENL) estimation: '+ $
+        strcompress(lookNum,/r)+' (Windows size: '+strcompress(winRad,/R)+ $
+        ', Histogram size: '+strcompress(histLen,/r) 
 end

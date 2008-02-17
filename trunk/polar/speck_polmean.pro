@@ -32,11 +32,13 @@ pro speck_polmean,CALLED = called, GUI=GUI, SMMX = smmx, SMMY = smmy
   endif
 
 ; start speckle filtering
+  if n_elements(smmx) eq 0 then smmx=3
+  if n_elements(smmy) eq 0 then smmy=3
 
   if ~keyword_set(called) || keyword_set(GUI) then begin ; Graphical interface
      main = WIDGET_BASE(GROUP_LEADER=wid.base,row=3,TITLE='Polarimetric Boxcar Filter',/floating,/tlb_kill_request_events,/tlb_frame_attr)
-     field1 = CW_FIELD(main,VALUE=3,/integer,TITLE='Filter boxsize X   : ',XSIZE=3)
-     field2 = CW_FIELD(main,VALUE=3,/integer,TITLE='Filter boxsize Y   : ',XSIZE=3)
+     field1 = CW_FIELD(main,VALUE=smmx,/integer,TITLE='Filter boxsize X   : ',XSIZE=3)
+     field2 = CW_FIELD(main,VALUE=smmy,/integer,TITLE='Filter boxsize Y   : ',XSIZE=3)
      buttons = WIDGET_BASE(main,column=3,/frame)
      but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
      but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
@@ -58,13 +60,9 @@ pro speck_polmean,CALLED = called, GUI=GUI, SMMX = smmx, SMMY = smmy
      widget_control,field2,GET_VALUE=smmy
      widget_control,main,/destroy ; remove main widget
      if event.id ne but_ok then return ; OK button _not_ clicked
-  endif else begin              ; Routine called with keywords
-     if not keyword_set(smmx) then smmx = 7 ; Default values
-     if not keyword_set(smmy) then smmy = 7
-  endelse
+  endif
 
 ; Error Handling
-
   if (smmx le 0 or smmy le 0) and not keyword_set(called) then begin ; Wrong box sizes ?
      error = DIALOG_MESSAGE("Boxsizes has to be >= 1", DIALOG_PARENT = wid.base, TITLE='Error',/error)
      return

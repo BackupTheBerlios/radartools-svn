@@ -173,6 +173,7 @@ function lee_pol_ref,arr,smm,LOOKS=looks,THRESHOLD=threshold,METHOD=method,SINGL
 end
 
 
+
 pro speck_polreflee,CALLED = called, SMM = smm, LOOKS = looks, THRESHOLD = threshold, METHOD_FLAG=mth_flag
 	common rat, types, file, wid, config
 
@@ -184,12 +185,18 @@ pro speck_polreflee,CALLED = called, SMM = smm, LOOKS = looks, THRESHOLD = thres
            return
         endif
 
+;;; default values
+	if n_elements(smm) eq 0 then smm=7
+	if n_elements(looks) eq 0 then looks=1.
+	if n_elements(threshold) eq 0 then threshold=6.0
+	if n_elements(mth_flag) eq 0 then mth_flag=0
+
 	if not keyword_set(called) then begin             ; Graphical interface
 		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=5,TITLE='Refined Polarimetric Lee Speckle Filter',/floating,/tlb_kill_request_events,/tlb_frame_attr)
-		field1   = CW_FIELD(main,VALUE=7,/integer,  TITLE='Filter boxsize        : ',XSIZE=3)
-		field2   = CW_FIELD(main,VALUE='1.0',/float,TITLE='Effective No of Looks : ',XSIZE=3)
-		field3   = CW_FIELD(main,VALUE='6.0',/float,TITLE='Threshold  (dB)       : ',XSIZE=3)
-		field4   = CW_BGROUP(main,["Lee original (RoA)","Lee modified","Lee modified + coef. of var.","Coefficient of variation"],/frame,set_value=0,row=4,label_top='Mask selection method:',/exclusive)
+		field1   = CW_FIELD(main,VALUE=smm,/integer,  TITLE='Filter boxsize        : ',XSIZE=3)
+		field2   = CW_FIELD(main,VALUE=strcompress(string(looks,f='(f9.1)'),/R),/float,TITLE='Effective No of Looks : ',XSIZE=3)
+		field3   = CW_FIELD(main,VALUE=strcompress(string(threshold,f='(f9.1)'),/R),/float,TITLE='Threshold  (dB)       : ',XSIZE=3)
+		field4   = CW_BGROUP(main,["Lee original (RoA)","Lee modified","Lee modified + coef. of var.","Coefficient of variation"],/frame,set_value=mth_flag,row=4,label_top='Mask selection method:',/exclusive)
 		buttons  = WIDGET_BASE(main,column=3,/frame)
 		but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
 		but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
@@ -221,12 +228,7 @@ pro speck_polreflee,CALLED = called, SMM = smm, LOOKS = looks, THRESHOLD = thres
 		widget_control,field4,GET_VALUE=mth_flag
 		widget_control,main,/destroy
 		if event.id ne but_ok then return                   ; OK button _not_ clicked
-	endif else begin                                       ; Routine called with keywords
-		if not keyword_set(smm) then smm = 7                ; Default values
-		if not keyword_set(looks) then looks = 1.0
-		if not keyword_set(threshold) then threshold = 6.0
-		if n_elements(mth_flag) eq 0 then mth_flag = 0
-	endelse
+             endif
 	threshold = alog10(threshold)
 
 ; Error Handling

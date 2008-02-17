@@ -62,10 +62,13 @@ pro speck_pollee,CALLED = called, SMM = smm, LOOKS = looks
            return
         endif
 
+        if n_elements(smm) eq 0 then smm = 7 ; Default values
+        if n_elements(looks) eq 0 then looks = 1.0
+
 	if not keyword_set(called) then begin             ; Graphical interface
 		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=4,TITLE='Polarimetric Lee Speckle Filter',/floating,/tlb_kill_request_events,/tlb_frame_attr)
-		field1   = CW_FIELD(main,VALUE=7,/integer,  TITLE='Filter boxsize        : ',XSIZE=3)
-		field2   = CW_FIELD(main,VALUE='1.0',/float,TITLE='Effective No of Looks : ',XSIZE=3)
+		field1   = CW_FIELD(main,VALUE=smm,/integer,  TITLE='Filter boxsize        : ',XSIZE=3)
+		field2   = CW_FIELD(main,VALUE=strcompress(/r,string(looks,f='(f9.1)')),/float,TITLE='Effective No of Looks : ',XSIZE=3)
 		buttons  = WIDGET_BASE(main,column=3,/frame)
 		but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
 		but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
@@ -93,11 +96,7 @@ pro speck_pollee,CALLED = called, SMM = smm, LOOKS = looks
 		widget_control,field2,GET_VALUE=looks
 		widget_control,main,/destroy
 		if event.id ne but_ok then return                   ; OK button _not_ clicked
-	endif else begin                                       ; Routine called with keywords
-		if not keyword_set(smm) then smm = 7                ; Default values
-		if not keyword_set(looks) then looks = 1.0
-	endelse
-
+	endif
 ; Error Handling
 
 	if smm le 0 and not keyword_set(called) then begin                   ; Wrong box sizes ?
