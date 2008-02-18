@@ -37,6 +37,7 @@ pro save_image,OUTPUTFILE = outputfile,PNG=png,JPG=jpg,TIFF=tiff
 ; Bytscaling
 ;---------------------------------
 
+		channel_default
 		preview,file.name,config.tempdir+config.lookfile,/full 
 		rrat,config.tempdir+config.lookfile,image                ; read preview file
 		image = float2bytes(image)                               ; do optimised bytscaling

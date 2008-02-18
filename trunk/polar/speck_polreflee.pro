@@ -21,6 +21,8 @@
 ;------------------------------------------------------------------------
 
 function lee_pol_ref,arr,smm,LOOKS=looks,THRESHOLD=threshold,METHOD=method,SINGLE=single
+	compile_opt idl2
+
 	if not keyword_set(looks) then looks=1
 	if not keyword_set(threshold) then threshold=0.5
 	if not keyword_set(method) then method=0
@@ -64,11 +66,11 @@ function lee_pol_ref,arr,smm,LOOKS=looks,THRESHOLD=threshold,METHOD=method,SINGL
 	cbox[5,*,*] = rotate(cvbox,1)
 	cbox[6,*,*] = rotate(chbox,0)
 	cbox[7,*,*] = rotate(cvbox,2)
-	cbox[8,*,*] += 1.
+;	cbox[8,*,*] += 1.
+        for i=0, delta do for j=delta-i, delta+i do cbox[8, i:smm-i-1, j] = 1
 	
 	for i=0,8 do cbox[i,*,*] /= total(cbox[i,*,*])
-	
-	
+
 	dbox = fltarr(1,1,smm,smm)
 	
 	ampf1 = fltarr(9,anzx,anzy)
@@ -144,10 +146,10 @@ function lee_pol_ref,arr,smm,LOOKS=looks,THRESHOLD=threshold,METHOD=method,SINGL
 ;---------------------------------------------
 ; FILTERING	
 ;---------------------------------------------
-	pre1 = fltarr(anzz2)+1
-	pre2 = indgen(anzz2)
-	pre3 = intarr(anzz2)
-	
+        pre1 = lonarr(anzz2)+1
+	pre2 = lindgen(anzz2)
+	pre3 = lonarr(anzz2)
+
 	for l=0,8 do begin                            ; loop over the different boxes
 		box  = reform(cbox[l,*,*])
 		dbox[0,0,*,*] = box
@@ -160,8 +162,8 @@ function lee_pol_ref,arr,smm,LOOKS=looks,THRESHOLD=threshold,METHOD=method,SINGL
 			k    = varx / vary
 			mamp = convol(arr,dbox,/center,/edge_truncate)
 
-			i4d = (pre1 ## (aux*anzz2)) + (pre2 ## (fltarr(nr)+1))
-			k4d = (pre1 ## k) + (pre3 ## (fltarr(nr)+1))
+			i4d = (pre1 ## (aux*anzz2)) + (pre2 ## (lonarr(nr)+1))
+			k4d = (pre1 ## k) ;+ (pre3 ## (fltarr(nr)+1))
 			out[i4d] = mamp[i4d] + (arr[i4d] - mamp[i4d] ) * k4d			
 
 		endif
@@ -176,6 +178,7 @@ end
 
 pro speck_polreflee,CALLED = called, SMM = smm, LOOKS = looks, THRESHOLD = threshold, METHOD_FLAG=mth_flag
 	common rat, types, file, wid, config
+	compile_opt idl2
 
 	if not ((file.type ge 200 and file.type lt 210) or (file.type ge 220 and file.type le 230) or $
 		 (file.type eq 100 or file.type eq 101 or file.type eq 103) or $

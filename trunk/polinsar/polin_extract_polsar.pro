@@ -20,9 +20,10 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-pro polin_extract_polsar,CALLED = called,channelvector=channelvector
+pro polin_extract_polsar,CALLED = called, NO_GUI=no_gui, channelvector=channelvector
   common rat, types, file, wid, config
   common channel, channel_names, channel_selec, color_flag
+  compile_opt idl2
 
 ; right type? --- calculate new type
   case file.type of
@@ -40,11 +41,11 @@ pro polin_extract_polsar,CALLED = called,channelvector=channelvector
         return
      endelse
   endcase
-  if newtype ge 200 && newtype le 210 then matrix=0 else matrix=1
-  pol  = file.vdim mod 3 eq 0 ? 3L : 4L
-  n_tr = matrix ? file.vdim/pol : file.zdim
 
-  if not keyword_set(called) then begin ; Graphical interface
+  polin_get_info, pol=pol, tracks=n_tr, baselines=n_bl, matrix=matrix
+  if n_elements(channelvector) eq 0 then channelvector = 0
+
+  if ~keyword_set(called) && ~keyword_set(no_gui) then begin ; Graphical interface
      main = WIDGET_BASE(GROUP_LEADER=wid.base,row=4, $
                         TITLE='PolSAR image extraction',/modal, $
                         /tlb_kill_request_events,/tlb_frame_attr)
@@ -74,8 +75,7 @@ pro polin_extract_polsar,CALLED = called,channelvector=channelvector
      widget_control,butt,GET_VALUE=channelvector
      widget_control,main,/destroy
      if event.id ne but_ok then return ; OK button _not_ clicked
-  endif else $
-     if n_elements(channelvector) eq 0 then channelvector = 0
+  endif
 
 ; change mousepointer
   WIDGET_CONTROL,/hourglass
