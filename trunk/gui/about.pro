@@ -21,7 +21,7 @@ pro about
 	common rat, types, file, wid, config
 	
 	infostring = [ $
-	'RAT - Radar Tools  (Version 0.20)',$
+	'RAT - Radar Tools  (Version SVN-HEAD)',$
 	'---------------------------------------------',$
 	'(c) 2003-2008 by the RAT development team',$ 
 	'---------------------------------------------',$
