@@ -29,7 +29,7 @@ logWeight = alog(classWeight)
 
 logEBlock = fltarr([classNum, blockRes])
 for i=0,classNum-1 do begin
-    logEBlock[i,*,*] = (lookNum-covarSize)*lnDetBlock - lookNum*(lnClassDet[i] + block_trace(block_mm(reform(invClassCovar[*,*,i]),covarBlock)))
+    logEBlock[i,*,*] = (lookNum-covarSize)*lnDetBlock - lookNum*(lnClassDet[i] + block_trace(real_part(block_mm(reform(invClassCovar[*,*,i]),covarBlock))))
 end
 logEBlock *= lookNum
 

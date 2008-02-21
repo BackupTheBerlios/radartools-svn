@@ -27,13 +27,17 @@
 
 
 
-function mm_trace, A
+function mm_trace, A, REAL_VALUED=real
   siz = size(A)
   if siz[siz[0]+2] eq 1 then return, A
 
   trace = A[0,0,*,*,*,*,*,*]
   for i=1,siz[1]-1 do $
      trace += A[i,i,*,*,*,*,*,*]
+
+  if keyword_set(REAL) && $
+     (size(A,/type) eq 6 || size(A,/type) eq 9) $
+  then trace = real_part(trace)
 
   return, reform(trace,/overwrite)
 end
