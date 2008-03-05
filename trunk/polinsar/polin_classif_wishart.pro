@@ -204,7 +204,7 @@ function polin_scc_wishart, T, initialization, iteration_Nr, MIN_POINTS=min_poin
            error = 1
            return,0
         endif
-        d[*,cl] += reform(block_trace(block_mm(Vinv[*,*,cl],T)))
+        d[*,cl] += reform(block_trace(real_part(block_mm(Vinv[*,*,cl],T))))
      endfor
      for i=0L,n-1 do $
         clusters[i] = argmin(d[i,*])

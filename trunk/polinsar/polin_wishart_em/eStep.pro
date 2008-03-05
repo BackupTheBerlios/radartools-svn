@@ -48,7 +48,7 @@ logEBlock = fltarr([classNum, blockRes])
 for i=0,classNum-1 do begin
 
     if (useFlags[1] eq 1) then begin
-        logEBlock[i,*,*] = lnDetBlock - lnClassDet[i] - block_trace(block_mm(reform(invClassCovar[*,*,i]),covarBlock))
+        logEBlock[i,*,*] = lnDetBlock - lnClassDet[i] - block_trace(real_part(block_mm(reform(invClassCovar[*,*,i]),covarBlock)))
         logEBlock[i,*,*] *= lookNum
     end
 

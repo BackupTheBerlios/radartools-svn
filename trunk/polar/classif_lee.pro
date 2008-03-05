@@ -160,7 +160,7 @@ for i=0,3 do begin
     for j=0,classNum-1 do begin
         if (classSize[j,i] eq 0) then continue
         
-        distBlock = lnClassDet[j,i] + block_trace(block_mm(reform(invMean[*,*,j,i]),covarBlock))
+        distBlock = lnClassDet[j,i] + block_trace(real_part(block_mm(reform(invMean[*,*,j,i]),covarBlock)))
         updateInd = where(distBlock[pixInd] lt minDistBlock[pixInd], nr)
         if (nr gt 0) then begin
             updateInd = pixInd[updateInd]

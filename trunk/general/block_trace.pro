@@ -22,11 +22,14 @@
 
 
 
-function block_trace,arr
+function block_trace,arr, REAL_VALUED=real
 	dim = (size(arr))[1]
 	out = arr[0,0,*,*]
 	for i=1,dim-1 do out += arr[i,i,*,*]
         out = reform(out,/overwrite)
+        if keyword_set(REAL) && $
+           (size(out,/type) eq 6 || size(out,/type) eq 9) $
+        then out = real_part(out)
 	return, out
 end
 

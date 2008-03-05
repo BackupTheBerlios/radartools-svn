@@ -85,11 +85,11 @@ end
 
 ;  for i=0,1 do begin
 ;      shiftV = [0,0,cliqueX[i],cliqueY[i]]
-;      energy += float(block_trace(block_mm(estimInv,shift(estimBlock,shiftV))))
+;      energy += float(block_trace(real_part(block_mm(estimInv,shift(estimBlock,shiftV)))))
 ;  end
 
 ;  energy *= lookBuf
-;  energy += lookNum * float(block_trace(block_mm(estimInv,covarBlock)))
+;  energy += lookNum * float(block_trace(real_part(block_mm(estimInv,covarBlock))))
 ;  energy += (lookNum+2*lookBuf) * alog(float(block_det(estim)))
 
 ; a = energy
