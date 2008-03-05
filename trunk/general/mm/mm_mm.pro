@@ -46,7 +46,7 @@ function mm_mm,A,B
 
   new_dim      = (siz1[0] gt siz2[0] ? size(A,/dim) : size(B,/dim))
   new_dim[0:1] = [x1,y2]
-  C            = make_array(new_dim,type=size(A,/type))
+  C            = make_array(new_dim,type=size(A,/type)>size(B,/type))
 
   if siz1[0] eq 2 then $
      for y=0,y2-1 do $

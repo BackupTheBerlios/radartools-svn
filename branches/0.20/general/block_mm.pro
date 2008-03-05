@@ -22,6 +22,7 @@ FUNCTION block_mm,in1,in2
 	cc1   = SIZE(in1) & cc2   = SIZE(in2)
 	vdim1 = cc1[1]    & vdim2 = cc2[1]
 	zdim1 = cc1[2]    & zdim2 = cc2[2]
+        type = size(in1,/type)>size(in2,/type)
 
 	IF vdim1 NE zdim2 THEN BEGIN
 		PRINT,'oups, error'
@@ -32,21 +33,21 @@ FUNCTION block_mm,in1,in2
 	
 	cc1[0] GT cc2[0]: BEGIN
 		IF cc1[0] EQ 2 THEN BEGIN
-			out = MAKE_ARRAY(vdim2,zdim1)
+			out = MAKE_ARRAY(vdim2,zdim1,type=type)
 			FOR vv = 0,vdim2-1 DO $
 				FOR zz=0,zdim1-1 DO $
 					FOR kk=0,vdim1-1 DO $
 						out[vv,zz] += in1[kk,zz] * in2[vv,kk]
 		ENDIF
 		IF cc1[0] EQ 3 THEN BEGIN
-			out = MAKE_ARRAY(vdim2,zdim1,cc1[3])
+			out = MAKE_ARRAY(vdim2,zdim1,cc1[3],type=type)
 			FOR vv = 0,vdim2-1 DO $
 				FOR zz=0,zdim1-1 DO $
 					FOR kk=0,vdim1-1 DO $
 						out[vv,zz,*] += in1[kk,zz,*] * in2[vv,kk]
 		ENDIF
 		IF cc1[0] EQ 4 THEN BEGIN
-			out = MAKE_ARRAY(vdim2,zdim1,cc1[3],cc1[4])
+			out = MAKE_ARRAY(vdim2,zdim1,cc1[3],cc1[4],type=type)
 			FOR vv = 0,vdim2-1 DO $
 				FOR zz=0,zdim1-1 DO $
 					FOR kk=0,vdim1-1 DO $
@@ -56,21 +57,21 @@ FUNCTION block_mm,in1,in2
 	
 	cc1[0] LT cc2[0]: BEGIN
 		if cc2[0] EQ 2 then BEGIN
-			out = MAKE_ARRAY(vdim2,zdim1)
+			out = MAKE_ARRAY(vdim2,zdim1,type=type)
 			FOR vv = 0,vdim2-1 DO $
 				FOR zz=0,zdim1-1 DO $
 					FOR kk=0,vdim1-1 DO $
 						out[vv,zz] += in1[kk,zz] * in2[vv,kk]
 		ENDIF
 		IF cc2[0] EQ 3 THEN BEGIN
-			out = MAKE_ARRAY(vdim2,zdim1,cc2[3])
+			out = MAKE_ARRAY(vdim2,zdim1,cc2[3],type=type)
 			FOR vv = 0,vdim2-1 DO $
 				FOR zz=0,zdim1-1 DO $
 					FOR kk=0,vdim1-1 DO $
 						out[vv,zz,*] += in1[kk,zz] * in2[vv,kk,*]
 		ENDIF
 		IF cc2[0] EQ 4 THEN BEGIN
-			out = MAKE_ARRAY(vdim2,zdim1,cc2[3],cc2[4])
+			out = MAKE_ARRAY(vdim2,zdim1,cc2[3],cc2[4],type=type)
 			FOR vv = 0,vdim2-1 DO $
 				FOR zz=0,zdim1-1 DO $
 					FOR kk=0,vdim1-1 DO $
@@ -80,21 +81,21 @@ FUNCTION block_mm,in1,in2
 	
 	else: begin
 		if cc2[0] EQ 2 then BEGIN
-			out = MAKE_ARRAY(vdim2,zdim1)
+			out = MAKE_ARRAY(vdim2,zdim1,type=type)
 			FOR vv = 0,vdim2-1 DO $
 				FOR zz=0,zdim1-1 DO $
 					FOR kk=0,vdim1-1 DO $
 						out[vv,zz] += in1[kk,zz] * in2[vv,kk]
 		ENDIF
 		IF cc2[0] EQ 3 THEN BEGIN
-			out = MAKE_ARRAY(vdim2,zdim1,cc2[3])
+			out = MAKE_ARRAY(vdim2,zdim1,cc2[3],type=type)
 			FOR vv = 0,vdim2-1 DO $
 				FOR zz=0,zdim1-1 DO $
 					FOR kk=0,vdim1-1 DO $
 						out[vv,zz,*] += in1[kk,zz,*] * in2[vv,kk,*]
 		ENDIF
 		IF cc2[0] EQ 4 THEN BEGIN
-			out = MAKE_ARRAY(vdim2,zdim1,cc2[3],cc2[4])
+			out = MAKE_ARRAY(vdim2,zdim1,cc2[3],cc2[4],type=type)
 			FOR vv = 0,vdim2-1 DO $
 				FOR zz=0,zdim1-1 DO $
 					FOR kk=0,vdim1-1 DO $

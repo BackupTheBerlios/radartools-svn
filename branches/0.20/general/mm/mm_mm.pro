@@ -11,7 +11,7 @@
 ;;;   based on rat-block-routines by A. Reigber and S. Guillaso
 ;;; mm_mm,a,b	<==>  a[*,*,0] # b[*,*,0]
 ;;; it is equivalent to matrix_multiply(A,B) == A#B
-;;; and the transpose of block_mm !!!
+;;; (while block_mm(A,B) == A##B) !!!
 ;;; if 1-dim array is given, it will be extended to 2-dim!
 ;------------------------------------------------------------------------
 ; The contents of this file are subject to the Mozilla Public License
@@ -29,6 +29,7 @@
 ;------------------------------------------------------------------------
 
 function mm_mm,A,B
+  compile_opt idl2
 
 ; DIMENSION OF A and B
   if size(A,/n_dim) eq 1 then A=reform(A,[n_elements(A),1],/overwrite)
