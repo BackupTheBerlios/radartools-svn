@@ -338,7 +338,7 @@ pro calib_xtalkoap,SMMX=smmx,SMMY=smmy,EXCLUDEPIX=excludepix,CALFILE=calfile
 		chck_field  = CW_BGROUP(main, ['Check calibration a-posteriori'],YPAD=5,/ROW,/NONEXCLUSIVE,SET_VALUE=[flag_chck])
 ;		symm_field  = CW_BGROUP(main, ['Cross-polar symmetrisation'],YPAD=5,/ROW,/NONEXCLUSIVE,SET_VALUE=[flag_symm])
 
-		cffield1 = CW_BGROUP(main, ['Generate calibration file :'],YPAD=5,/ROW,/NONEXCLUSIVE,SET_VALUE=[flag_calf])
+		cffield1 = CW_BGROUP(main, ['Generate calibration file (*.ps):'],YPAD=5,/ROW,/NONEXCLUSIVE,SET_VALUE=[flag_calf])
 	  cffield = WIDGET_BASE(main,column=2,sensitive=flag_calf)
 			cffield2 = CW_FIELD(cffield,VALUE=calfile,/STRING,XSIZE=60,TITLE='')
 			cffield3 = WIDGET_BUTTON(cffield,VALUE='browse',YSIZE=35)
@@ -587,7 +587,7 @@ pro calib_xtalkoap,SMMX=smmx,SMMY=smmy,EXCLUDEPIX=excludepix,CALFILE=calfile
 	if flag_calf then begin
 		
 		set_plot,'ps'
-		device,filename=calfile,/color,xsize=21,ysize=29.7
+		device,filename=calfile,/color,/encaps,xsize=21,ysize=29.7
 		
 		!p.multi = [0,2,4]
 		tek_color
@@ -632,7 +632,8 @@ pro calib_xtalkoap,SMMX=smmx,SMMY=smmy,EXCLUDEPIX=excludepix,CALFILE=calfile
 			xyouts,0.4,0.08,'(abs(z) ='+strcompress(zm2)+' dB)',/normal
 		endif
  		device,/close
-		set_plot,"x"	
+		if	config.os eq 'windows' then set_plot,"win"
+		if	config.os eq 'unix' then set_plot,"x"	
 		
 	endif	
 
