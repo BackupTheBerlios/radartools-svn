@@ -231,6 +231,7 @@ PRO rat_event, event
 			case event.value of
 				'Inspect.Point target'							: inspect_polcorner
 				'Inspect.Calculate # of looks'				: calc_looks
+				'Inspect.Calculate PolSAR SNR'            : calc_polsnr
 				'Inspect.Polarimetric scatterer analysis'		: polin_analysis_pol
 				'RFI filter'                              : rfi_filter
 				'Speckle filter.Boxcar'							: speck_polmean
@@ -279,7 +280,8 @@ PRO rat_event, event
 				'Time-frequency.Generate.Subaperture covariance matrix' 	: subap_cov
 				'Time-frequency.Covarince matrix for every subaperture'  : subap_k2m
 				'Time-frequency.Nonstationarity analysis' 			: subap_nonstat
-				'Calibration.Cross-talk' 							: calib_xtalk
+				'Calibration.Cross-talk (Quegan)' 				: calib_xtalk
+				'Calibration.Cross-talk (Ainsworth)' 			: calib_xtalkoap
 				'Calibration.Phase and amplitude imbalance' : calib_imbalance
 				'Calibration.Cross-polar symmetrisation'    : calib_xsym
 				'Wizard mode.Scattering vector -> Entropy/Alpha/Anisotropy'	: wiz_k2eaa
@@ -657,10 +659,12 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
 		'0\Polarimetric scatterer analysis', $
 		'0\Point target', $
 		'0\Distributed target',$
+		'0\Calculate PolSAR SNR',$
 		'2\Calculate # of looks',$
 		'1\Calibration',$
 		'0\Phase and amplitude imbalance',$
-		'0\Cross-talk',$
+		'0\Cross-talk (Quegan)',$
+		'0\Cross-talk (Ainsworth)',$
 		'2\Cross-polar symmetrisation',$
 		'0\RFI filter'   , $
 		'5\Speckle filter'   , $

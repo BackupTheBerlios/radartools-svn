@@ -2,6 +2,12 @@
   CHANGELOG
 =============
 
+Version 0.21:
+- New routine: Ainsworth PolSAR calibration
+- New routine: Polarimetric SNR estimation
+- Various small improvements and bug fixes
+
+
 Version 0.20:
 
 - New routines: TerraSAR-X and metadata loader

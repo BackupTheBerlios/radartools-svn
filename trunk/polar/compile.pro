@@ -48,6 +48,7 @@
 @polar/calib_imbalance
 @polar/calib_xsym
 @polar/calib_xtalk
+@polar/calib_xtalkoap
 @polar/edge_pol_cfar
 @polar/calc_iphase
 @polar/calc_icorr
@@ -57,3 +58,4 @@
 @polar/pclass_fredur
 @polar/wiz_k2eaa
 @polar/wiz_k2wclass
+@polar/calc_polsnr

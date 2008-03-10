@@ -27,7 +27,7 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-function rebinc,arr_in,xres,yres,zres,NOSMOOTH = nosmooth
+function rebinc,arr_in,xres,yres,zres,vres,NOSMOOTH = nosmooth
 	arr = arr_in
 	on_error,2
 	s=size(arr)
