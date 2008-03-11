@@ -21,18 +21,18 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-pro tiling_init,OVERLAP = overlap   
+pro tiling_init,OVERLAP = overlap
 ; Initialise tiling with given block overlap
 ; Omit keyword for no overlap
 	common rat, types, file, wid, config, tiling
 
 	if keyword_set(overlap) then $
-		calc_blocks_overlap,file.ydim,config.blocksize,overlap,anz_blocks,bs_last $	
+		calc_blocks_overlap,file.ydim,config.blocksize,overlap,anz_blocks,bs_last $
 	else begin
-		calc_blocks_normal, file.ydim,config.blocksize,anz_blocks,bs_last 
+		calc_blocks_normal, file.ydim,config.blocksize,anz_blocks,bs_last
 		overlap = 0
 	endelse
-	
+
 	tiling.nr_blocks = anz_blocks
 	tiling.overlap   = overlap
 	tiling.blocksizes = ptr_new(intarr(anz_blocks))
@@ -44,11 +44,11 @@ end
 pro tiling_jumpback,lun
 ; Jump back in inputfile to solve the problem of overlapping blocks
 	common rat, types, file, wid, config, tiling
-	
-	xdrsize = [0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8]
-	point_lun,-lun,file_pos
-	point_lun,lun,file_pos - 2 * tiling.overlap * file.vdim * file.zdim * file.xdim * xdrsize[file.var]
-
+	if tiling.nr_blocks gt 1 then begin
+		xdrsize = [0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8]
+		point_lun,-lun,file_pos
+		point_lun,lun,file_pos - 2 * tiling.overlap * file.vdim * file.zdim * file.xdim * xdrsize[file.var]
+	endif
 end
 
 pro tiling_write,lun,nr,block
