@@ -55,7 +55,7 @@ pro calc_polsnr,CALLED=called,BOXSIZE=boxsize
 		widget_control,field1,GET_VALUE=boxsize                ; read widget fields
 		widget_control,main,/destroy                        ; remove main widget
 		if event.id ne but_ok then return                   ; OK button _not_ clicked
-	endif 
+	endif
 
 ; go
 
@@ -63,17 +63,17 @@ pro calc_polsnr,CALLED=called,BOXSIZE=boxsize
 
 ; undo function
    undo_prepare,outputfile,finalfile,CALLED=CALLED
-	
+
 ; read / write header
 
 	head = 1l
-	rrat,file.name,ddd,header=head,info=info,type=type		
-	srat,outputfile,eee,header=[2l,file.xdim,file.ydim,4l],info=info,type=50l	
+	rrat,file.name,ddd,header=head,info=info,type=type
+	srat,outputfile,eee,header=[2l,file.xdim,file.ydim,4l],info=info,type=50l
 
 ; calculating preview size and number of blocks
 
 	tiling_init,overlap=(boxsize+1)/2
-	
+
 ; pop up progress window
 
 	progress,Message='PolSAR SNR...',/cancel_button
@@ -87,7 +87,7 @@ pro calc_polsnr,CALLED=called,BOXSIZE=boxsize
 
 		tiling_read,ddd,i,block
 		if boxsize gt 1 then block = smooth(block,[1,1,boxsize,boxsize],/edge_truncate)
-		oblock = fltarr(1,1,file.xdim,*tiling.blocksizes[i])
+		oblock = fltarr(1,1,file.xdim,(*tiling.blocksizes)[i])
 		for k=0,file.xdim-1 do begin
 			for l=0,(*tiling.blocksizes)[i]-1 do begin
 				foo = (float(la_eigenql(reform(block[*,*,k,l]))))[index]
