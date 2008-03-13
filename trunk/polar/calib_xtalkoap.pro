@@ -461,8 +461,8 @@ pro calib_xtalkoap,SMMX=smmx,SMMY=smmy,EXCLUDEPIX=excludepix,CALFILE=calfile
   		for k=1,999 do hist[k] += hist[k-1]
   		bar   = max(hist) * 0.95
   		cut = 0 & while hist[cut] lt bar do cut++
-  		aux = where(foo gt l[cut])
-  		block[4*aux] = complex(0,0) & block[4*aux+1] = complex(0,0)  & block[4*aux+2] = complex(0,0) & block[4*aux+3] = complex(0,0)
+  		aux = where(foo gt l[cut],nr)
+  		if nr gt 0 then block[4*aux] = complex(0,0) & block[4*aux+1] = complex(0,0)  & block[4*aux+2] = complex(0,0) & block[4*aux+3] = complex(0,0)
 		endif
 
 ; generate covariances
@@ -475,10 +475,6 @@ pro calib_xtalkoap,SMMX=smmx,SMMY=smmy,EXCLUDEPIX=excludepix,CALFILE=calfile
 ;  	xcal[0,0,0] = congrid(oap_xtalk(covar),5,xend+1,bsy,cubic=-0.5)
   	xcal[0,0,0] = congrid(oap_xtalk(covar),5,file.xdim,bsy,cubic=-0.5)
 
-		if i ne tiling.nr_blocks-1 or tiling.nr_blocks eq 1 then begin
-			xrg1 += total(xcal,3)
-			pxrg += bsy
-		endif
 
 		if excludepix gt 0 then block = oap_calxtalk_k4(iblock,xcal) else block = oap_calxtalk_k4(block,xcal)
 
@@ -490,12 +486,46 @@ pro calib_xtalkoap,SMMX=smmx,SMMY=smmy,EXCLUDEPIX=excludepix,CALFILE=calfile
 			xcal2  = complexarr(5,file.xdim,bsy)
 ;			xcal2[0,0,0]  = congrid(oap_xtalk(covar),5,xend+1,bsy,cubic=-0.5)
 			xcal2[0,0,0]  = congrid(oap_xtalk(covar),5,file.xdim,bsy,cubic=-0.5)
-			if i ne tiling.nr_blocks-1  or tiling.nr_blocks eq 1 then xrg2 += total(xcal2,3)
 
 ;			xcal_qual,covar
 
+
 		endif
 
+
+		if flag_chck then begin
+			check1 = total(total(abs(xcal[0:3,*]),2),1)
+			check2 = total(total(abs(xcal2[0:3,*]),2),1)
+			valid  = where(check1 gt 0.0 and check1 lt 1.0 and check2 gt 0.0 and check2 lt 1.0,nr)
+		endif else begin
+			check1 = total(total(abs(xcal[0:3,*]),2),1)
+			valid  = where(check1 gt 0.0 and check1 lt 1.0,nr)
+		endelse
+		if nr gt 0 then	begin
+			xrg1 += total(xcal[*,*,valid],3)
+			pxrg += nr
+			if flag_chck then xrg2 += total(xcal2[*,*,valid],3)
+		endif
+
+		wins,0
+		!p.multi = [0,2,3]
+		tek_color
+		plot,(abs(xrg1[4,*]/pxrg)),yrange=[0.5,1.5],title='abs(a)'
+		if flag_chck then oplot,(abs(xrg2[4,*]/pxrg)),color=3
+		phase = (atan(xrg1[4,*],/phase))*!radeg
+		if flag_chck then phase = [phase,(atan(xrg2[4,*],/phase))*!radeg]
+		plot,(atan(xrg1[4,*],/phase))*!radeg,title='phase(a)',yrange=[min([0,min(phase)]),max([0,max(phase)])]
+		if flag_chck then oplot,(atan(xrg2[4,*],/phase))*!radeg,color=3
+ 		plot,10*alog10(abs(xrg1[0,*]/pxrg)),yrang=[-50,0],title='u',ytitle='dB'
+		if flag_chck then oplot,10*alog10(abs(xrg2[0,*]/pxrg)),color=3
+ 		plot,10*alog10(abs(xrg1[1,*]/pxrg)),yrang=[-50,0],title='v',ytitle='dB'
+		if flag_chck then oplot,10*alog10(abs(xrg2[1,*]/pxrg)),color=3
+ 		plot,10*alog10(abs(xrg1[2,*]/pxrg)),yrang=[-50,0],title='w',ytitle='dB'
+		if flag_chck then oplot,10*alog10(abs(xrg2[2,*]/pxrg)),color=3
+ 		plot,10*alog10(abs(xrg1[3,*]/pxrg)),yrang=[-50,0],title='z',ytitle='dB'
+		if flag_chck then oplot,10*alog10(abs(xrg2[3,*]/pxrg)),color=3
+		loadct,0,/silent
+		!p.multi = [0,1,1]
 
 		if bs ne 0 then block=reform(block[*,*,0:(*tiling.blocksizes)[i]-1],1,dnew,file.xdim,(*tiling.blocksizes)[i]) else block = reform(block,1,dnew,file.xdim,bsy)
   		tiling_write,eee,i,temporary(block)
@@ -633,7 +663,7 @@ pro calib_xtalkoap,SMMX=smmx,SMMY=smmy,EXCLUDEPIX=excludepix,CALFILE=calfile
  		device,/close
 		if	config.os eq 'windows' then set_plot,"win"
 		if	config.os eq 'unix' then set_plot,"x"
-
+stop
 	endif
 
 ; update everything
