@@ -65,7 +65,7 @@ pro rat_plugin_quote, CALLED=called, NO_GUI=no_gui, FUNC_PARAMETERS=pars, $
   common rat, types, file, wid, config
 
   if arg_present(plugin_info) then begin
-     plugin_info={menu_name:"Random RAT Quote",menu_pos:["general","polinsar"]}
+     plugin_info={menu_name:"Random RAT Quote",menu_pos:["general"]}
      return
   endif
   if keyword_set(HELP) then begin
@@ -77,21 +77,12 @@ pro rat_plugin_quote, CALLED=called, NO_GUI=no_gui, FUNC_PARAMETERS=pars, $
   mess=["An old RAT is a brave RAT.", $
         "The trouble with the RAT-race is that even if you win, you're still a RAT.", $
         "High School: the mouse race to prepare you for the RAT race.", $
-        "You're a mouse studying to be a RAT.", $
-        "I only mention it 'cause sometimes there's a man, I won't say a hero, 'cause what's a hero, " + $
-        "but sometimes there's a man, and I'm talking about the Dude here, sometimes there's a man, " + $
-        "well, he's The Man for that time and place. He fits there. And that's the Dude. In Los Angeles."]
+        "You're a mouse studying to be a RAT."]
 
   r = fix(randomu(seed)*n_elements(mess)) 
 
   if keyword_set(NO_GUI) then $
      message,mess[r],/INFO $
-  else ret=dialog_message(r eq 4?["I only mention it 'cause sometimes there's a man,", $
-                                  "I won't say a hero, 'cause what's a hero, but sometimes ", $
-                                  "there's a man, and I'm talking about the Dude here, " , $
-                                  "sometimes there's a man, well, he's The Man for that " , $
-                                  "time and place. He fits there. And that's the Dude. " , $
-                                  "In Los Angeles."]:mess[r],dialog_parent=wid.base, $
-                          /INFO,TITLE="Random Rat Quote")
+  else ret=dialog_message(mess[r],dialog_parent=wid.base,/INFO,TITLE="Random Rat Quote")
 
 end

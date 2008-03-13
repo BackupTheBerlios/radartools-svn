@@ -157,7 +157,6 @@ pro polin_rgflt_adaptive,CALLED = called, FE=FE, BANDWIDTH=bw, SAMPLING=rs, CONJ
            rrat,files[i],fetmp
            fe[i,*] = fetmp[*,0]
         endif & fetmp=0
-        if conj_fe then fe = -fe
         fe =transpose(fe)
 
 ;      for i=0,n_tr-1 do begin
@@ -182,8 +181,8 @@ pro polin_rgflt_adaptive,CALLED = called, FE=FE, BANDWIDTH=bw, SAMPLING=rs, CONJ
         message, "Please provide an appropriate Flat Earth file!" 
   endelse
 
-
 ; calculate parameters
+  if conj_fe then fe = -fe
   if array_equal(size(fe, /dim), [n_tr, file.xdim]) then fe = transpose(fe)
   dfe = fe
   for i=0,n_tr-1 do dfe[*,i]=deriv(fe[*,i])
