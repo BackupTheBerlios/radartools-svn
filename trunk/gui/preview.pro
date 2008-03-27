@@ -95,7 +95,7 @@ pro preview,infile,outfile,FULL=full,TRICK=trick,TYPE=type,DIRECT=direct
       if file.dim eq 3 then srat,outfile,out,header=[3l,file.zdim,xprev,yprev,4l],info='preview' 		
       if file.dim eq 4 then srat,outfile,out,header=[4l,file.vdim,file.zdim,xprev,yprev,4l],info='preview' 		
    endif else begin
-      direct = fltarr(file.vdim,file.zdim,xprev,yprev)
+      direct = fltarr(file.vdim,file.zdim,xprev,total(scalesizes))
       opos   = 0l
    endelse
 
