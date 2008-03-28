@@ -155,8 +155,8 @@ pro rrat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,BLOCK=block,TYPE=type,PRE
            return
         endelse
         readu,ddd,bild
-        free_lun,ddd
-     endelse
+     endelse 
+	  free_lun,ddd
 ;           if keyword_set(block) then $
 ;              bild = reform(bild[*,*,block[0]:block[0]+block[2]-1,*])
   endelse
