@@ -233,11 +233,11 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
       end
       
       ((type ge 510) and (type le 513)): begin ;  PolInSAR matrix
-         arr = sqrt(arr > 0)
+         arr = sqrt(temporary(arr) > 0)
       end
 
       type eq 514: begin        ; normalized matrix
-         arr=bytscl(sqrt(abs(arr)),0.0,1.0)
+         arr=bytscl(sqrt(abs(temporary(arr))),0.0,1.0)
          scaling = 0
       end
       
@@ -362,8 +362,8 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
 ;       print,"B1: ",systime(1)-t
       
       if amp_scl eq 1 then begin
-         foo = sqrt(arr > 0)
-         arr = foo*sqrt(foo)
+         arr = sqrt(temporary(arr) > 0)
+         arr *= sqrt(arr)
       endif
       
 ; SAR scaling
