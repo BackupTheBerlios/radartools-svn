@@ -147,6 +147,7 @@ pro rrat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,BLOCK=block,TYPE=type,PRE
            readu,ddd,line
            bild[*,*,*,i] = line
         endfor
+        bild = reform(bild)
      endif else begin
         if var gt 0 and var le 15 then begin
            bild=make_array(dimension=siz,type=var)
@@ -155,7 +156,7 @@ pro rrat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,BLOCK=block,TYPE=type,PRE
            return
         endelse
         readu,ddd,bild
-     endelse 
+     endelse
 	  free_lun,ddd
 ;           if keyword_set(block) then $
 ;              bild = reform(bild[*,*,block[0]:block[0]+block[2]-1,*])
