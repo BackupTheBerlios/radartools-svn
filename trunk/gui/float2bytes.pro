@@ -158,6 +158,13 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
          ch_scl  = 2
       end
 
+      (type eq 235): begin      ; ERD
+         scaling = 0
+         arr = bytscl(temporary(arr),-1,1)
+      end
+
+
+
       (type eq 230): begin
          arr=bytscl(arr,0.0,1.0)
          scaling = 0
@@ -385,6 +392,5 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
       arr=_arr
       return, reform(result)
    endif
-
    return,reform(arr)
 end

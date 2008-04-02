@@ -93,56 +93,56 @@ PRO rat_event, event
 ; FILE MENU
          'file': begin
             case event.value of
-               'Open RAT file' : open_rat
-               'Save RAT file' : save_rat
-               'Open internal.E-SAR DCSLC'                              : open_esardcslc
-               'Open internal.rarr / sarr'				: open_rarr
-               'Open internal.2*long + complex'				: open_2lcmp
-               'Open external.E-SAR        (DLR)'			: open_esar
-               'Open external.EMISAR       (DCRS)'			: open_emisar
-               'Open external.PI-SAR       (NASDA-CRL)'                 : open_pisar
-               'Open external.CONVAIR      (CCRS)'                      : open_convair
-               'Open external.ASF SAR DATA.SLC DATA.RADARSAT-1'		: open_asf_slcs
-               'Open external.ASF SAR DATA.SLC DATA.ERS-1/2'            : open_asf_slcs
-               'Open external.ASF SAR DATA.SLC DATA.JERS'               : open_asf_slcs
-               'Open external.ASF SAR DATA.DETECTED DATA.RADARSAT-1'		: open_asf_slcs
-               'Open external.ASF SAR DATA.DETECTED DATA.ERS-1/2'			: open_asf_slcs
-               'Open external.ASF SAR DATA.DETECTED DATA.JERS'				: open_asf_slcs
-               'Open external.ENVISAT-ASAR (ESA)'			: open_envisat
-               'Open external.ALOS-PALSAR  (JAXA)'			: open_palsar
-               'Open external.TERRASAR-X   (DLR)'			: open_cosar
-               'Open external.RADARSAT-2   (CSA)'		   : open_radarsat2
-               'Open external.RAMSES       (ONERA)'		: open_ramses
-               'Open external.GB-SAR       (UPC)'		: open_gbsar_upc
-               'Open external.POLSARPRO 2.0/3.0'			: open_polsarpro
-               'Open external.Generic binary'				: open_generic
-               'Open external.ENVI standard'					: open_envi
-               'Open pixmap.Open PNG'							: open_image,/png
-               'Open pixmap.Open JPEG'							: open_image,/jpg
-               'Open pixmap.Open TIFF'							: open_image,/tiff
-               'Import system info.E-SAR        (DLR)'				: import_info_esar
-               'Import system info.RAMSES       (ONERA)'			: import_info_ramses
-               'Import system info.TERRASAR-X   (DLR)'				: import_info_terrasarx
-               'Import system info.Generic'				: import_info_generic
-               'Save external.Generic binary'			: save_generic
-               'Save external.ENVI Standard'				: save_generic,/envi
-               'Save pixmap.Save PNG'						: save_image,/png
-               'Save pixmap.Save JPEG'						: save_image,/jpg
-               'Save pixmap.Save TIFF'						: save_image,/tiff
-               'Construct.Multitemporal.Create new multitemporal set'		: construct_multi
-               'Construct.Multitemporal.Change existing multitemporal set'	: construct_multi, /called
-               'Construct.Multitemporal'					: construct_multi
-               'Construct.PolSAR vector'					: construct_polsar
-               'Construct.InSAR pair'						: construct_insar
-               'Construct.MB-PolInSAR vector'					: construct_polinsar
-;				'Construct.MB-SAR vector'					: construct_polinsar
-               'Construct.Flat earth file'				: construct_flatearth
-               'Construct.Baseline lengths file'		: construct_blp
-               'Construct.Wavenumber file'				: construct_kz
-               'Preferences'									: preferences
-               'Edit file header'							: whatisthis
-               'Data management'								: tool_box ,/data_management
-               'Quit'          								: exit_rat
+               'Open RAT file'                                             : open_rat
+               'Save RAT file'                                             : save_rat
+               'Open internal.E-SAR DCSLC'                                 : open_esardcslc
+               'Open internal.rarr / sarr'                                 : open_rarr
+               'Open internal.2*long + complex'                            : open_2lcmp
+               'Open external.E-SAR        (DLR)'                          : open_esar
+               'Open external.EMISAR       (DCRS)'                         : open_emisar
+               'Open external.PI-SAR       (NASDA-CRL)'                    : open_pisar
+               'Open external.CONVAIR      (CCRS)'                         : open_convair
+               'Open external.ASF SAR DATA.SLC DATA.RADARSAT-1'	           : open_asf_slcs
+               'Open external.ASF SAR DATA.SLC DATA.ERS-1/2'               : open_asf_slcs
+               'Open external.ASF SAR DATA.SLC DATA.JERS'                  : open_asf_slcs
+               'Open external.ASF SAR DATA.DETECTED DATA.RADARSAT-1'       : open_asf_slcs
+               'Open external.ASF SAR DATA.DETECTED DATA.ERS-1/2'          : open_asf_slcs
+               'Open external.ASF SAR DATA.DETECTED DATA.JERS'             : open_asf_slcs
+               'Open external.ENVISAT-ASAR (ESA)'                          : open_envisat
+               'Open external.ALOS-PALSAR  (JAXA)'                         : open_palsar
+               'Open external.TERRASAR-X   (DLR)'                          : open_cosar
+               'Open external.RADARSAT-2   (CSA)'                          : open_radarsat2
+               'Open external.RAMSES       (ONERA)'                        : open_ramses
+               'Open external.GB-SAR       (UPC)'                          : open_gbsar_upc
+               'Open external.POLSARPRO 2.0/3.0'                           : open_polsarpro
+               'Open external.Generic binary'                              : open_generic
+               'Open external.ENVI standard'                               : open_envi
+               'Open pixmap.Open PNG'                                      : open_image,/png
+               'Open pixmap.Open JPEG'                                     : open_image,/jpg
+               'Open pixmap.Open TIFF'                                     : open_image,/tiff
+               'Import system info.E-SAR        (DLR)'                     : import_info_esar
+               'Import system info.RAMSES       (ONERA)'                   : import_info_ramses
+               'Import system info.TERRASAR-X   (DLR)'                     : import_info_terrasarx
+               'Import system info.Generic'                                : import_info_generic
+               'Save external.Generic binary'                              : save_generic
+               'Save external.ENVI Standard'                               : save_generic,/envi
+               'Save pixmap.Save PNG'                                      : save_image,/png
+               'Save pixmap.Save JPEG'                                     : save_image,/jpg
+               'Save pixmap.Save TIFF'                                     : save_image,/tiff
+               'Construct.Multitemporal.Create new multitemporal set'      : construct_multi
+               'Construct.Multitemporal.Change existing multitemporal set' : construct_multi, /called
+               'Construct.Multitemporal'                                   : construct_multi
+               'Construct.PolSAR vector'                                   : construct_polsar
+               'Construct.InSAR pair'                                      : construct_insar
+               'Construct.MB-PolInSAR vector'                              : construct_polinsar
+;              'Construct.MB-SAR vector'                                   : construct_polinsar
+               'Construct.Flat earth file'                                 : construct_flatearth
+               'Construct.Baseline lengths file'                           : construct_blp
+               'Construct.Wavenumber file'                                 : construct_kz
+               'Preferences'                                               : preferences
+               'Edit file header'                                          : whatisthis
+               'Data management'                                           : tool_box ,/data_management
+               'Quit'                                                      : exit_rat
                else: if ~strmatch(event.value,'*plugin*',/Fold) then dummy
             endcase
          end
@@ -232,29 +232,30 @@ PRO rat_event, event
 ; POLARIMETRY MENU
          'polsar': begin
             case event.value of
-               'Inspect.Point target'							: inspect_polcorner
-               'Inspect.Calculate # of looks'				: calc_looks
-               'Inspect.Calculate PolSAR SNR'            : calc_polsnr
-               'Inspect.Polarimetric scatterer analysis'		: polin_analysis_pol
-               'RFI filter'                              : rfi_filter
-               'Speckle filter.Boxcar'							: speck_polmean
-               'Speckle filter.Lee'								: speck_pollee
-               'Speckle filter.Refined Lee'					: speck_polreflee
-               'Speckle filter.Simulated Annealing'		: speck_pol_anneal
-               'Speckle filter.Refined Lee'					: speck_polreflee
-               'Speckle filter.IDAN-LLMMSE'			      : speck_polidan
-               'Edge detection.Polarimetric CFAR'				: edge_pol_cfar
-               'Basis transforms.-> HV'	: polar_basis,0
-               'Basis transforms.-> circular'	: polar_basis,1
-               'Basis transforms.-> linar at 45 deg' : polar_basis,2
-               'Basis transforms.Others' : polar_basis
-               'Parameters.Entropy / Alpha / Anisotropy' : decomp_entalpani
-               'Parameters.Alpha / Beta / Gamma / Delta angles' : decomp_alpbetgam
-               'Decompositions.Pauli decomposition'		: decomp_pauli
-               'Decompositions.Eigenvalue / Eigenvector'	: decomp_eigen
-               'Decompositions.Freeman-Durden'				: decomp_fredur
-               'Decompositions.Moriyama'				: decomp_moriyama
-               'Decompositions.Sphere / Diplane / Helix'	: decomp_sdh
+               'Inspect.Point target'                                      : inspect_polcorner
+               'Inspect.Calculate # of looks'                              : calc_looks
+               'Inspect.Calculate PolSAR SNR'                              : calc_polsnr
+               'Inspect.Polarimetric scatterer analysis'                   : polin_analysis_pol
+               'RFI filter'                                                : rfi_filter
+               'Speckle filter.Boxcar'                                     : speck_polmean
+               'Speckle filter.Lee'                                        : speck_pollee
+               'Speckle filter.Refined Lee'                                : speck_polreflee
+               'Speckle filter.Simulated Annealing'                        : speck_pol_anneal
+               'Speckle filter.Refined Lee'                                : speck_polreflee
+               'Speckle filter.IDAN-LLMMSE'                                : speck_polidan
+               'Edge detection.Polarimetric CFAR'                          : edge_pol_cfar
+               'Basis transforms.-> HV'                                    : polar_basis,0
+               'Basis transforms.-> circular'                              : polar_basis,1
+               'Basis transforms.-> linar at 45 deg'                       : polar_basis,2
+               'Basis transforms.Others'                                   : polar_basis
+               'Parameters.Entropy / Alpha / Anisotropy'                   : decomp_entalpani
+               'Parameters.Alpha / Beta / Gamma / Delta angles'            : decomp_alpbetgam
+               'Parameters.SERD / DERD'                                    : decomp_erd
+               'Decompositions.Pauli decomposition'                        : decomp_pauli
+               'Decompositions.Eigenvalue / Eigenvector'                   : decomp_eigen
+               'Decompositions.Freeman-Durden'                             : decomp_fredur
+               'Decompositions.Moriyama'                                   : decomp_moriyama
+               'Decompositions.Sphere / Diplane / Helix'                   : decomp_sdh
 ;				'Decomposition.Cameron'    					: classif_cameron
                'Classification.K-means Wishart (general)': classif_wishart
                'Classification.K-means Wishart (H/a/A)'	: classif_wishart_opt
@@ -684,6 +685,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                        '0\-> linar at 45 deg', $
                        '2\Others', $
                        '5\Parameters', $
+                       '0\SERD / DERD',$
                        '0\Entropy / Alpha / Anisotropy',$
                        '2\Alpha / Beta / Gamma / Delta angles',$
                        '1\Decompositions', $

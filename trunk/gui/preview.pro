@@ -51,6 +51,7 @@ pro preview,infile,outfile,FULL=full,TRICK=trick,TYPE=type,DIRECT=direct
       52:  trick=2              ; phase
       55:  trick=4              ; complex phase
       102: trick=2              ; phase
+      235: trick=1
       302: trick=2              ; phase
       303: trick=1              ; unwrapped phase
       320: trick=2              ; phase

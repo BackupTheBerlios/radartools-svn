@@ -89,6 +89,7 @@ pro definitions,update_pref=update_pref
 	types[232] = "polarimetric anisotropy"
 	types[233] = "Entropy / Alpha / Anisotropy"
 	types[234] = "Alpha / Beta / Gamma / Delta angles"
+        types[235] = "ERD parameters"
 
 	types[250] = "polarimetric span image"
 	types[280] = "ENVISAT partial polarimetry scattering vector"

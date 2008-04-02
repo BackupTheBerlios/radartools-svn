@@ -44,7 +44,7 @@ function scale_block,INBLOCK,xprev,yprev,trick,FULL=full
         case trick of
             1:    if keyword_set(full) then outblock = inblock else outblock = scale2d(float(inblock),xprev,yprev)
             2:    if keyword_set(full) then outblock = inblock else outblock = scale2dpha(inblock,xprev,yprev)
-          	3:    if keyword_set(full) then outblock = atan(inblock,/phase) else outblock = scale2dpha(atan(inblock,/phase),xprev,yprev)
+            3:    if keyword_set(full) then outblock = atan(inblock,/phase) else outblock = scale2dpha(atan(inblock,/phase),xprev,yprev)
            else: if keyword_set(full) then outblock = float(abs(inblock)) else outblock = scale2d(float(abs(inblock)),xprev,yprev)
         endcase
      end		

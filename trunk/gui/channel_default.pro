@@ -187,10 +187,17 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                            for i=0,file.zdim-1 do $
                               names[*,i] = str+' track'+strcompress(i)
                            names=reform(transpose(names),/overwrite)
-                        endif else $
+                        endif else begin
                            names = ['Alpha 1','Alpha 2','Alpha 3','Beta 1','Beta 2','Beta 3','Gamma 1','Gamma 2','Gamma 3','Delta 1','Delta 2','Delta 3']
-			select = [0,1,2]
-		end
+                        endelse
+                        select = [0,1,2]
+                     end
+                
+                235 : begin
+                   names = ['SERD','DERD']
+                   select = [0,0,1]
+                end
+
 		220 : begin
 ;  			if file.vdim eq 3 then begin
 ;  				channel_names = ['C_11','C_21','C_31','C_12','C_22','C_32','C_13','C_23','C_33']
@@ -415,7 +422,7 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
 
 ;;; all other data types
 		else : begin
-                   if vdim le 1 || zdim le 1 then $
+                if vdim le 1 || zdim le 1 then $
                       for i=0,vdim-1 do $
                          for j=0,zdim-1 do $
                             names[i*zdim+j] = 'Channel '+strcompress(i*zdim+j+1) $
@@ -425,7 +432,6 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                                            +strcompress(j+1,/R)+']'
 		end
 	endcase
-	
 	if flag_select eq 1 then begin
 		channel_selec = select
 		channel_names = names
