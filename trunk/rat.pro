@@ -150,27 +150,27 @@ PRO rat_event, event
 ; GENERAL MENU
          'general': begin
             case event.value of
-               'Undo'												: undo
-               'Redo'												: redo
-               'Recalculate preview'							: generate_preview,/recalculate,/nodefault
-               'Zoom'												: zoom_region
-               'Measure value/location'                  : measure_value
-               'Mirror vertical'									: mirror_vert
-               'Mirror horizontal'								: mirror_hor
-               'Mirror diagonal'								: mirror_diag
-               'Cut out region'									: cut_region
-               'Resize image'										: image_resize
-               'Presumming'										: image_presumming
-               'Channel statistics' 							: multi_statistics
-               'Channel spectrum' 								: channel_spectrum
-               'Principal Components' 							: principal_components
-               'Binary transform.Complex -> Amplitude'	: complex2abs
-               'Binary transform.Complex -> Phase'			: complex2pha
-               'Binary transform.Integer -> Float'			: int2float
-               'Extract channels'	 							: extract_channels
-               'Select channels'	 								: tool_box ,/select_channel
-               'Colour palettes'	 								: tool_box ,/color_table
-               'Parameter Information' 							: parameter_info
+               'Undo'                                                      : undo
+               'Redo'                                                      : redo
+               'Recalculate preview'                                       : generate_preview,/recalculate,/nodefault
+               'Zoom'                                                      : zoom_region
+               'Measure value/location'                                    : measure_value
+               'Mirror vertical'                                           : mirror_vert
+               'Mirror horizontal'                                         : mirror_hor
+               'Transpose'                                                 : mirror_diag
+               'Cut out region'                                            : cut_region
+               'Resize image'                                              : image_resize
+               'Presumming'                                                : image_presumming
+               'Channel statistics'                                        : multi_statistics
+               'Channel spectrum'                                          : channel_spectrum
+               'Principal Components'                                      : principal_components
+               'Binary transform.Complex -> Amplitude'                     : complex2abs
+               'Binary transform.Complex -> Phase'                         : complex2pha
+               'Binary transform.Integer -> Float'                         : int2float
+               'Extract channels'                                          : extract_channels
+               'Select channels'                                           : tool_box ,/select_channel
+               'Colour palettes'                                           : tool_box ,/color_table
+               'Parameter Information'                                     : parameter_info
                else: if ~strmatch(event.value,'*plugin*',/Fold) then  dummy
             endcase
          end
@@ -178,53 +178,52 @@ PRO rat_event, event
 ; SAR MENU
          'sar': begin
             case event.value of
-               'Inspect.Point target'							: inspect_corner
-               'Inspect.Distributed target'					: inspect_area
-               'Inspect.Calculate # of looks'				: calc_looks
-               'RFI filter'                              : rfi_filter
-               'Speckle filter.Boxcar'							: speck_mean
-               'Speckle filter.Median'							: speck_median
-               'Speckle filter.Gauss'							: speck_gauss
-               'Speckle filter.Sigma'							: speck_sigma
-               'Speckle filter.Lee'								: speck_lee
-               'Speckle filter.Refined Lee'					: speck_polreflee
-               'Speckle filter.IDAN-LLMMSE'			      : speck_polidan
-               'Speckle filter.Frost'							: speck_frost
-               'Speckle filter.Kuan'						   : speck_kuan
-               'Speckle filter.Gamma-MAP'						: speck_gammamap
-               'Edge detection.Lee-RoA'						: edge_maxgrad
-               'Edge detection.RoA'					         : edge_roa4
-               'Edge detection.MSP-RoA'						: edge_msproa
-               'Edge detection.Sobel'							: edge_robsob,/sobel
-               'Edge detection.Roberts'						: edge_robsob,/roberts
-               'Edge detection.Canny'							: edge_canny
-               'Texture.Co-occurence features'           : text_cooc
-               'Texture.Texture inhomogenity'            : text_klee
-               'Texture.Variation coefficient'           : text_varcoef
-               'Geometry.Slant range -> ground range'		: slant2ground
-               'Transform.Amplitude <-> Intensity'			: amp2int
-               'Transform.SLC -> Amplitude Image'			: complex2abs
-
-               'Multitemporal.Coregistration.Coarse (global offset)'	: mt_coreg_coarse
-               'Multitemporal.Coregistration.Warping'		: mt_coreg_warp
-               'Multitemporal.Change-detection.Band ratio'	: mt_ratio
-               'Multitemporal.Change-detection.Band difference'	: mt_difference
-               'Multitemporal.Change-detection.Propability of change'	: mt_prop_of_change
-               'Multitemporal.Change-detection.Band entropy'		: mt_entropy
-               'Multitemporal.Recombine to single file'					: mt_allinone
-
-               'Spectral tools.watch spectra'				: channel_spectrum
-               'Spectral tools.modify spectal weights'	: spectral_weight ;apply_hamming
-               'Time-frequency.Generate.Subaperture channels in x'		: subap_generate,/X
-               'Time-frequency.Generate.Subaperture channels in y'		: subap_generate,/Y
-               'Time-frequency.Generate.Subaperture channels in x and y'		: subap_generate
-               'Time-frequency.Generate.Subaperture covariance matrix' 	: subap_cov
-               'Subapertures.Nonstationarity analysis' 			: subap_nonstat
-               'Calculate.Span image'							: pol_to_span
-               'Calculate.Amplitude ratio'					: calc_ampratio
-               'Calculate.Interchannel phase difference'	: calc_iphase
-               'Calculate.Interchannel correlation'		: calc_icorr
-               'Wizard mode.Speckle filtering'				: wiz_speckle
+               'Inspect.Point target'                                      : inspect_corner
+               'Inspect.Distributed target'                                : inspect_area
+               'Inspect.Calculate # of looks'                              : calc_looks
+               'RFI filter'                                                : rfi_filter
+               'Speckle filter.Boxcar'                                     : speck_mean
+               'Speckle filter.Median'                                     : speck_median
+               'Speckle filter.Gauss'                                      : speck_gauss
+               'Speckle filter.Sigma'                                      : speck_sigma
+               'Speckle filter.Lee'                                        : speck_lee
+               'Speckle filter.Refined Lee'                                : speck_polreflee
+               'Speckle filter.IDAN-LLMMSE'                                : speck_polidan
+               'Speckle filter.Frost'                                      : speck_frost
+               'Speckle filter.Kuan'                                       : speck_kuan
+               'Speckle filter.Gamma-MAP'                                  : speck_gammamap
+               'Edge detection.Lee-RoA'                                    : edge_maxgrad
+               'Edge detection.RoA'                                        : edge_roa4
+               'Edge detection.MSP-RoA'                                    : edge_msproa
+               'Edge detection.Sobel'                                      : edge_robsob,/sobel
+               'Edge detection.Roberts'                                    : edge_robsob,/roberts
+               'Edge detection.Canny'                                      : edge_canny
+               'Texture.Co-occurence features'                             : text_cooc
+               'Texture.Texture inhomogenity'                              : text_klee
+               'Texture.Variation coefficient'                             : text_varcoef
+               'Geometry.Slant range -> ground range'                      : slant2ground
+               'Transform.Amplitude <-> Intensity'                         : amp2int
+               'Transform.SLC -> Amplitude Image'                          : complex2abs
+               'Multitemporal.Coregistration.Coarse (global offset)'       : mt_coreg_coarse
+               'Multitemporal.Coregistration.Warping'                      : mt_coreg_warp
+               'Multitemporal.Change-detection.Band ratio'                 : mt_ratio
+               'Multitemporal.Change-detection.Band difference'            : mt_difference
+               'Multitemporal.Change-detection.Propability of change'      : mt_prop_of_change
+               'Multitemporal.Change-detection.Band entropy'               : mt_entropy
+               'Multitemporal.Recombine to single file'                    : mt_allinone
+               'Spectral tools.watch spectra'                              : channel_spectrum
+               'Spectral tools.CDA sidelobe cancellation'                  : spectral_cda
+               'Spectral tools.modify spectal weights'                     : spectral_weight ;apply_hamming
+               'Time-frequency.Generate.Subaperture channels in x'         : subap_generate,/X
+               'Time-frequency.Generate.Subaperture channels in y'         : subap_generate,/Y
+               'Time-frequency.Generate.Subaperture channels in x and y'   : subap_generate
+               'Time-frequency.Generate.Subaperture covariance matrix'     : subap_cov
+               'Subapertures.Nonstationarity analysis'                     : subap_nonstat
+               'Calculate.Span image'                                      : pol_to_span
+               'Calculate.Amplitude ratio'                                 : calc_ampratio
+               'Calculate.Interchannel phase difference'                   : calc_iphase
+               'Calculate.Interchannel correlation'                        : calc_icorr
+               'Wizard mode.Speckle filtering'                             : wiz_speckle
                else: if ~strmatch(event.value,'*plugin*',/Fold) then  dummy
             endcase
          end
@@ -256,41 +255,41 @@ PRO rat_event, event
                'Decompositions.Freeman-Durden'                             : decomp_fredur
                'Decompositions.Moriyama'                                   : decomp_moriyama
                'Decompositions.Sphere / Diplane / Helix'                   : decomp_sdh
-;				'Decomposition.Cameron'    					: classif_cameron
-               'Classification.K-means Wishart (general)': classif_wishart
-               'Classification.K-means Wishart (H/a/A)'	: classif_wishart_opt
-               'Classification.Expectation maximisation EM-PLR' : classif_emplr
-               'Classification.Expectation maximisation selfinit' : wishart_em
-               'Classification.H/a segmentation'			: classif_ea
-               'Classification.H/a/A segmentation' 		: classif_eaa
-               'Classification.Lee category preserving' 	: classif_lee
-               'Classification.Physical classification'  : classif_physic
-               'Classification.Number of sources'        : classif_nrsources
-               'Post-classification.Resort clusters'     : pclass_resort
-               'Post-classification.Median filter'			: speck_median,smm=3
-               'Post-classification.Freeman Durden Palette'     : pclass_fredur
-               'Calculate.Span image'							: pol_to_span
-               'Calculate.Amplitude ratio'					: calc_ampratio
-               'Calculate.Interchannel phase difference'	: calc_iphase
-               'Calculate.Interchannel correlation'		: calc_icorr
-               'Transform.Vector -> Matrix'					: k_to_m
-               'Transform.Matrix -> Vector'					: m_to_k
-               'Transform.[C] <--> [T]'						: c_to_t
-               'Edge Detector.Maximum Likelihood' : dummy
-               'Spectral tools.watch spectra'				: channel_spectrum
-               'Time-frequency.Generate.Subaperture channels in x'		: subap_generate,/X
-               'Time-frequency.Generate.Subaperture channels in y'		: subap_generate,/Y
-               'Time-frequency.Generate.Subaperture channels in x and y'		: subap_generate
-               'Time-frequency.Generate.Subaperture covariance matrix' 	: subap_cov
-               'Time-frequency.Covarince matrix for every subaperture'  : subap_k2m
-               'Time-frequency.Nonstationarity analysis' 			: subap_nonstat
-               'Calibration.Cross-talk (Quegan)' 				: calib_xtalk
-               'Calibration.Cross-talk (Ainsworth)' 			: calib_xtalkoap
-               'Calibration.Phase and amplitude imbalance' : calib_imbalance
-               'Calibration.Cross-polar symmetrisation'    : calib_xsym
-               'Wizard mode.Scattering vector -> Entropy/Alpha/Anisotropy'	: wiz_k2eaa
-               'Wizard mode.Scattering vector -> Wishart classification'	: wiz_k2wclass
-               'Wizard mode.Speckle filtering'				: wiz_speckle
+;              'Decomposition.Cameron'                                     : classif_cameron
+               'Classification.K-means Wishart (general)'                  : classif_wishart
+               'Classification.K-means Wishart (H/a/A)'                    : classif_wishart_opt
+               'Classification.Expectation maximisation EM-PLR'            : classif_emplr
+               'Classification.Expectation maximisation selfinit'          : wishart_em
+               'Classification.H/a segmentation'                           : classif_ea
+               'Classification.H/a/A segmentation'                         : classif_eaa
+               'Classification.Lee category preserving'                    : classif_lee
+               'Classification.Physical classification'                    : classif_physic
+               'Classification.Number of sources'                          : classif_nrsources
+               'Post-classification.Resort clusters'                       : pclass_resort
+               'Post-classification.Median filter'                         : speck_median,smm=3
+               'Post-classification.Freeman Durden Palette'                : pclass_fredur
+               'Calculate.Span image'                                      : pol_to_span
+               'Calculate.Amplitude ratio'                                 : calc_ampratio
+               'Calculate.Interchannel phase difference'                   : calc_iphase
+               'Calculate.Interchannel correlation'                        : calc_icorr
+               'Transform.Vector -> Matrix'                                : k_to_m
+               'Transform.Matrix -> Vector'                                : m_to_k
+               'Transform.[C] <--> [T]'                                    : c_to_t
+               'Edge Detector.Maximum Likelihood'                          : dummy
+               'Spectral tools.watch spectra'                              : channel_spectrum
+               'Time-frequency.Generate.Subaperture channels in x'         : subap_generate,/X
+               'Time-frequency.Generate.Subaperture channels in y'         : subap_generate,/Y
+               'Time-frequency.Generate.Subaperture channels in x and y'   : subap_generate
+               'Time-frequency.Generate.Subaperture covariance matrix'     : subap_cov
+               'Time-frequency.Covarince matrix for every subaperture'     : subap_k2m
+               'Time-frequency.Nonstationarity analysis'                   : subap_nonstat
+               'Calibration.Cross-talk (Quegan)'                           : calib_xtalk
+               'Calibration.Cross-talk (Ainsworth)'                        : calib_xtalkoap
+               'Calibration.Phase and amplitude imbalance'                 : calib_imbalance
+               'Calibration.Cross-polar symmetrisation'                    : calib_xsym
+               'Wizard mode.Scattering vector -> Entropy/Alpha/Anisotropy' : wiz_k2eaa
+               'Wizard mode.Scattering vector -> Wishart classification'   : wiz_k2wclass
+               'Wizard mode.Speckle filtering'                             : wiz_speckle
                else: if ~strmatch(event.value,'*plugin*',/Fold) then  dummy
             endcase
          end
@@ -349,7 +348,7 @@ PRO rat_event, event
                'Decompositions.Lexicographic (default)'			: polin_basis,/LEX ; done !
                'Decompositions.Freeman-Durden'				: polin_deco_freedur ; done !
                'Decompositions.Sphere / Diplane / Helix'		: polin_deco_sdh ; done !
-;		      'Classification.K-means Wishart' 			: polin_classif_wishart
+;               'Classification.K-means Wishart'                         : polin_classif_wishart
                'Classification.Expectation maximisation EM-PLR' 	: classif_emplr ; done !
                'Classification.Expectation maximisation selfinit' 	: wishart_em ; done !
                'Classification.K-means Wishart (H/a/A)'			: classif_wishart_opt ; ???
@@ -583,7 +582,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                         '0\Cut out region' , $
                         '4\Mirror vertical' , $
                         '0\Mirror horizontal', $
-                        '0\Mirror diagonal', $
+                        '0\Transpose', $
                         '4\Select channels', $
                         '0\Extract channels', $
                         '4\Colour palettes',$
@@ -639,6 +638,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
 
    '5\Spectral tools'  , $
      '0\watch spectra',$
+     '0\CDA sidelobe cancellation', $
      '2\modify spectal weights',$
      '1\Time-frequency'  , $
      '1\Generate', $

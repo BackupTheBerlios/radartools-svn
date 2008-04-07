@@ -48,3 +48,4 @@
 @sar/mt_entropy
 @sar/mt_prop_of_change
 @sar/text_klee
+@sar/spectral_cda

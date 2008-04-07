@@ -3,8 +3,13 @@
 =============
 
 Version 0.21:
+
+- New routine: CDA sidelobe suppression / resolution enhancement
+- New routine: Polarimetric SERD/DERD parameters
 - New routine: Ainsworth PolSAR calibration
 - New routine: Polarimetric SNR estimation
+- Faster preview calculation & zoom
+- Inline documentation based on IDLdoc
 - Various small improvements and bug fixes
 
 
