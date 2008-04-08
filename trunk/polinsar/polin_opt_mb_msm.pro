@@ -1,7 +1,7 @@
 ;------------------------------------------------------------------------
 ; RAT - Radar Tools
 ;------------------------------------------------------------------------
-; RAT Module: polin_opt_mcca
+; RAT Module: polin_opt_mb_msm
 ; written by       : Maxim Neumann
 ; last revision    : 08/2006
 ; Simultaneously Multibaseline Coherence Optimization
@@ -21,7 +21,7 @@
 ;------------------------------------------------------------------------
 
 
-pro polin_opt_mcca,CALLED = called, SM_FILE=sm_file, SMMX = smmx, SMMY = smmy
+pro polin_opt_mb_msm,CALLED = called, SM_FILE=sm_file, SMMX = smmx, SMMY = smmy
   common rat, types, file, wid, config
   compile_opt idl2
 
@@ -133,7 +133,7 @@ pro polin_opt_mcca,CALLED = called, SM_FILE=sm_file, SMMX = smmx, SMMY = smmy
      readu,ddd,block
 
 ; -------- THE FILTER ----------
-     block = mb_opt(block,sm=sm)
+     block = mb_opt(block,sm=sm, pol=pol, tracks_nr=n_tr, bl_nr=n_bl)
 ; -------- THE FILTER ----------
      writeu,eee, block
      if sms then writeu,fff,sm
@@ -148,7 +148,7 @@ pro polin_opt_mcca,CALLED = called, SM_FILE=sm_file, SMMX = smmx, SMMY = smmy
   file.vdim = pol
   file.type = newtype
 
-  evolute,'Multibaseline coherence optimization with MSM.'
+  evolute,'Multibaseline coherence optimization with MSM (MB-MSM).'
 
 ; generate preview
   if not keyword_set(called) then begin

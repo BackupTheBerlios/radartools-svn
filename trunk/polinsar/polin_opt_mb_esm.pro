@@ -1,7 +1,7 @@
 ;------------------------------------------------------------------------
 ; RAT - Radar Tools
 ;------------------------------------------------------------------------
-; RAT Module: polin_opt_nr
+; RAT Module: polin_opt_mb_esm
 ; written by       : Maxim Neumann
 ; last revision    : 08/2006
 ; Simultaneously Multibaseline Coherence Optimization (Multiple NR's)
@@ -21,7 +21,7 @@
 ;------------------------------------------------------------------------
 
 
-pro polin_opt_nr,CALLED = called, sm_file=sm_file, SMMX = smmx, SMMY = smmy
+pro polin_opt_mb_esm,CALLED = called, sm_file=sm_file, SMMX = smmx, SMMY = smmy
   common rat, types, file, wid, config
 
   if ~(file.type ge 500 && file.type le 514) then begin
@@ -132,7 +132,7 @@ pro polin_opt_nr,CALLED = called, sm_file=sm_file, SMMX = smmx, SMMY = smmy
      readu,ddd,block
 
 ; -------- THE FILTER ----------
-     block = mb_opt_nr(block,sm=sm)
+     block = mb_opt_nr(block,sm=sm, pol=pol, tracks_nr=n_tr, bl_nr=n_bl)
 ; -------- THE FILTER ----------
      writeu,eee, block
      if sms then writeu,fff,sm
@@ -147,7 +147,7 @@ pro polin_opt_nr,CALLED = called, sm_file=sm_file, SMMX = smmx, SMMY = smmy
   file.vdim = pol
   file.type = newtype
 
-  evolute,'Multibaseline correlation optimization with ESM Multiple Numerical Radius algorithm (MB-ESM)'
+  evolute,'Multibaseline coherence optimization with ESM (MB-ESM).'
 
 ; generate preview
   if not keyword_set(called) then begin

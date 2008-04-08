@@ -47,10 +47,10 @@
 @polinsar/polin_coh_rgrow.pro
 @polinsar/polin_cor.pro
 @polinsar/polin_normalize.pro
-@polinsar/polin_opt_mcca.pro
+@polinsar/polin_opt_mb_esm.pro
 @polinsar/polin_get_info.pro
 @polinsar/polin_analysis.pro
-@polinsar/polin_opt_nr.pro
+@polinsar/polin_opt_mb_msm.pro
 @polinsar/polin_opt_sb.pro
 @polinsar/polin_deco_haa.pro
 @polinsar/polin_deco_abgd.pro

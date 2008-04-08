@@ -330,8 +330,8 @@ PRO rat_event, event
 ;                       'Coherence estimation.Region Growing'			: polin_coh_rgrow
                'Coherence estimation.Boxcar'				: polin_coh_mean ; done !
                'Coherence estimation.Region Growing'			: polin_coh_rgrow ; done !
-               'Coherence optimisation.Multibaseline multiple SMs   (MB-MSM)'	: polin_opt_mcca ; done !
-               'Coherence optimisation.Multibaseline equal SMs      (MB-ESM)'	: polin_opt_nr ; done !
+               'Coherence optimisation.Multibaseline multiple SMs   (MB-MSM)'	: polin_opt_mb_msm ; done !
+               'Coherence optimisation.Multibaseline equal SMs      (MB-ESM)'	: polin_opt_mb_esm ; done !
                'Coherence optimisation.Single-baseline multiple SMs (SB-MSM)'	: polin_opt_sb,method=0 ; done !
                'Coherence optimisation.Single-baseline equal SMs    (SB-ESM)'	: polin_opt_sb,method=1 ; done !
                'Coherence optimisation.Anisotropy parameters'		: polin_params_lff ; done !

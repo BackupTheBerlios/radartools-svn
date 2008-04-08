@@ -46,6 +46,7 @@ end
 pro template_overlap, CALLED = called, BOXSIZE = boxsize
 
 	common rat, types, file, wid, config, tiling
+        compile_opt idl2
 
 ;------------------------------------------------------------
 ; Error Handling 1 (EXAMPLE)

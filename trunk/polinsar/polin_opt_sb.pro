@@ -5,8 +5,8 @@
 ; written by	: Maxim Neumann
 ; last revision	: 08/2006
 ; Single-baseline Coherence Optimization
-; METHOD=0	: 2CM-SVD
-; METHOD=1	: 1CM-NR
+; METHOD=0	: SB-MSM
+; METHOD=1	: SB-ESM
 ;------------------------------------------------------------------------
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in
@@ -145,8 +145,8 @@ pro polin_opt_sb,CALLED = called, METHOD=METHOD, SM_FILE=sm_file, SMMX = smmx, S
 ; -------- THE FILTER ----------
      for bl=0,n_bl-1 do begin
         case method of $
-           0: oblock[*,bl,*,*] = cc_opt(mb_sb(block,bl),sm=sm)
-           1: oblock[*,bl,*,*] = coh_nr(mb_sb(block,bl),sm=sm)
+           0: oblock[*,bl,*,*] = cc_opt(mb_sb(block,bl),sm=sm, pol=pol, tracks_nr=n_tr, bl_nr=n_bl)
+           1: oblock[*,bl,*,*] = coh_nr(mb_sb(block,bl),sm=sm, pol=pol, tracks_nr=n_tr, bl_nr=n_bl)
            else: stop
         endcase
         if sms then smblock[*,*,*,bl,*,*]=sm

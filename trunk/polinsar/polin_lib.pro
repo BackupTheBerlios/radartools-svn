@@ -273,21 +273,22 @@ function cc, T, w1, w2, MAGNITUDE=magnitude, PHASE=phase, $
   return, c
 end
 function cc_opt, T, SINGLE_SM=SINGLE_SM, EIGENVALUES=EIGENVALUES, $
-                 MAGNITUDE=m, SM = SM 
+                 MAGNITUDE=m, SM = SM,  POL_NR=pol, TRACKS_NR=n_tr, BL_NR=n_bl
  ;; mn, 27.08.2006
   if keyword_set(m) then EIGENVALUES = 1
   siz = size(T)
-  pol = 3 & n_tr = 2
-  coh = make_array((siz[0]le 2?3:[3,siz[3:siz[0]]]),type=(keyword_set(EIGENVALUES)?4:6),/nozero)
+  if n_elements(pol) eq 0 then pol = 3
+  n_tr = 2
+  coh = make_array((siz[0]le 2?pol:[pol,siz[3:siz[0]]]),type=(keyword_set(EIGENVALUES)?4:6),/nozero)
   if arg_present(SM) then sm = make_array([pol,pol,(siz[0]le 2?n_tr:[n_tr,siz[3:siz[0]]])],type=siz[siz[0]+1],/nozero)
   case siz[1] of
-     3: begin
+     pol: begin
         A = T
         B = mm_herm(T)
      end
-     6: begin  ;; no test either T11 or T22 are invertible!
-        A = mm_mm(mm_invert(T[0:2,0:2,*,*,*,*]),T[0:2,3:5,*,*,*,*])
-        B = mm_mm(mm_invert(T[3:5,3:5,*,*,*,*]),mm_herm(T[0:2,3:5,*,*,*,*]))
+     2*pol: begin  ;; no test either T11 or T22 are invertible!
+        A = mm_mm(mm_invert(T[0:pol-1,0:pol-1,*,*,*,*]),T[0:pol-1,pol:2*pol-1,*,*,*,*])
+        B = mm_mm(mm_invert(T[pol:2*pol-1,pol:2*pol-1,*,*,*,*]),mm_herm(T[0:pol-1,pol:2*pol-1,*,*,*,*]))
      end
   endcase
   for l=0,(siz[0]lt 6?0:siz[6]-1) do $
@@ -307,7 +308,7 @@ function cc_opt, T, SINGLE_SM=SINGLE_SM, EIGENVALUES=EIGENVALUES, $
      endif
      w1= w1[*,reverse(sort(eval1))]
      w2= w2[*,reverse(sort(eval2))]
-     dpha = mm_v2m(atan(total(w1*conj(w2),1),/pha),3,/T)
+     dpha = mm_v2m(atan(total(w1*conj(w2),1),/pha),pol,/T)
      w2   = w2 * complex(cos(dpha),sin(dpha))
      if keyword_set(SINGLE_SM) then begin
         w1 += w2
@@ -315,10 +316,10 @@ function cc_opt, T, SINGLE_SM=SINGLE_SM, EIGENVALUES=EIGENVALUES, $
         w1 = w2
      endif
      case siz[1] of 
-        3: coh[*,i,j,k,l] = diag_matrix(conj(transpose(w1))#T[*,*,i,j,k,l]#w2)
-        6: coh[0,i,j,k,l] = diag_matrix(        conj(transpose(w1))#T[0:2,3:*,i,j,k,l]#w2) $
-                            /sqrt(diag_matrix(( conj(transpose(w1))#T[0:2,0:2,i,j,k,l]#w1) $
-                                              *(conj(transpose(w2))#T[3:*,3:*,i,j,k,l]#w2)))
+        pol: coh[*,i,j,k,l] = diag_matrix(conj(transpose(w1))#T[*,*,i,j,k,l]#w2)
+        2*pol: coh[0,i,j,k,l] = diag_matrix(        conj(transpose(w1))#T[0:pol-1,pol:*,i,j,k,l]#w2) $
+                            /sqrt(diag_matrix(( conj(transpose(w1))#T[0:pol-1,0:pol-1,i,j,k,l]#w1) $
+                                              *(conj(transpose(w2))#T[pol:*,pol:*,i,j,k,l]#w2)))
      endcase
      if keyword_set(SINGLE_SM) then coh[0,i,j,k,l] = coh[reverse(sort(abs(coh[*,i,j,k,l]))),i,j,k,l]
      if n_elements(SM) ne 0 then begin
@@ -364,10 +365,12 @@ function NumRad, A, th0, $ ;; mn, 27.08.2006
            ' numRAD: '+strcompress(abs(eval[0]))+' evalALL:'+strjoin(strcompress(eval))
   return, abs(eval[0])
 end
-function coh_NR, T6, MAGNITUDE=magnitude, SM=SM, DEBUG=DEBUG  ;; mn, 27.08.2006
+function coh_NR, T6, MAGNITUDE=magnitude, SM=SM, DEBUG=DEBUG, $ ;; mn, 27.08.2006
+                 POL_NR=pol, TRACKS_NR=n_tr, BL_NR=n_bl
 ;;;;;;;;;; INITIALIZATION ;;;;;;;;;;;;;;
   siz  = size(T6)
-  p    = siz[1]/2                ; M==p==number of polarizations
+  if n_elements(pol) eq 0 then pol = siz[1]/2 
+  p = pol                       ; M==p==number of polarizations
   n_tr = 2
   if arg_present(SM) then sm = make_array([p,(siz[0]le 2?p:[p,siz[3:siz[0]]])],type=siz[siz[0]+1],/nozero)
 
@@ -585,7 +588,7 @@ function mb_nr_baselines, nr_tracks
 end
 function mb_opt, T, SINGLE_SM=SINGLE_SM, MAGNITUDE=m, CRITERIA=criteria, CONSTRAINT=CONSTRAINT, $
                  GLOBALLY_ORTHOGONAL_BASIS=GLOBALLY_ORTHOGONAL_BASIS, $
-                 SM = SM 
+                 SM = SM,  POL_NR=pol, TRACKS_NR=n_tr, BL_NR=n_bl
 ;; /single_sm -- only one average scattering vector is taken to compute result!
 ;;            -- else both eigenvectors are used.
 ;; /MAGNITUDE -- /mag
@@ -605,9 +608,9 @@ function mb_opt, T, SINGLE_SM=SINGLE_SM, MAGNITUDE=m, CRITERIA=criteria, CONSTRA
   method = [criteria,constraint]
 
   siz  = size(T)
-  pol  = siz[1] mod 3 eq 0? 3L: 4L
-  n_tr = siz[1]/pol
-  n_bl = mb_nr_baselines(n_tr)
+  if n_elements(pol) eq 0 then pol  = siz[1] mod 3 eq 0? 3L: 4L
+  if n_elements(n_tr) eq 0 then n_tr = siz[1]/pol
+  if n_elements(n_bl) eq 0 then n_bl = mb_nr_baselines(n_tr)
   coh = make_array((siz[0]le 2?pol*n_Bl:[pol*n_Bl,siz[3:siz[0]]]),type=(keyword_set(EIGENVALUES)?4:6),/nozero)
   wTr = complexarr(pol,pol,n_tr,/nozero)
   U    = make_array(pol*n_tr,pol*n_tr,type=siz[siz[0]+1])
@@ -634,7 +637,7 @@ function mb_opt, T, SINGLE_SM=SINGLE_SM, MAGNITUDE=m, CRITERIA=criteria, CONSTRA
         else: stop
      endcase
      eval = reverse(eval)
-     w    = reverse(w,2) & w=w[*,0:2]
+     w    = reverse(w,2) & w=w[*,0:pol-1]
      if status ne 0 then begin
         coh[*,i,j,k,l] = 0.
         continue
@@ -642,8 +645,8 @@ function mb_opt, T, SINGLE_SM=SINGLE_SM, MAGNITUDE=m, CRITERIA=criteria, CONSTRA
 
      if GLOBALLY_ORTHOGONAL_BASIS then begin
         for tr=0,n_tr-1 do begin
-           U3 = ortho_basis(w[tr*pol:tr*pol+2,0:2],/unitary)
-           U[tr*pol:tr*pol+2,tr*pol:tr*pol+2]= U3
+           U3 = ortho_basis(w[tr*pol:(1+tr)*pol-1,0:pol-1],/unitary)
+           U[tr*pol:(tr+1)*pol-1,tr*pol:(tr+1)*pol-1]= U3
         endfor
         Tbx   = conj(transpose(U)) # T[*,*,i,j,k,l] # U
         Tbx[lindgen(n_tr)*pol,*] = 0.
@@ -663,15 +666,15 @@ function mb_opt, T, SINGLE_SM=SINGLE_SM, MAGNITUDE=m, CRITERIA=criteria, CONSTRA
         endcase
         wbx = reverse(evec,2)
         for tr=0,n_tr-1 do begin
-           w[pol*tr:pol*tr+2,1:2] = U[pol*tr:pol*tr+2,pol*tr:pol*tr+2] # wbx[pol*tr:pol*tr+2,0:1]
-           w[pol*tr:pol*tr+2,*] = ortho_basis(w[pol*tr:pol*tr+2,*],/unitary)
+           w[pol*tr:pol*tr+pol-1,1:2] = U[pol*tr:pol*tr+pol-1,pol*tr:pol*tr+pol-1] # wbx[pol*tr:pol*tr+pol-1,0:1]
+           w[pol*tr:pol*tr+pol-1,*] = ortho_basis(w[pol*tr:pol*tr+pol-1,*],/unitary)
         endfor
         for tr=0,n_tr-1 do $
-           wTr[*,*,tr] = w[tr*pol:tr*pol+2,0:2]
+           wTr[*,*,tr] = w[tr*pol:tr*pol+pol-1,0:pol-1]
         for tr=1,n_Tr-1 do $
-           wTr[*,*,tr] *= exp(complex(0,mm_v2m(atan(total(wTr[*,*,0]*conj(wTr[*,*,tr]),1),/pha),3,/TRANSP)))
+           wTr[*,*,tr] *= exp(complex(0,mm_v2m(atan(total(wTr[*,*,0]*conj(wTr[*,*,tr]),1),/pha),pol,/TRANSP)))
         for bl=0,n_Bl-1 do $
-           coh[bl*3,i,j,k,l] = cc(mb_sb(T[*,*,i,j,k,l],bl),wTr[*,0:2,(mb_ind(bl,/F))],wTr[*,0:2,(mb_ind(bl,/S))])
+           coh[bl*pol,i,j,k,l] = cc(mb_sb(T[*,*,i,j,k,l],bl),wTr[*,0:pol-1,(mb_ind(bl,/F))],wTr[*,0:pol-1,(mb_ind(bl,/S))])
      endif else begin
         if keyword_set(m) && n_bl lt n_tr then begin
            coh[0,i,j,k,l] = ((eval))[0:n_Bl*pol-1]
@@ -679,19 +682,19 @@ function mb_opt, T, SINGLE_SM=SINGLE_SM, MAGNITUDE=m, CRITERIA=criteria, CONSTRA
         endif else begin
            if keyword_set(SINGLE_SM) then wTr = complexarr(pol,pol,n_tr,/nozero)
            for tr=0,n_Tr-1 do $
-              wTr[0,0,tr]   = mm_vnormalize(w[tr*pol:tr*pol+pol-1,0:2])
+              wTr[0,0,tr]   = mm_vnormalize(w[tr*pol:tr*pol+pol-1,0:pol-1])
            for tr=1,n_Tr-1 do $
-              wTr[*,*,tr] *= exp(complex(0,mm_v2m(atan(total(wTr[*,*,0]*conj(wTr[*,*,tr]),1),/pha),3,/TRANSP)))
+              wTr[*,*,tr] *= exp(complex(0,mm_v2m(atan(total(wTr[*,*,0]*conj(wTr[*,*,tr]),1),/pha),pol,/TRANSP)))
            if keyword_set(SINGLE_SM) then begin
               wTr = total(wTr,3)/n_tr
               for bl=0,n_Bl-1 do $
-                 coh[bl*3,i,j,k,l] = cc(mb_sb(T[*,*,i,j,k,l],bl),wTr[*,0:2])
+                 coh[bl*pol,i,j,k,l] = cc(mb_sb(T[*,*,i,j,k,l],bl),wTr[*,0:pol-1])
            endif else $
               for bl=0,n_Bl-1 do $
-                 coh[bl*3,i,j,k,l] = cc(mb_sb(T[*,*,i,j,k,l],bl),wTr[*,0:2,(mb_ind(bl,/F))],wTr[*,0:2,(mb_ind(bl,/S))])
+                 coh[bl*pol,i,j,k,l] = cc(mb_sb(T[*,*,i,j,k,l],bl),wTr[*,0:pol-1,(mb_ind(bl,/F))],wTr[*,0:pol-1,(mb_ind(bl,/S))])
         endelse
      endelse
-     if n_elements(SM) gt 0 then sm[*,*,*,i,j,k,l]=wTr 
+     if n_elements(SM) gt 0 then sm[*,*,*,i,j,k,l]=wTr
   endfor
   if keyword_set(m) then return, abs(coh)
   return, coh
@@ -739,14 +742,14 @@ function mb_opt_nr, T, MAGNITUDE=magnitude, $
                     ORTHOGONAL_BASIS=ORTHOGONAL_BASIS, $
                     GLOBALLY_ORTHOGONAL_BASIS=GLOBALLY_ORTHOGONAL_BASIS, $
                     NORMALIZED=NORMALIZED, DEBUG=DEBUG, $
-                    SM = SM 
+                    SM = SM,  POL_NR=pol, TRACKS_NR=n_tr, BL_NR=n_bl
 
   ORTHOGONAL_BASIS	    = n_elements(ORTHOGONAL_BASIS)	    eq 0? 0: ORTHOGONAL_BASIS
   GLOBALLY_ORTHOGONAL_BASIS = n_elements(GLOBALLY_ORTHOGONAL_BASIS) eq 0? 1: GLOBALLY_ORTHOGONAL_BASIS
   siz  = size(T)
-  pol  = siz[1] mod 3 eq 0? 3: stop
-  n_tr = siz[1] / pol
-  n_bl = mb_nr_baselines(n_tr)
+  if n_elements(pol) eq 0 then pol  = siz[1] mod 3 eq 0? 3: stop
+  if n_elements(n_tr) eq 0 then n_tr = siz[1] / pol
+  if n_elements(n_bl) eq 0 then n_bl = mb_nr_baselines(n_tr)
   n    = [siz[2:siz[0]],lonarr(8-siz[0])+1] & n=n[1:*]
   coh  = make_array([pol,siz[0]eq 2?n_bl:[n_bl,siz[3:siz[0]]]],type=siz[siz[0]+1],/nozero)
   A    = make_array(pol,pol,n_bl,type=siz[siz[0]+1],/nozero)
@@ -783,7 +786,7 @@ function mb_opt_nr, T, MAGNITUDE=magnitude, $
         w[*,2] = Tsi # PB # evec[*,1]
      endif else if GLOBALLY_ORTHOGONAL_BASIS then begin
         PB = ortho_basis(w,/unitary)
-        for tr=0,n_tr-1 do U[tr*3:tr*3+2,tr*3:tr*3+2]= PB
+        for tr=0,n_tr-1 do U[tr*pol:(tr+1)*pol-1,tr*pol:(tr+1)*pol-1]= PB
         Tbx   = conj(transpose(U)) # T[*,*,i,j,k,l,p,q] # U
         Tbx[lindgen(n_tr)*pol,*] = 0.
         Tbx[*,lindgen(n_tr)*pol] = 0.
