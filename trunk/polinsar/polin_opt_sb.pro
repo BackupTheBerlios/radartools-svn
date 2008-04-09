@@ -145,8 +145,8 @@ pro polin_opt_sb,CALLED = called, METHOD=METHOD, SM_FILE=sm_file, SMMX = smmx, S
 ; -------- THE FILTER ----------
      for bl=0,n_bl-1 do begin
         case method of $
-           0: oblock[*,bl,*,*] = cc_opt(mb_sb(block,bl),sm=sm, pol=pol, tracks_nr=n_tr, bl_nr=n_bl)
-           1: oblock[*,bl,*,*] = coh_nr(mb_sb(block,bl),sm=sm, pol=pol, tracks_nr=n_tr, bl_nr=n_bl)
+           0: oblock[*,bl,*,*] = cc_opt(mb_sb(block,bl, pol=pol),sm=sm, pol=pol, tracks_nr=n_tr, bl_nr=n_bl)
+           1: oblock[*,bl,*,*] = coh_nr(mb_sb(block,bl, pol=pol),sm=sm, pol=pol, tracks_nr=n_tr, bl_nr=n_bl)
            else: stop
         endcase
         if sms then smblock[*,*,*,bl,*,*]=sm

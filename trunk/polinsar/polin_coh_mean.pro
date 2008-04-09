@@ -54,7 +54,7 @@ pro polin_coh_mean,CALLED = called, SMMX = smmx, SMMY = smmy, coh_complex=coh_co
      repeat begin               ; Event loop
         event = widget_event(main)
         if event.id eq but_info then begin ; Info Button clicked
-           infotext = ['MULTIBASELINE COHERENCE USING BOXCAR FILTER',$
+           infotext = ['COHERENCE ESTIMATION USING BOXCAR FILTER',$
                        ' ',$
                        'RAT module written by Maxim Neumann']
            info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, $

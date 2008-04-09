@@ -232,26 +232,27 @@ function coh_shape, CovarianceMatrix, BOUNDARY_POINTS=bp_total, FILTERED_POWER =
   return, boundary
 end
 function cc, T, w1, w2, MAGNITUDE=magnitude, PHASE=phase, $
-             NR_MB=NR_MB
-  md = (size(T,/dim))[0] ;;; matrix dimension
+             NR_MB=N_TR
+  siz = size(T)
+  md  = siz[1] ;;; matrix dimension
   if n_elements(w1) eq 0 then begin
      case md of
         3: c = mm_diag(T) ;; PI
-        6: c = mm_diag(T[0:2,3:*,*,*,*,*]) $ ;; T6
+        6: if n_elements(n_tr) eq 0 || n_tr eq 2 then $
+           c = mm_diag(T[0:2,3:*,*,*,*,*]) $ ;; T6
                /sqrt(mm_diag(T[0:2,0:2,*,*,*,*])*mm_diag(T[3:*,3:*,*,*,*,*]))
         else: begin
-           if n_elements(NR_MB) eq 0 && md mod 3 eq 0 then $
-              NR_MB = md/3 ;;; Multibaselines 3-pol!!!
-           if n_elements(NR_MB) eq 0 then $
+           if n_elements(N_TR) eq 0 && md mod 3 eq 0 then $
+              N_TR = md/3 ;;; Multibaselines 3-pol!!!
+           if n_elements(N_TR) eq 0 then $
               message,'ERROR in cc.pro: ' + $
                       'wrong dimensions of the coherency matrix'
-           siz = size(T)
-           p   = siz[1]/NR_MB
-           NRX = 1 & for i=2,NR_MB-1 do NRX += i
+           p   = siz[1]/N_TR
+           NRX = 1 & for i=2,N_TR-1 do NRX += i
            c   = complexarr([p,(siz[0]eq 2?NRX:[NRX,siz[3:siz[0]]])],/noz)
            k   = 0
-           for i=0,NR_MB-1 do $
-              for j=i+1,NR_MB-1 do $
+           for i=0,N_TR-1 do $
+              for j=i+1,N_TR-1 do $
                  c[*,k++,*,*] = mm_diag(T[i*p:(i+1)*p-1,j*p:(j+1)*p-1,*,*,*])$
               /sqrt(mm_diag(T[i*p:(i+1)*p-1,i*p:(i+1)*p-1,*,*])* $
                     mm_diag(T[j*p:(j+1)*p-1,j*p:(j+1)*p-1,*,*,*]))
@@ -259,14 +260,15 @@ function cc, T, w1, w2, MAGNITUDE=magnitude, PHASE=phase, $
      endcase
   endif else begin
      if n_elements(w2) eq 0 then w2=w1
-     case md of
-        3: c = mm_diag(mm_mm(mm_mm(adj(w1),T),w2))
-        6: c = mm_diag(mm_mm(mm_mm(adj(w1),T[0:2,3:*,*,*,*,*]),w2)) $
-               /sqrt(mm_diag(mm_mm(mm_mm(adj(w1),T[0:2,0:2,*,*,*,*]),w1))* $
-                     mm_diag(mm_mm(mm_mm(adj(w2),T[3:*,3:*,*,*,*,*]),w2)))
-        else: message,'ERROR in cc.pro: ' + $
-                      'wrong dimensions of the coherency matrix'
-     endcase
+     if n_elements(n_tr) eq 0 || n_tr eq 2 then begin
+        p = md/2
+        if md eq 3 then c = mm_diag(mm_mm(mm_mm(adj(w1),T),w2)) $
+        else c = mm_diag(mm_mm(mm_mm(adj(w1),T[0:p-1,p:*,*,*,*,*]),w2)) $
+                 /sqrt(mm_diag(mm_mm(mm_mm(adj(w1),T[0:p-1,0:p-1,*,*,*,*]),w1))* $
+                       mm_diag(mm_mm(mm_mm(adj(w2),T[p:*,p:*,*,*,*,*]),w2)))
+;         else: message,'ERROR in cc.pro: ' + $
+;                       'wrong dimensions of the coherency matrix'
+     endif
   endelse
   if keyword_set(PHASE)     then return, atan(c,/phase)
   if keyword_set(MAGNITUDE) then return, abs(c)
@@ -388,28 +390,43 @@ function coh_NR, T6, MAGNITUDE=magnitude, SM=SM, DEBUG=DEBUG, $ ;; mn, 27.08.200
      Tsi = mm_power(Tsi,/sqrt,/invert,/overwrite)
      A   = Tsi # T12 # Tsi      ; A is not hermitian
      nr0 = numrad(A,evec=evec,DEBUG=DEBUG)  ;,th=th)
-     x0  = evec[*,0]
-     PB  = evec
-     A2  = conj(transpose(PB)) # A # PB
-     A2[*,0] = 0.
-     A2[0,*] = 0.
-     nr1 = numrad(A2,evec=evec,eval=eval,DEBUG=DEBUG);,/debug)
-     x1  = PB # evec[*,0]
-     x2  = PB # evec[*,1]
-     w0  = Tsi # x0
-     w1  = Tsi # x1
-     w2  = Tsi # x2
-     coh[0,i,j,k,l] = transpose(conj(w0)) # T12 # (w0) $
-                      / sqrt(transpose(conj(w0)) # T11 # (w0)) $
-                      / sqrt(transpose(conj(w0)) # T22 # (w0)) 
-     coh[1,i,j,k,l] = transpose(conj(w1)) # T12 # (w1) $
-                      / sqrt(transpose(conj(w1)) # T11 # (w1)) $
-                      / sqrt(transpose(conj(w1)) # T22 # (w1)) 
-     coh[2,i,j,k,l] = transpose(conj(w2)) # T12 # (w2) $
-                      / sqrt(transpose(conj(w2)) # T11 # (w2)) $
-                      / sqrt(transpose(conj(w2)) # T22 # (w2)) 
+     if pol eq 3 then begin
+        x0  = evec[*,0]
+        PB  = evec
+        A2  = conj(transpose(PB)) # A # PB
+        A2[*,0] = 0.
+        A2[0,*] = 0.
+        nr1 = numrad(A2,evec=evec,eval=eval,DEBUG=DEBUG) ;,/debug)
+        x1  = PB # evec[*,0]
+        x2  = PB # evec[*,1]
+        w0  = Tsi # x0
+        w1  = Tsi # x1
+        w2  = Tsi # x2
+        coh[0,i,j,k,l] = transpose(conj(w0)) # T12 # (w0) $
+                         / sqrt(transpose(conj(w0)) # T11 # (w0)) $
+                         / sqrt(transpose(conj(w0)) # T22 # (w0)) 
+        coh[1,i,j,k,l] = transpose(conj(w1)) # T12 # (w1) $
+                         / sqrt(transpose(conj(w1)) # T11 # (w1)) $
+                         / sqrt(transpose(conj(w1)) # T22 # (w1)) 
+        coh[2,i,j,k,l] = transpose(conj(w2)) # T12 # (w2) $
+                         / sqrt(transpose(conj(w2)) # T11 # (w2)) $
+                         / sqrt(transpose(conj(w2)) # T22 # (w2)) 
      if n_elements(SM) ne 0 then sm[*,*,i,j,k,l] = $
         [[w0]/norm(w0),[w1]/norm(w1),[w2]/norm(w2)]
+     endif else if pol eq 2 then begin
+        x0  = evec[*,0]
+        x1  = evec[*,1]
+        w0  = Tsi # x0
+        w1  = Tsi # x1
+        coh[0,i,j,k,l] = transpose(conj(w0)) # T12 # (w0) $
+                         / sqrt(transpose(conj(w0)) # T11 # (w0)) $
+                         / sqrt(transpose(conj(w0)) # T22 # (w0)) 
+        coh[1,i,j,k,l] = transpose(conj(w1)) # T12 # (w1) $
+                         / sqrt(transpose(conj(w1)) # T11 # (w1)) $
+                         / sqrt(transpose(conj(w1)) # T22 # (w1)) 
+        if n_elements(SM) ne 0 then sm[*,*,i,j,k,l] = $
+           [[w0]/norm(w0),[w1]/norm(w1)]
+     endif else message, 'Error in coh_NR'
   endfor
   return, reform(keyword_set(magnitude)?abs(coh):coh)
 end
@@ -644,37 +661,39 @@ function mb_opt, T, SINGLE_SM=SINGLE_SM, MAGNITUDE=m, CRITERIA=criteria, CONSTRA
      endif
 
      if GLOBALLY_ORTHOGONAL_BASIS then begin
-        for tr=0,n_tr-1 do begin
-           U3 = ortho_basis(w[tr*pol:(1+tr)*pol-1,0:pol-1],/unitary)
-           U[tr*pol:(tr+1)*pol-1,tr*pol:(tr+1)*pol-1]= U3
-        endfor
-        Tbx   = conj(transpose(U)) # T[*,*,i,j,k,l] # U
-        Tbx[lindgen(n_tr)*pol,*] = 0.
-        Tbx[*,lindgen(n_tr)*pol] = 0.
-        if total(method eq [1,2]) ne 2 then begin
-           for tr=0,n_tr-1 do $
-              Bbx[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1]=Tbx[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1]
-           for tr=0,n_tr-1 do $
-              Bi[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1]=la_invert(Tbx[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1])
+        if pol ge 3 then begin
+           for tr=0,n_tr-1 do begin
+              U3 = ortho_basis(w[tr*pol:(1+tr)*pol-1,0:pol-1],/unitary)
+              U[tr*pol:(tr+1)*pol-1,tr*pol:(tr+1)*pol-1]= U3
+           endfor
+           Tbx   = conj(transpose(U)) # T[*,*,i,j,k,l] # U
+           Tbx[lindgen(n_tr)*pol,*] = 0.
+           Tbx[*,lindgen(n_tr)*pol] = 0.
+           if total(method eq [1,2]) ne 2 then begin
+              for tr=0,n_tr-1 do $
+                 Bbx[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1]=Tbx[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1]
+              for tr=0,n_tr-1 do $
+                 Bi[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1]=la_invert(Tbx[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1], status=status)
+           endif
+           case 2 of
+              total(method eq [1,2]): eval2 = la_eigenql(transpose(Tbx)/(n_Tr-1),		eigenvectors=evec,status=status)
+              total(method eq [1,4]): eval2 = la_eigenql(transpose(Bi#Tbx)/(n_Tr-1),	eigenvectors=evec,status=status)
+              total(method eq [6,2]): eval2 = la_eigenql(transpose(Tbx-Bbx)/(n_Tr-1),	eigenvectors=evec,status=status)
+              total(method eq [6,4]): eval2 = la_eigenql(transpose(Bi#(Tbx-Bbx))/(n_Tr-1),	eigenvectors=evec,status=status)
+              else: stop
+           endcase
+           wbx = reverse(evec,2)
+           for tr=0,n_tr-1 do begin
+              w[pol*tr:pol*tr+pol-1,1:2] = U[pol*tr:pol*tr+pol-1,pol*tr:pol*tr+pol-1] # wbx[pol*tr:pol*tr+pol-1,0:1]
+              w[pol*tr:pol*tr+pol-1,*] = ortho_basis(w[pol*tr:pol*tr+pol-1,*],/unitary)
+           endfor
         endif
-        case 2 of
-           total(method eq [1,2]): eval2 = la_eigenql(transpose(Tbx)/(n_Tr-1),		eigenvectors=evec,status=status)
-           total(method eq [1,4]): eval2 = la_eigenql(transpose(Bi#Tbx)/(n_Tr-1),	eigenvectors=evec,status=status)
-           total(method eq [6,2]): eval2 = la_eigenql(transpose(Tbx-Bbx)/(n_Tr-1),	eigenvectors=evec,status=status)
-           total(method eq [6,4]): eval2 = la_eigenql(transpose(Bi#(Tbx-Bbx))/(n_Tr-1),	eigenvectors=evec,status=status)
-           else: stop
-        endcase
-        wbx = reverse(evec,2)
-        for tr=0,n_tr-1 do begin
-           w[pol*tr:pol*tr+pol-1,1:2] = U[pol*tr:pol*tr+pol-1,pol*tr:pol*tr+pol-1] # wbx[pol*tr:pol*tr+pol-1,0:1]
-           w[pol*tr:pol*tr+pol-1,*] = ortho_basis(w[pol*tr:pol*tr+pol-1,*],/unitary)
-        endfor
         for tr=0,n_tr-1 do $
            wTr[*,*,tr] = w[tr*pol:tr*pol+pol-1,0:pol-1]
         for tr=1,n_Tr-1 do $
            wTr[*,*,tr] *= exp(complex(0,mm_v2m(atan(total(wTr[*,*,0]*conj(wTr[*,*,tr]),1),/pha),pol,/TRANSP)))
         for bl=0,n_Bl-1 do $
-           coh[bl*pol,i,j,k,l] = cc(mb_sb(T[*,*,i,j,k,l],bl),wTr[*,0:pol-1,(mb_ind(bl,/F))],wTr[*,0:pol-1,(mb_ind(bl,/S))])
+           coh[bl*pol,i,j,k,l] = cc(mb_sb(T[*,*,i,j,k,l],bl, pol=pol),wTr[*,0:pol-1,(mb_ind(bl,/F))],wTr[*,0:pol-1,(mb_ind(bl,/S))])
      endif else begin
         if keyword_set(m) && n_bl lt n_tr then begin
            coh[0,i,j,k,l] = ((eval))[0:n_Bl*pol-1]
@@ -688,10 +707,10 @@ function mb_opt, T, SINGLE_SM=SINGLE_SM, MAGNITUDE=m, CRITERIA=criteria, CONSTRA
            if keyword_set(SINGLE_SM) then begin
               wTr = total(wTr,3)/n_tr
               for bl=0,n_Bl-1 do $
-                 coh[bl*pol,i,j,k,l] = cc(mb_sb(T[*,*,i,j,k,l],bl),wTr[*,0:pol-1])
+                 coh[bl*pol,i,j,k,l] = cc(mb_sb(T[*,*,i,j,k,l],bl, pol=pol),wTr[*,0:pol-1])
            endif else $
               for bl=0,n_Bl-1 do $
-                 coh[bl*pol,i,j,k,l] = cc(mb_sb(T[*,*,i,j,k,l],bl),wTr[*,0:pol-1,(mb_ind(bl,/F))],wTr[*,0:pol-1,(mb_ind(bl,/S))])
+                 coh[bl*pol,i,j,k,l] = cc(mb_sb(T[*,*,i,j,k,l],bl, pol=pol),wTr[*,0:pol-1,(mb_ind(bl,/F))],wTr[*,0:pol-1,(mb_ind(bl,/S))])
         endelse
      endelse
      if n_elements(SM) gt 0 then sm[*,*,*,i,j,k,l]=wTr
