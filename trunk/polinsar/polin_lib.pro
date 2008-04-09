@@ -655,7 +655,7 @@ function mb_opt, T, SINGLE_SM=SINGLE_SM, MAGNITUDE=m, CRITERIA=criteria, CONSTRA
            for tr=0,n_tr-1 do $
               Bbx[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1]=Tbx[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1]
            for tr=0,n_tr-1 do $
-              Bi[tr*pol+1:tr*pol+pol-1,tr*pol+1:tr*pol+pol-1]=la_invert(Tbx[tr*pol+1:tr*pol+pol-1,tr*pol+1:tr*pol+pol-1])
+              Bi[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1]=la_invert(Tbx[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1])
         endif
         case 2 of
            total(method eq [1,2]): eval2 = la_eigenql(transpose(Tbx)/(n_Tr-1),		eigenvectors=evec,status=status)
