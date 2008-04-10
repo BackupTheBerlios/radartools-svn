@@ -687,9 +687,11 @@ function mb_opt, T, SINGLE_SM=SINGLE_SM, MAGNITUDE=m, CRITERIA=criteria, CONSTRA
               w[pol*tr:pol*tr+pol-1,1:2] = U[pol*tr:pol*tr+pol-1,pol*tr:pol*tr+pol-1] # wbx[pol*tr:pol*tr+pol-1,0:1]
               w[pol*tr:pol*tr+pol-1,*] = ortho_basis(w[pol*tr:pol*tr+pol-1,*],/unitary)
            endfor
-        endif
-        for tr=0,n_tr-1 do $
-           wTr[*,*,tr] = w[tr*pol:tr*pol+pol-1,0:pol-1]
+           for tr=0,n_tr-1 do $
+              wTr[*,*,tr] = w[tr*pol:tr*pol+pol-1,0:pol-1]
+        endif else $ ;; pol = 2
+           for tr=0,n_tr-1 do $
+              wTr[*,*,tr] = mm_vnormalize(w[tr*pol:tr*pol+pol-1,0:pol-1])
         for tr=1,n_Tr-1 do $
            wTr[*,*,tr] *= exp(complex(0,mm_v2m(atan(total(wTr[*,*,0]*conj(wTr[*,*,tr]),1),/pha),pol,/TRANSP)))
         for bl=0,n_Bl-1 do $

@@ -43,10 +43,61 @@ end
 ; file.var  = IDL variable type, following the values returned by the size() command
 ; file.type = RAT data type, for details have a look in definitions.pro
 ;------------------------------------------------------------
+; Comments for the IDLdoc, which should be provided at least
+; for every module (main function) of the file:
+;
+; Possible values:
+;
+; :Keywords:
+;   for every keyword a line with definition,
+;      and a line with comments
+;
+; :Params:
+;   for every parameter a line with definition,
+;      and a line with comments
+;
+; :Author: RAT Team or your name(s)
+;
+; :Categories: SAR, speckle filter, General, Infrastructure, spectral
+; tools, image enhancment, PolSAR parameters
+;
+; :Copyright:
+;   usually dosn't need changes
+;------------------------------------------------------------
+
+
+; docformat = 'rst'
+;+
+; The classical Lee speckle filter
+;
+; :Keywords:
+;    called: in, optional, type="flag"
+;       call routine without GUI in batchmode
+;    
+; :Params:
+;
+; :Author: 
+; 
+; :Categories: 
+;
+; :Copyright:
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
+;-
 pro template_overlap, CALLED = called, BOXSIZE = boxsize
 
 	common rat, types, file, wid, config, tiling
-        compile_opt idl2
+   compile_opt idl2
 
 ;------------------------------------------------------------
 ; Error Handling 1 (EXAMPLE)
