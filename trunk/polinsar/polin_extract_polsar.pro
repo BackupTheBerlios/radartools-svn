@@ -36,7 +36,7 @@ pro polin_extract_polsar,CALLED = called, NO_GUI=no_gui, channelvector=channelve
      512 : newtype = 222L
      513 : newtype = 222L
      else: begin
-        error_button = DIALOG_MESSAGE(['Data has to be a Multibaseline data'], $
+        error_button = DIALOG_MESSAGE(['Data has to be a PolInSAR data set'], $
                                       DIALOG_PARENT = wid.base, TITLE='Error',/ERROR)
         return
      endelse
@@ -53,6 +53,7 @@ pro polin_extract_polsar,CALLED = called, NO_GUI=no_gui, channelvector=channelve
      if file.type ge 500 && file.type le 503 then $
         ch_groups = 'Vector '+strcompress(indgen(n_tr),/R) $
      else ch_groups = 'T'+strcompress(indgen(n_tr)+1,/R)+strcompress(indgen(n_tr)+1,/R)
+     ch_groups = [ch_groups, 'Average all']
      butt = cw_bgroup(main,ch_groups,/exclusive,column=1,SET_VALUE=0)
      buttons  = WIDGET_BASE(main,column=3,/frame)
      but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
@@ -108,7 +109,13 @@ pro polin_extract_polsar,CALLED = called, NO_GUI=no_gui, channelvector=channelve
      block  = make_array([file.vdim,file.zdim,file.xdim,blocksizes[i]],type=file.var)
      readu,ddd,block
 
-     if matrix then $
+     if channelvector eq n_tr then begin ; average all
+        if matrix then begin
+           for tr=1, n_tr-1 do $
+              block[0:pol-1, 0:pol-1, *, *] += block[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1,*,*]
+           writeu,eee,block[0:pol-1,0:pol-1,*,*]/n_tr
+        endif else writeu,eee,total(block, 2)/n_tr
+     endif else if matrix then $
         writeu,eee,block[channelvector*pol:channelvector*pol+pol-1,channelvector*pol:channelvector*pol+pol-1,*,*] $
      else $
         writeu,eee,block[*,channelvector,*,*]
