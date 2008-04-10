@@ -20,9 +20,38 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-
+; docformat = 'rst'
+;+
+; Individual basis change, pixel per pixel
+;
+; :Keywords:
+;    called: in, optional, type=flag
+;       
+;    sm_file: in, optional, type=string
+;       Name of the file, which contains the scattering mechanisms
+;    sb_extract: in, optional, type=int
+;       Index of the demanded baseline
+; 
+; :Author: Maxim Neumann
+; :Categories: PolInSAR
+;
+; :Copyright:
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
+;-
 pro polin_basis_indiv,CALLED = called, SM_FILE=sm_file, SB_EXTRACT=SB_EXTRACT
   common rat, types, file, wid, config
+  compile_opt idl2
 
   if ~(file.type ge 510 && file.type le 513) then begin
      error = DIALOG_MESSAGE("This is wrong data type.", $
@@ -156,7 +185,7 @@ pro polin_basis_indiv,CALLED = called, SM_FILE=sm_file, SB_EXTRACT=SB_EXTRACT
      rrat,file.name,ddd,header=head,info=info,type=type
      if sm_head[0] ne 6 then $
         srat,outputfile,eee,header=head,info=info,type=newtype $
-     else $
+     else $ ;; single--baseline optimized
         srat,outputfile,eee,header=[4L,pol*[2L,2L],head[3:*]],info=info,type=newtype
      rrat,sm_file,fff,header=sm_head
      
@@ -190,17 +219,17 @@ pro polin_basis_indiv,CALLED = called, SM_FILE=sm_file, SB_EXTRACT=SB_EXTRACT
         case sm_head[0] of
            6: begin
               if n_tr gt 2 then $
-                 block = mb_sb(block,bl)
+                 block = mb_sb(block,bl, pol=pol)
               for tr=0,1 do $
                  if sm_head[3] eq 1 then $
-                    U[tr*pol:tr*pol+2,tr*pol:tr*pol+2,*,*] = sm[*,*,0,bl,*,*] $
+                    U[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1,*,*] = sm[*,*,0,bl,*,*] $
                  else $
-                    U[tr*pol:tr*pol+2,tr*pol:tr*pol+2,*,*] = sm[*,*,tr,bl,*,*]
+                    U[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1,*,*] = sm[*,*,tr,bl,*,*]
            end
            5: for tr=0,n_tr-1 do $
-              U[tr*pol:tr*pol+2,tr*pol:tr*pol+2,*,*] = sm[*,*,tr,*,*]
+              U[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1,*,*] = sm[*,*,tr,*,*]
            4: for tr=0,n_tr-1 do $
-              U[tr*pol:tr*pol+2,tr*pol:tr*pol+2,*,*] = sm
+              U[tr*pol:tr*pol+pol-1,tr*pol:tr*pol+pol-1,*,*] = sm
            else: stop
         endcase
         sm = -1
