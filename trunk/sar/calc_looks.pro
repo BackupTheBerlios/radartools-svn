@@ -17,107 +17,107 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 function calcLookNum, block, winRad, lookHist, histLim, FFT_FILTER=fft_filter
-block = reform(block)
+   block = reform(block)
 
-blockSize = size(block)
-histLen = n_elements(lookHist);
-blockDim = blockSize[0]
-blockRes = blockSize[blockDim-1:blockDim]
-blockSize = blockSize[1:blockDim]
+   blockSize = size(block)
+   histLen = n_elements(lookHist) ;
+   blockDim = blockSize[0]
+   blockRes = blockSize[blockDim-1:blockDim]
+   blockSize = blockSize[1:blockDim]
 
 
-logLim = [0,-alog(histLim[0])]
-histStep = float(logLim[1]-logLim[0])/(histLen-3)
-histUnit = 1.0/histStep
+   logLim = [0,-alog(histLim[0])]
+   histStep = float(logLim[1]-logLim[0])/(histLen-3)
+   histUnit = 1.0/histStep
 
-if (min(blockRes-2*winRad) le 0) then begin
-    blockDim = -1
-end
+   if (min(blockRes-2*winRad) le 0) then begin
+      blockDim = -1
+   end
 
-channels = -1
-case blockDim of
-    2: begin
-        channels = 1
-        intenBlock = fltarr(1,blockRes[0],blockRes[1])
-        intenBlock[0,*,*] = abs(block)^2
-    end
+   channels = -1
+   case blockDim of
+      2: begin
+         channels = 1
+         intenBlock = fltarr(1,blockRes[0],blockRes[1])
+         intenBlock[0,*,*] = abs(block)^2
+      end
 
-    3: begin
-        channels = blockSize[0]
-        intenBlock = fltarr([blockSize[0],blockRes])
-        for i=0,blockSize[0]-1 do intenBlock = abs(block[i,*,*])^2
-    end
+      3: begin
+         channels = blockSize[0]
+         intenBlock = fltarr([blockSize[0],blockRes])
+         for i=0,blockSize[0]-1 do intenBlock[i,*,*] = abs(block[i,*,*])^2
+      end
 
-    4: begin
-        if (blockSize[0] eq blockSize[1]) then begin
+      4: begin
+         if (blockSize[0] eq blockSize[1]) then begin
             channels = blockSize[0]
             intenBlock = fltarr(channels,blockRes[0],blockRes[1])
             for i=0,blockSize[0]-1 do intenBlock[i,*,*] = float(block[i,i,*,*])
-        end else begin
+         end else begin
             channels = blockSize[0]*blockSize[1]
             intenBlock = fltarr(channels,blockRes[0],blockRes[1])
             for i=0,blockSize[0]-1 do begin
-                for j=0,blockSize[1]-1 do begin
-                    intenBlock[i+j*blockSize[0],*,*] = abs(block[i,j,*,*])^2
-                end
+               for j=0,blockSize[1]-1 do begin
+                  intenBlock[i+j*blockSize[0],*,*] = abs(block[i,j,*,*])^2
+               end
             end
-        end
-    end
-    else:
-end
+         end
+      end
+      else:
+   end
 
 
-winSize = 2*(winRad+1)
-winCenter = floor(winSize/2)
-filter = (fltarr(1,winSize)+1.0)##findgen(winSize)-winCenter
-filter = sqrt(filter^2 + transpose(filter^2))
-filter = ((winRad+0.5-filter)<1.0)>0.0
-filter /= total(filter)
+   winSize = 2*(winRad+1)
+   winCenter = floor(winSize/2)
+   filter = (fltarr(1,winSize)+1.0)##findgen(winSize)-winCenter
+   filter = sqrt(filter^2 + transpose(filter^2))
+   filter = ((winRad+0.5-filter)<1.0)>0.0
+   filter /= total(filter)
 
-fftFactor = product(blockRes)
-for i=0,channels-1 do begin
-    if (keyword_set(fft_filter)) then begin
-        intenBlock[i,*,*] = fftFactor*fft(fft(intenBlock[i,*,*],-1)*fft_filter,1)
-    end
+   fftFactor = product(blockRes)
+   for i=0,channels-1 do begin
+      if (keyword_set(fft_filter)) then begin
+         intenBlock[i,*,*] = fftFactor*fft(fft(intenBlock[i,*,*],-1)*fft_filter,1)
+      end
 
-    lookBlock = convol(reform(intenBlock[i,*,*])^2,filter,/center,/edge_wrap)
-    lookBlock /= convol(reform(intenBlock[i,*,*]),filter,/center,/edge_wrap)^2
-    lookBlock = 1.0/(temporary(lookBlock)-1.0)
-    lookBlock = -alog(lookBlock/histLim[1]);
+      lookBlock = convol(reform(intenBlock[i,*,*])^2,filter,/center,/edge_wrap)
+      lookBlock /= convol(reform(intenBlock[i,*,*]),filter,/center,/edge_wrap)^2
+      lookBlock = 1.0/(temporary(lookBlock)-1.0)
+      lookBlock = -alog(lookBlock/histLim[1]) ;
 
-    edgeBlock = sqrt(reform(intenBlock[i,*,*]))
-    edge_msproa, block=edgeBlock, winSize = 2*winRad
-    edgeBlock = -alog(edgeBlock)
-    infInd = where(finite(edgeBlock) eq 0, nr)
-    if (nr gt 0) then edgeBlock[infInd] = max(edgeBlock,/nan)
-    edgeBlock = (edgeBlock-mean(edgeBlock)) > 0
+      edgeBlock = sqrt(reform(intenBlock[i,*,*]))
+      edge_msproa, block=edgeBlock, winSize = 2*winRad
+      edgeBlock = -alog(edgeBlock)
+      infInd = where(finite(edgeBlock) eq 0, nr)
+      if (nr gt 0) then edgeBlock[infInd] = max(edgeBlock,/nan)
+      edgeBlock = (edgeBlock-mean(edgeBlock)) > 0
 
-    histInd = (round((lookBlock-logLim[0])*histUnit + 1) > 0) < (histLen+1)
-    ignore = histogram(histInd,min=0,max=histLen-1,reverse_indices=revInd)
-    ignore = 0
+      histInd = (round((lookBlock-logLim[0])*histUnit + 1) > 0) < (histLen+1)
+      ignore = histogram(histInd,min=0,max=histLen-1,reverse_indices=revInd)
+      ignore = 0
 
-    for j=0,histLen-1 do begin
-        if (revInd[j] ge revInd[j+1]) then continue
-        updateInd = revInd[revInd[j]:revInd[j+1]-1]
-        lookHist[j] += total(edgeBlock[updateInd])
-    end
-end
+      for j=0,histLen-1 do begin
+         if (revInd[j] ge revInd[j+1]) then continue
+         updateInd = revInd[revInd[j]:revInd[j+1]-1]
+         lookHist[j] += total(edgeBlock[updateInd])
+      end
+   end
 
-medWidth = round(0.01 * histLen);
-medHist = median(lookHist,medWidth);
-medHist[[0,histLen-1]] = 0
+   medWidth = round(0.01 * histLen) ;
+   medHist = median(lookHist,medWidth) ;
+   medHist[[0,histLen-1]] = 0
 
-histCenter = floor(0.5*histLen)
-diff = complex(0,findgen(histLen) - histCenter)
-diff *= exp(-(imaginary(diff)/(histLen*0.25 < 50))^2)
-diffHist = float(fft(fft(medHist,-1) * shift(diff,-histCenter),1))
+   histCenter = floor(0.5*histLen)
+   diff = complex(0,findgen(histLen) - histCenter)
+   diff *= exp(-(imaginary(diff)/(histLen*0.25 < 50))^2)
+   diffHist = float(fft(fft(medHist,-1) * shift(diff,-histCenter),1))
 
-ignore = max(medHist,maxInd)
-ignore = max(diffHist[0:maxInd],maxInd)
-maxInd = min(where(diffHist[0:maxInd] ge 0.8*diffHist[maxInd]))
-lookNum = histLim[1]*exp(-(maxInd*histStep + logLim[0]))
+   ignore = max(medHist,maxInd)
+   ignore = max(diffHist[0:maxInd],maxInd)
+   maxInd = min(where(diffHist[0:maxInd] ge 0.8*diffHist[maxInd]))
+   lookNum = histLim[1]*exp(-(maxInd*histStep + logLim[0]))
 
-return, [lookNum,maxInd]
+   return, [lookNum,maxInd]
 end
 
 
