@@ -724,8 +724,8 @@ function mb_NumRad, A, th0, $
                  eval=max_eval, evec=max_evec, $
                  EPS=EPS, USE_THETA_THRESHOLD=USE_THETA_THRESHOLD, $
                  MAX_ITER=MAX_ITER, THETA_RETURN=th, DEBUG=DEBUG
-  pol = 3
   n_bl= (size(A))[3]
+  pol = (size(A))[2]
   if n_elements(use_theta_threshold) eq 0 then use_theta_threshold=0
   if n_elements(EPS) eq 0 then eps = !pi/180./100.
   if n_elements(MAX_ITER) eq 0 then max_iter = 100
@@ -741,8 +741,24 @@ function mb_NumRad, A, th0, $
      Hth  = (Ath + mm_herm(Ath)) / 2.
      if n_bl ne 1 then $
         Hth  = total(Hth,3)/n_bl
-     eval = la_eigenql(transpose(Hth), eigenvectors=evec)
-     se   = reverse(sort(eval))
+     eval = la_eigenql(transpose(Hth), eigenvectors=evec, status=status, failed=failed, method=0)
+     if status eq 0 then $
+        se   = reverse(sort(eval)) $
+     else begin
+        se = pol-1
+        if n_elements(evec[0, *]) eq pol && product(failed-se) ne 0 then $
+           status = 0 $
+        else begin
+           eval = la_eigenql(transpose(Hth), eigenvectors=evec, status=status, method=1)
+           if status ne 0 then $
+              eval = la_eigenql(transpose(Hth), eigenvectors=evec, status=status, method=2)
+           if status eq 0 then se = pol-1 $
+           else begin
+              max_evec = evec[*, 0]
+              return, 0
+           endelse
+        endelse
+     endelse 
      for bl=0,n_bl-1 do $
         th2[bl] = atan(conj(transpose(evec[*,se[0]])) # A[*,*,bl] # evec[*,se[0]],/phase)
      if max_eval[0] lt eval[se[0]] then begin
