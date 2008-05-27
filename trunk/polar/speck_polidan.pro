@@ -20,106 +20,106 @@
 ;------------------------------------------------------------------------
 
 function polidan,arr,NRMAX=nrmax,LOOKS=looks,SINGLE=single,NRMIN=nrmin
-	common rat, types, file, wid, config
-	
-	if not keyword_set(nrmax) then nrmax = 50
-	if not keyword_set(looks) then looks = 1.0
-	
-	sig2  = 1.0/looks
-	sfak  = 1.0+sig2
-	
-	if keyword_set(single) then begin
-		amp  = total(total(arr,1),1)  ; Calculate span
-		span = amp
-		anzz = 1
-	endif else begin ; covariance matrix data
-		amp = make_array(file.zdim,file.xdim,file.ydim,/float)
-		for i=0,file.zdim-1 do amp[i,*,*] = arr[i,i,*,*]
-		span = total(amp,1)
-		anzz = file.zdim
-	endelse
+   common rat, types, file, wid, config
+   
+   if not keyword_set(nrmax) then nrmax = 50
+   if not keyword_set(looks) then looks = 1.0
+   
+   sig2  = 1.0/looks
+   sfak  = 1.0+sig2
+   
+   if keyword_set(single) then begin
+      amp  = total(total(arr,1),1) ; Calculate span
+      span = amp
+      anzz = 1
+   endif else begin             ; covariance matrix data
+      amp = make_array(file.zdim,file.xdim,file.ydim,/float)
+      for i=0,file.zdim-1 do amp[i,*,*] = arr[i,i,*,*]
+      span = total(amp,1)
+      anzz = file.zdim
+   endelse
 
-	siz  = size(amp)
-	anzx = siz[siz[0]-1]
-	anzy = siz[siz[0]]
-	nmat = file.vdim*file.zdim
-	pol  = lindgen(nmat)
-	if keyword_set(single) then out = fltarr(file.vdim,file.zdim,file.xdim,file.ydim) else out = complexarr(file.vdim,file.zdim,file.xdim,file.ydim)
-	
-	if file.zdim gt 1 and not keyword_set(single) then begin  ; multilayer span
-		box3 = intarr(file.zdim,9)
-		for j=0,file.zdim-1 do for i=0,2 do box3[j,3*i:3*i+2]=(findgen(3)-1)*file.zdim+anzx*file.zdim*(i-1)+j
-	endif else begin    ; single layer
-		box3 = intarr(1,9)
-		for i=0,2 do box3[3*i] = (findgen(3)-1)+anzx*(i-1)
-	endelse
-	box = intarr(9)
-	for i=0,2 do box[3*i] = (findgen(3)-1)+anzx*(i-1)
-	box  = [box[0:3],box[5:*]]
+   siz  = size(amp)
+   anzx = siz[siz[0]-1]
+   anzy = siz[siz[0]]
+   nmat = file.vdim*file.zdim
+   pol  = lindgen(nmat)
+   if keyword_set(single) then out = fltarr(file.vdim,file.zdim,file.xdim,file.ydim) else out = complexarr(file.vdim,file.zdim,file.xdim,file.ydim)
+   
+   if file.zdim gt 1 and not keyword_set(single) then begin ; multilayer span
+      box3 = intarr(file.zdim,9)
+      for j=0,file.zdim-1 do for i=0,2 do box3[j,3*i:3*i+2]=(findgen(3)-1)*file.zdim+anzx*file.zdim*(i-1)+j
+   endif else begin             ; single layer
+      box3 = intarr(1,9)
+      for i=0,2 do box3[3*i] = (findgen(3)-1)+anzx*(i-1)
+   endelse
+   box = intarr(9)
+   for i=0,2 do box[3*i] = (findgen(3)-1)+anzx*(i-1)
+   box  = [box[0:3],box[5:*]]
 
-	for i=1,anzx-2 do begin
-		progress,percent=(i+1)*100.0/(anzx-2),/check_cancel
-		if wid.cancel eq 1 then return,-1
-		
-		for j=1,anzy-2 do begin
-			limit = file.zdim/sqrt(looks)*2/3
-			pos   = [j*anzx+i]
-			an    = [j*anzx+i]
-			nrold = 1
-			nrnew = 1
+   for i=1,anzx-2 do begin
+      progress,percent=(i+1)*100.0/(anzx-2),/check_cancel
+      if wid.cancel eq 1 then return,-1
+      
+      for j=1,anzy-2 do begin
+         limit = file.zdim/sqrt(looks)*2/3
+         pos   = [j*anzx+i]
+         an    = [j*anzx+i]
+         nrold = 1
+         nrnew = 1
 grow_further:
-			seed  = median(amp[file.zdim*pos[0]+box3],dim=2)
+         seed  = median(amp[file.zdim*pos[0]+box3],dim=2)
 
-			repeat begin 
-				nrold = nrnew
-				rand  = 0
-				for k=0,nrold-1 do rand = [rand,an[k]+box]
-				rand = rand[1:*]
-				rand = rand[uniq(rand,sort(rand))]
-				check = 0
-				mran = file.zdim*rand
-				for k=0,anzz-1 do check += abs(amp[mran+k]-seed[k])/seed[k]
-				index = where(check lt limit,anz1,complement=bgindex,ncomplement=anz2)
+         repeat begin 
+            nrold = nrnew
+            rand  = 0
+            for k=0,nrold-1 do rand = [rand,an[k]+box]
+            rand = rand[1:*]
+            rand = rand[uniq(rand,sort(rand))]
+            check = 0
+            mran = file.zdim*rand
+            for k=0,anzz-1 do check += abs(amp[mran+k]-seed[k])/seed[k]
+            index = where(check lt limit,anz1,complement=bgindex,ncomplement=anz2)
 
-				if anz1 gt 0 then begin
-					an = [an,rand[index]]
-					an = an[uniq(an,sort(an))]
-					nrnew = n_elements(an)
-				endif
-			endrep until (nrnew ge nrmax) or (nrold eq nrnew)
-			if anz2 gt 0 then anbg = rand[bgindex]
+            if anz1 gt 0 then begin
+               an = [an,rand[index]]
+               an = an[uniq(an,sort(an))]
+               nrnew = n_elements(an)
+            endif
+         endrep until (nrnew ge nrmax) or (nrold eq nrnew)
+         if anz2 gt 0 then anbg = rand[bgindex]
 
-			if nrnew lt nrmax && anz2 ge 1 then begin
-				anbg  = rand[bgindex]
-				anbg  = anbg[uniq(anbg,sort(anbg))]
-				for k=0,anzz-1 do seed[k] = mean(amp[file.zdim*an+k])
-				check = 0
-				mran = file.zdim*anbg
-				for k=0,anzz-1 do check += abs(amp[mran+k]-seed[k])/seed[k]
-				index = where(check lt limit*3,anz)
-				if anz gt 0 then an = [an,anbg[index]]
-			endif
-			nele = n_elements(an)
-			if nele lt nrmin then begin
-				limit += 0.2
-				nrnew = nele
-				goto, grow_further
-			endif
+         if nrnew lt nrmax && anz2 ge 1 then begin
+            anbg  = rand[bgindex]
+            anbg  = anbg[uniq(anbg,sort(anbg))]
+            for k=0,anzz-1 do seed[k] = mean(amp[file.zdim*an+k])
+            check = 0
+            mran = file.zdim*anbg
+            for k=0,anzz-1 do check += abs(amp[mran+k]-seed[k])/seed[k]
+            index = where(check lt limit*3,anz)
+            if anz gt 0 then an = [an,anbg[index]]
+         endif
+         nele = n_elements(an)
+         if nele lt nrmin then begin
+            limit += 0.2
+            nrnew = nele
+            if limit lt 10*file.zdim then goto, grow_further
+         endif
 
-			ibox = span(an)
-			imean= mean(ibox)
-			vary = total((ibox-imean)^2)/(nele-1) 
-			varx = (vary - imean^2*sig2) / sfak > 0
-			k    = varx / vary
+         ibox = span(an)
+         imean= mean(ibox)
+         vary = total((ibox-imean)^2)/(nele-1) 
+         varx = (vary - imean^2*sig2) / sfak > 0
+         k    = varx / vary
 
-			win   = (lonarr(nmat) + 1) ## (an*nmat) + pol ## (lonarr(nele) + 1)
-			covec = arr[win]																; covec contains all complex values of the window			
-			meanc = total(covec,1)  / nele											; meanc contains the averaged complex values for each polarisation
-			cov   = arr[pos[0]*nmat+pol]
-			out[*,*,i,j] = meanc + (cov - meanc) * k
-		endfor
-	endfor
-	return,out
+         win   = (lonarr(nmat) + 1) ## (an*nmat) + pol ## (lonarr(nele) + 1)
+         covec = arr[win] ; covec contains all complex values of the window			
+         meanc = total(covec,1)  / nele ; meanc contains the averaged complex values for each polarisation
+         cov   = arr[pos[0]*nmat+pol]
+         out[*,*,i,j] = meanc + (cov - meanc) * k
+      endfor
+   endfor
+   return,out
 end
 
 pro speck_polidan,CALLED = called, GUI=GUI, NMAX=nmax,NMIN=nmin,LOOKS=nlook
