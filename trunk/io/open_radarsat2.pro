@@ -88,7 +88,7 @@ pro open_radarsat2,INPUTFILE = inputfile
 			;write rat header
 			srat,config.tempdir+config.workfile1,lun_out,header=[3l,4l,anz_rg,anz_az,6l],type=t
 
-			progress,Message='Decoding RADARSAR-2 Polarimetric ...'
+			progress,Message='Decoding RADARSAT-2 Polarimetric ...'
 			;loop through tiff files and write rat file
 			arr = complexarr(4,anz_rg,1)
 			for i=0l,anz_az-1 do begin
