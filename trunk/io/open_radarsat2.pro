@@ -21,7 +21,7 @@ pro open_radarsat2,INPUTFILE = inputfile
 	common channel, channel_names, channel_selec, color_flag, palettes, pnames
 
 	main = WIDGET_BASE(GROUP_LEADER=wid.base,row=4,TITLE='RADARSAT-2 import',/floating,/tlb_kill_request_events,/tlb_frame_attr )
-	butt = cw_bgroup(main,[' Load quadpol data set',' Load single-pol data set'],set_value=0,row=2,/exclusive)		
+	butt = cw_bgroup(main,[' Load quadpol data set',' Load single-pol data set'],set_value=0,row=2,/exclusive)
 	buttons  = WIDGET_BASE(main,column=3,/frame)
 	but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
 	but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
@@ -53,23 +53,23 @@ pro open_radarsat2,INPUTFILE = inputfile
 	if strlen(inputfile) gt 0 then begin
 
 ; change mousepointer
-	
+
 		WIDGET_CONTROL,/hourglass                ; switch mouse cursor
 ; undo function
                 undo_prepare,outputfile,finalfile,CALLED=CALLED
                 open_rit,/EMPTY ; no parameters are set: delete the old ones!
 
 ; Get all the files
-		
+
 		if channels eq 0 then begin
 			filex = file_basename(inputfile)
 			filex = strsplit(filex,'_',/extract)
-			
+
 			file_hh = path+filex[0]+'_HH.tif'
 			file_vv = path+filex[0]+'_VV.tif'
 			file_hv = path+filex[0]+'_HV.tif'
 			file_vh = path+filex[0]+'_VH.tif'
-			
+
 			if not (file_test(file_hh) and file_test(file_vv) and file_test(file_hv) and file_test(file_vh)) then begin
 				channels = 1
 				dummy = DIALOG_MESSAGE(["Not all of the quad-pol files found !","Loading single-pol instead"], DIALOG_PARENT = wid.base, TITLE='Error',/information)
@@ -77,22 +77,35 @@ pro open_radarsat2,INPUTFILE = inputfile
 		endif
 
 ; Load all the files
-		
+		;need to modify for tiled reading to get around memory constraints
 		if channels eq 0 then begin
-			dummy = read_tiff(file_hh,geotiff=para)
-			dummy = complex(reform(dummy[0,*,*]),reform(dummy[1,*,*]))
-			siz   = size(dummy)
-			anz_rg = siz[1]
-			anz_az = siz[2]
-			arr = complexarr(4,anz_rg,anz_az)
-			arr[0,*,*] = dummy
-			dummy = read_tiff(file_vv,geotiff=para)
-			arr[1,*,*]  = complex(reform(dummy[0,*,*]),reform(dummy[1,*,*]))
-			dummy = read_tiff(file_hv,geotiff=para)
-			arr[2,*,*]  = complex(reform(dummy[0,*,*]),reform(dummy[1,*,*]))
-			dummy = read_tiff(file_vh,geotiff=para)
-			arr[3,*,*]  = complex(reform(dummy[0,*,*]),reform(dummy[1,*,*]))
+
+			info = query_tiff(file_hh,tinfo,geotiff=para)
+
+			anz_rg = tinfo.dimensions[0]
+			anz_az = tinfo.dimensions[1]
 			t = 200l
+			;write rat header
+			srat,config.tempdir+config.workfile1,lun_out,header=[3l,4l,anz_rg,anz_az,6l],type=t
+
+			progress,Message='Decoding RADARSAR-2 Polarimetric ...'
+			;loop through tiff files and write rat file
+			arr = complexarr(4,anz_rg,1)
+			for i=0l,anz_az-1 do begin
+				progress,percent=i*100.0/anz_az
+				sub_rect = [0,i,anz_rg,1]
+				dummy = read_tiff(file_hh,geotiff=para,sub_rect=sub_rect)
+				arr[0,*,*] = complex(reform(dummy[0,*,*]),reform(dummy[1,*,*]))
+				dummy = read_tiff(file_vv,geotiff=para,sub_rect=sub_rect)
+				arr[1,*,*]  = complex(reform(dummy[0,*,*]),reform(dummy[1,*,*]))
+				dummy = read_tiff(file_hv,geotiff=para,sub_rect=sub_rect)
+				arr[2,*,*]  = complex(reform(dummy[0,*,*]),reform(dummy[1,*,*]))
+				dummy = read_tiff(file_vh,geotiff=para,sub_rect=sub_rect)
+				arr[3,*,*]  = complex(reform(dummy[0,*,*]),reform(dummy[1,*,*]))
+				writeu,lun_out,arr
+			endfor
+			;close file handle
+			free_lun,lun_out
 		endif else begin
 			dummy = read_tiff(inputfile,geotiff=para)
 			arr = complex(reform(dummy[0,*,*]),reform(dummy[1,*,*]))
@@ -100,13 +113,13 @@ pro open_radarsat2,INPUTFILE = inputfile
 			anz_rg = siz[1]
 			anz_az = siz[2]
 			t = 101l
-		endelse		
-		srat,config.tempdir+config.workfile1,arr,type=t
+			srat,config.tempdir+config.workfile1,arr,type=t
+		endelse
 
 ; set internal variables of RAT
-	
+
 		file.name = config.tempdir+config.workfile1
-		file.info = 'unknown'                    ; Put here a string describing your data
+		file.info = 'RADARSAT-2 Data'            ; Put here a string describing your data
 		file.type = 200l                         ; data type (101 = single channel complex)
 		file.dim  = 3l                           ; single channel data (two-dimensional array)
 		file.xdim = anz_rg                       ; range image size
@@ -114,7 +127,7 @@ pro open_radarsat2,INPUTFILE = inputfile
 		file.zdim = 4l                           ; nr. of layers (set to 1 if not needed)
 		file.vdim = 1l                           ; nr. of layers of layers (set to 1 if not needed)
 		file.var  = 6l                           ; IDL variable type (6 = complex, 4 = floating point)
- 		
+
 		if channels eq 1 then begin
 			file.dim  = 2l                           ; single channel data (two-dimensional array)
 			file.xdim = anz_rg                          ; range image size
@@ -126,11 +139,11 @@ pro open_radarsat2,INPUTFILE = inputfile
 		endif
 
 ; update file generation history (evolution)
-	
+
 		evolute,'Import SAR data from RADARSAT2.'
 
 ; read palette information
-	
+
 		palettes[0,*,*] = palettes[2,*,*] ; set variable palette to b/w linear
 		palettes[1,*,*] = palettes[2,*,*] ; set variable palette to b/w linear
 
@@ -139,7 +152,7 @@ pro open_radarsat2,INPUTFILE = inputfile
 		file.window_name = 'Untitled.rat'
 		generate_preview
 		update_info_box
-	
-	endif	
+
+	endif
 end
 

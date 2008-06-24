@@ -19,20 +19,20 @@
 
 pro about
 	common rat, types, file, wid, config
-	
+
 	infostring = [ $
 	'RAT - Radar Tools  (Version SVN-HEAD)',$
 	'---------------------------------------------',$
-	'(c) 2003-2008 by the RAT development team',$ 
+	'(c) 2003-2008 by the RAT development team',$
 	'---------------------------------------------',$
 	'Current coordination & main programming:',$
-   'Andreas Reigber, Maxim Neumann & Thisham Dhar',$
+   'Andreas Reigber, Maxim Neumann & Tisham Dhar',$
 	' ',$
 	'Additional programming: ',$
 	'Markus Steiof, Stephane Guillaso, Franz Mayer, ',$
 	'Marcus Saemmang, Jan-Christoph Unger, Marc Jaeger,',$
 	'Thomas Weser, Oliver Bach, Bert Wolff',$
 	'Andre Lehmann, Nicole Bouvier, Mathias Weller']
- 	
+
 	dummy=DIALOG_MESSAGE(infostring,DIALOG_PARENT = wid.base, TITLE='About RAT',/INFORMATION)
 end
