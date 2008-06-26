@@ -107,13 +107,27 @@ pro open_radarsat2,INPUTFILE = inputfile
 			;close file handle
 			free_lun,lun_out
 		endif else begin
-			dummy = read_tiff(inputfile,geotiff=para)
-			arr = complex(reform(dummy[0,*,*]),reform(dummy[1,*,*]))
-			siz   = size(arr)
-			anz_rg = siz[1]
-			anz_az = siz[2]
+
+			info = query_tiff(inputfile,tinfo,geotiff=para)
+
+			anz_rg = tinfo.dimensions[0]
+			anz_az = tinfo.dimensions[1]
 			t = 101l
-			srat,config.tempdir+config.workfile1,arr,type=t
+			;write rat header
+			srat,config.tempdir+config.workfile1,lun_out,header=[2l,anz_rg,anz_az,6l],type=t
+
+			progress,Message='Decoding RADARSAT-2 Single Channel ...'
+			;loop through tiff files and write rat file
+			arr = complexarr(1,anz_rg,1)
+			for i=0l,anz_az-1 do begin
+				progress,percent=i*100.0/anz_az
+				sub_rect = [0,i,anz_rg,1]
+				dummy = read_tiff(inputfile,geotiff=para,sub_rect=sub_rect)
+				arr[0,*,*] = complex(reform(dummy[0,*,*]),reform(dummy[1,*,*]))
+				writeu,lun_out,arr
+			endfor
+			;close file handle
+			free_lun,lun_out
 		endelse
 
 ; set internal variables of RAT
