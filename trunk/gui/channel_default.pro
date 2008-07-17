@@ -26,7 +26,7 @@
 pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_flag
 	common rat, types, file, wid, config
 	common channel, channel_names, channel_selec, color_flag
-	
+   compile_opt idl2
 
 	;--> Initialisation
 	if not keyword_set(dim) then dim=file.dim
@@ -117,10 +117,13 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
 		211 : begin
 ;  			channel_names = ['Double Bounce','Volume','Surface']
 ;  			channel_selec = [0,1,2]
-			names = ['Double Bounce','Volume','Surface']
+         names = strarr(file.zdim*file.vdim)
+         if file.vdim eq 8 then $
+            names[0] = ['Double Bounce','Volume','Surface', 'rho', '|alpha|', 'fc', 'fg', 'arg(alpha)'] $
+         else names[0] = ['Double Bounce','Volume','Surface']
 			select = [0,1,2]
                         if file.vdim gt 1 then begin
-                           names = [names[0]+' track'+strcompress(indgen(file.zdim)), $
+                           names[0] = [names[0]+' track'+strcompress(indgen(file.zdim)), $
                                     names[1]+' track'+strcompress(indgen(file.zdim)), $
                                     names[2]+' track'+strcompress(indgen(file.zdim))]
                         endif
