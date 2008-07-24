@@ -30,30 +30,32 @@ pro save_image,OUTPUTFILE = outputfile,PNG=png,JPG=jpg,TIFF=tiff
 	if strlen(outputfile) gt 0 then begin
 
 ; change mousepointer
-	
+
 		WIDGET_CONTROL,/hourglass
 
 ;---------------------------------
 ; Bytscaling
 ;---------------------------------
 
-		preview,file.name,config.tempdir+config.lookfile,/full 
+		preview,file.name,config.tempdir+config.lookfile,/full
 		rrat,config.tempdir+config.lookfile,image                ; read preview file
+		;Image wide byte-scaling may fail for large arrays
 		image = float2bytes(image)                               ; do optimised bytscaling
-		
-		progress,/destroy	
+
+
+		progress,/destroy
 
 ; save to file
 
 		if keyword_set(PNG)  then rat_tv,image,save=outputfile,/png
-		if keyword_set(JPG)  then rat_tv,image,save=outputfile,/jpg 
+		if keyword_set(JPG)  then rat_tv,image,save=outputfile,/jpg
 		if keyword_set(TIFF) then rat_tv,image,save=outputfile,/tif
-				
+
 ;  			if keyword_set(PNG) then WRITE_PNG,outputfile,arr
 ;  			if keyword_set(JPG) then WRITE_JPEG,outputfile,arr,true=1
 ;  			if keyword_set(TIFF) then WRITE_TIFF,outputfile,reverse(arr,3)
 ;		endif
-		
+
 	endif
-	
+
 end
