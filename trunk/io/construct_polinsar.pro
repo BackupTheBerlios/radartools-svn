@@ -120,6 +120,9 @@ pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_ge
      files[0]=''
      goto,tryagain
   endif
+  ;need to extend to handle partial polarimetry datasets
+  ;where only 2-channels are present - these need to be
+  ;identfiable as HH/VV/HV etc.
   if type0 lt 200 || type0 gt 210 || head0[0] ne 3 then begin
      error = DIALOG_MESSAGE('0: Data has to be a polarimetric (3-pol) scattering vector', $
                             DIALOG_PARENT = wid.base, TITLE='Error',/error)
@@ -162,7 +165,7 @@ pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_ge
   xdim  = head[2]
   ydim  = head[3]
   var   = head[4]
-  case type of 
+  case type of
      200: newtype=500L
      209: newtype=502L
      210: newtype=501L
@@ -172,7 +175,7 @@ pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_ge
 
 ; calculating preview size and number of blocks
   bs = config.blocksize
-  calc_blocks_normal,ydim,bs,anz_blocks,bs_last 
+  calc_blocks_normal,ydim,bs,anz_blocks,bs_last
   blocksizes = intarr(anz_blocks)+bs
   blocksizes[anz_blocks-1] = bs_last
 ; pop up progress window
@@ -204,7 +207,7 @@ pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_ge
   file.type  = newtype
   file.info  = newinfo
   file_move,outputfile,finalfile,/overwrite
-  
+
   open_rit,/EMPTY
   ignore = set_par('polarizations',pol)
   ignore = set_par('nr_tracks',n_tr)
