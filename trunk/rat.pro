@@ -390,7 +390,7 @@ PRO rat_event, event
                'Transform.Image pair -> interferogram'   : pair2interf
                'Transform.Extract amplitude'             : interf2amp
                'Transform.Extract phase'                 : interf2pha
-               'Coregistration with Orbit (global)'	 	 	 : coreg_orbit
+               'Coregistration.Orbit (global)'	 	 	 : coreg_orbit
                'Coregistration.Coarse (global)'	         	 : coreg_one
                'Coregistration.Subpixel (global)'		     : coreg_sub
                'Coregistration.Array of patches'		     : coreg_patch
@@ -843,6 +843,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
 
    desc_insar_menu = [ $
                        '5\Coregistration', $
+                       '0\Orbit (global)', $
                        '0\Coarse (global)'   , $
                        '0\Subpixel (global)' , $
                        '2\Array of patches'	, $
