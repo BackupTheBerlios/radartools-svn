@@ -29,6 +29,7 @@
 @insar/rm_flatearth_fft
 @insar/rm_flatearth_geometry
 @insar/rm_flatearth_file
+@insar/coreg_orbit
 @insar/coreg_one
 @insar/coreg_sub
 @insar/coreg_patch

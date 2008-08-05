@@ -390,7 +390,8 @@ PRO rat_event, event
                'Transform.Image pair -> interferogram'   : pair2interf
                'Transform.Extract amplitude'             : interf2amp
                'Transform.Extract phase'                 : interf2pha
-               'Coregistration.Coarse (global)'	                     : coreg_one
+               'Coregistration with Orbit (global)'	 	 	 : coreg_orbit
+               'Coregistration.Coarse (global)'	         	 : coreg_one
                'Coregistration.Subpixel (global)'		     : coreg_sub
                'Coregistration.Array of patches'		     : coreg_patch
                'Phase noise filter.Boxcar'			     : pnoise_mean
