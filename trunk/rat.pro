@@ -95,6 +95,8 @@ PRO rat_event, event
             case event.value of
                'Open RAT file'                                             : open_rat
                'Save RAT file'                                             : save_rat
+               'Open internal.F-SAR.DCSLC'                                 : open_fsardcslc
+               'Open internal.F-SAR.INTG'                                  : open_fsarintg
                'Open internal.E-SAR DCSLC'                                 : open_esardcslc
                'Open internal.rarr / sarr'                                 : open_rarr
                'Open internal.2*long + complex'                            : open_2lcmp
@@ -550,6 +552,9 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                     '0\Generic binary', $
                     '2\ENVI standard', $
                     '1\Open internal', $
+                    '1\F-SAR', $
+                    '0\DCSLC', $
+                    '2\INTG', $
                     '0\E-SAR DCSLC', $
                     '0\rarr / sarr', $
                     '2\2*long + complex', $

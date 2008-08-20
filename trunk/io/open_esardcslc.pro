@@ -49,7 +49,7 @@ pro open_esardcslc,INPUTFILE = inputfile
 		readu,ddd,anzx
 		inf = fstat(ddd)
 		anzy = (inf.size - 12 ) / anzx / 8
-		srat,config.tempdir+config.workfile1,eee,header=[2l,anzx,anzy,6l],type=0l
+		srat,config.tempdir+config.workfile1,eee,header=[2l,anzx,anzy,6l],type=101l
 
 		bs_y  = config.blocksize
 		zeile = complexarr(anzx,bs_y)
