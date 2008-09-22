@@ -136,6 +136,7 @@ PRO rat_event, event
                'Construct.Multitemporal.Change existing multitemporal set' : construct_multi, /called
                'Construct.Multitemporal'                                   : construct_multi
                'Construct.PolSAR vector'                                   : construct_polsar
+               'Construct.Dual-Pol vector'								   : construct_dualpol
                'Construct.InSAR pair'                                      : construct_insar
                'Construct.MB-PolInSAR vector'                              : construct_polinsar
 ;              'Construct.MB-SAR vector'                                   : construct_polinsar
@@ -523,6 +524,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                     '0\Create new multitemporal set', $
                     '2\Change existing multitemporal set', $
                     '0\PolSAR vector', $
+                    '0\Dual-Pol vector',$
                     '0\InSAR pair', $
                     '0\MB-PolInSAR vector', $
                     '0\Flat earth file' , $

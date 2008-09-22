@@ -34,6 +34,7 @@
 @io/save_generic.pro
 @io/construct_insar.pro
 @io/construct_polsar.pro
+@io/construct_dualpol.pro
 @io/construct_polinsar.pro
 @io/open_esar.pro
 @io/open_envi.pro
