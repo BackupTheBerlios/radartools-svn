@@ -21,7 +21,7 @@
 
 ;;; input: T : coherency or covariance matrix
 ;;; REF_CHANNEL and BOX are in general well adapted and do not need modification.
-function remove_topo, input_T, REF_CHANNEL=topo_ch,BOX=box
+function remove_topo_T, input_T, REF_CHANNEL=topo_ch,BOX=box
   T   = input_T
   polin_get_info,pol=pol,tracks=n_tr,baselines=n_bl
   if n_elements(BOX) eq 0 then box = 15
@@ -40,19 +40,34 @@ function remove_topo, input_T, REF_CHANNEL=topo_ch,BOX=box
   endfor
   return,T
 end
+function remove_topo_k, k, REF_CHANNEL=topo_ch,BOX=box
+  polin_get_info,pol=pol,tracks=n_tr,baselines=n_bl
+  if n_elements(BOX) eq 0 then box = 20
+  topo_box = [1,1,box,box]
 
-pro polin_remove_topo,CALLED=called
+  for s=1,n_tr-1 do begin
+     phi = atan(k[1, 0, *,*]*conj(k[1, s, *,*]),/phase); choose VV channel
+     C   = complex(cos(phi),sin(phi))
+     Cs  = smooth(C,topo_box,/E)
+     Cs /= abs(Cs)
+     for j=0, pol-1 do  $
+        k[j,s,*,*] *= Cs
+  endfor
+  return,k
+end
+
+pro polin_remove_topo,CALLED=called, box_given=box_given
   common rat, types, file, wid, config
   compile_opt idl2
 
 ; check if array is complex
 
-   if ~((file.type ge 510 && file.type le 513)) then begin
+   if ~((file.type ge 500 && file.type le 513)) then begin
       error_button = DIALOG_MESSAGE('Wrong input data type', DIALOG_PARENT = wid.base, TITLE='Error',/ERROR)
       return
    endif
-
-   box = 15
+   if n_elements(box_given) ne 0 then box = box_given else $
+      box = 20
    show_intrf = 0
    if not keyword_set(called) then begin ; Graphical interface
       main = WIDGET_BASE(GROUP_LEADER=wid.base,row=4, $
@@ -108,7 +123,7 @@ pro polin_remove_topo,CALLED=called
    byt=[0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8] ; bytelength of the different variable typos
 
 ; pop up progress window
-   progress,Message='Removing tomographic phase...',/cancel_button
+   progress,Message='Removing the topographic phase...',/cancel_button
 
 ;start block processing
    for i=0,anz_blocks-1 do begin ; normal blocks
@@ -119,7 +134,10 @@ pro polin_remove_topo,CALLED=called
                          type=file.var,/NOZERO)
       readu,ddd,block
 ; -------- THE FILTER ----------
-      block=remove_topo(block,box=box)
+      if file.type ge 510 then $
+         block=remove_topo_T(block,box=box) $
+      else $
+         block=remove_topo_k(block,box=box)
 ; -------- THE FILTER ----------
       if i eq anz_blocks-1 then ypos2 = bs_last
       writeu,eee,block[*,*,*,ypos1:ypos2-1]

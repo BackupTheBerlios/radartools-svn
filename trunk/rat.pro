@@ -309,6 +309,9 @@ PRO rat_event, event
                'Calibration.Cross-polar symmetrisation'    		: calib_xsym ; done !
                'Calibration.Reflection symmetrisation'			: ; polin_calib_natural,/REFLECTION_SYM
                'Calibration.Freeman volume power adjustment'		: ; polin_calib_natural,/VOL_CALIB
+               'Calibration.Not recommended.Enforcing reflection symmetry':  polin_calib_natural,/REFLECTION_SYM
+               'Calibration.Not recommended.Enforcing polarimetric stationarity':  polin_calib_natural,/POL_STATIONARITY
+               'Calibration.Not recommended.Enforcing Freeman volume power':  polin_calib_natural,/VOL_CALIB
                'RFI filter'                              		: rfi_filter ; done !
 ;                      'Edge detection.Polarimetric CFAR'		: edge_pol_cfar
                'Remove topography.Maximum likelihood estimation (MLE)'	: polin_remove_topo ; done !
@@ -751,9 +754,11 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
 ;                  '0\MB parameter inversion analysis', $
    '2\Calculate # of looks',$
      '1\Calibration',$
+     '5\Not recommended', $
+     '0\Enforcing reflection symmetry', $
+     '0\Enforcing polarimetric stationarity', $
+     '2\Enforcing Freeman volume power', $
      '2\Cross-polar symmetrisation', $
-;                   '0\Reflection symmetrisation', $
-;                   '2\Freeman volume power adjustment', $
    '0\RFI filter'   , $
      '5\Remove topography',$
      '0\Maximum likelihood estimation (MLE)', $

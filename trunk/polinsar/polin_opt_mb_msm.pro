@@ -3,8 +3,7 @@
 ;------------------------------------------------------------------------
 ; RAT Module: polin_opt_mb_msm
 ; written by       : Maxim Neumann
-; last revision    : 08/2006
-; Simultaneously Multibaseline Coherence Optimization
+; last revision    : 04/2008
 ;------------------------------------------------------------------------
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in

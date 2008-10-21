@@ -20,7 +20,40 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-pro polin_extract_polsar,CALLED = called, NO_GUI=no_gui, channelvector=channelvector
+; docformat = 'rst'
+;+
+; Extract PolSAR image from MB-PolInSAR
+;
+; :Keywords:
+;    called: in, optional, type="flag"
+;       call routine without GUI in batchmode
+;    no_gui: in, optional, type="flag"
+;    channelvector: in, optional, type="int"
+;       Track number to extract
+;    all: in, optional, type="flag"
+;       Average all tracks into one PolSAR image
+;    
+; :Params:
+;
+; :Author: Maxim Neumann
+; 
+; :Categories: PolInSAR
+;
+; :Copyright:
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
+;-
+pro polin_extract_polsar,CALLED = called, NO_GUI=no_gui, CHANNELVECTOR=channelvector, ALL=all
   common rat, types, file, wid, config
   common channel, channel_names, channel_selec, color_flag
   compile_opt idl2
@@ -44,6 +77,7 @@ pro polin_extract_polsar,CALLED = called, NO_GUI=no_gui, channelvector=channelve
 
   polin_get_info, pol=pol, tracks=n_tr, baselines=n_bl, matrix=matrix
   if n_elements(channelvector) eq 0 then channelvector = 0
+  if keyword_set(ALL) then channelvector = n_tr
 
   if ~keyword_set(called) && ~keyword_set(no_gui) then begin ; Graphical interface
      main = WIDGET_BASE(GROUP_LEADER=wid.base,row=4, $
@@ -140,12 +174,14 @@ pro polin_extract_polsar,CALLED = called, NO_GUI=no_gui, channelvector=channelve
   pol_new  = pol
   ignore = set_par('polarizations',pol_new)
   ignore = set_par('nr_tracks',n_tr_new)
-  evolute,'Extract POLSAR image'
+  evolute,'Extract POLSAR image from MB-PolInSAR data: '+(channelvector eq n_tr?'average all '+strcompress(n_tr, /r)+ $
+                                                          ' tracks':'track '+strcompress(channelvector, /r))
 
 ; generate preview
   if not keyword_set(called) then begin
      generate_preview
      update_info_box
-  endif
+  endif else $
+     channel_default
 
 end

@@ -23,6 +23,7 @@
 
 pro calib_xsym,CALLED=called,METHOD = method
   common rat, types, file, wid, config
+  compile_opt idl2
 
 ; check if array is usable - get new type
   type_all   = [200L,210,220,221,500,501,510,511]
@@ -74,7 +75,7 @@ pro calib_xsym,CALLED=called,METHOD = method
 
 
 ; GUI
-  if n_elements(method) eq 0 then method = 1 
+  if n_elements(method) eq 0 then method = 0
   if not keyword_set(called) then begin ; Graphical interface
      main = WIDGET_BASE(GROUP_LEADER=wid.base,row=3,TITLE='Cross-polar symmetrisation',/floating,/tlb_kill_request_events,/tlb_frame_attr)
      field2 = widget_label(main,value='Select symmetrisation method:')

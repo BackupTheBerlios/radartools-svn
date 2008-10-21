@@ -120,7 +120,7 @@ pro speck_polmean,CALLED = called, GUI=GUI, SMMX = smmx, SMMY = smmy
      block = make_array([file.vdim,file.zdim,file.xdim,blocksizes[i]],type=file.var)
      readu,ddd,block
 ; -------- THE FILTER ----------
-     block = smooth(block,smm_box,/edge_truncate)   
+     block = smooth(block,smm_box,/edge_truncate, /nan)
 ; -------- THE FILTER ----------
      if i eq anz_blocks-1 then ypos2 = bs_last
      writeu,eee,block[*,*,*,ypos1:ypos2-1]

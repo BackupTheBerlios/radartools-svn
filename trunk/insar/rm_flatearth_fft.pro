@@ -23,6 +23,7 @@
  
 pro rm_flatearth_fft,CALLED = called, FRINGEX = fringex, FRINGEY = fringey
 	common rat, types, file, wid, config
+   compile_opt idl2
 
 	if file.type ne 300 and file.type ne 301 and file.type ne 302 then begin                   
 		error = DIALOG_MESSAGE("This is not an interferogram ", DIALOG_PARENT = wid.base, TITLE='Error',/error)
@@ -145,7 +146,7 @@ pro rm_flatearth_fft,CALLED = called, FRINGEX = fringex, FRINGEY = fringey
 	
 	file_move,outputfile,finalfile,/overwrite
 	file.name = finalfile
-        file.info += ' (FFE-fe removed)'
+        file.info += ' (FFT-fe removed)'
 
 ; generate preview
 

@@ -307,15 +307,16 @@ function oap_xtalk,covar
 end
 
 
-pro calib_xtalkoap,SMMX=smmx,SMMY=smmy,EXCLUDEPIX=excludepix,CALFILE=calfile
+pro calib_xtalkoap, CALLED=CALLED, SMMX=smmx,SMMY=smmy,EXCLUDEPIX=excludepix,CALFILE=calfile
 
    common rat, types, file, wid, config, tiling
 
    if not keyword_set(smmx) then smmx = 16 ; Routine called with keywords
    if not keyword_set(smmy) then smmy = 128 ; Default values
    if not keyword_set(excludepix) then excludepix = 0 ; Default values
+   if n_elements(calfile) eq 0 then calfile = ''
 
-   if not keyword_set(flag_chck) then flag_chck = 1 ; Default values
+   if not keyword_set(flag_chck) then flag_chck = ~keyword_set(CALLED) ; Default values
    if not keyword_set(flag_calf) then flag_calf = 0 ; Default values
 
 ; ---- CHECK IF ARRAY IS USABLE ----
@@ -366,7 +367,7 @@ pro calib_xtalkoap,SMMX=smmx,SMMY=smmy,EXCLUDEPIX=excludepix,CALFILE=calfile
             info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
          end
 
-                                ; get the classification H/alpha filename
+                                ; get the filename
          if event.id eq cffield3 then begin
             path = config.workdir
             calfile = dialog_pickfile(title='Select output calfile',dialog_parent=wid.base, filter = '*.ps',path=path,get_path=path)
@@ -612,7 +613,7 @@ pro calib_xtalkoap,SMMX=smmx,SMMY=smmy,EXCLUDEPIX=excludepix,CALFILE=calfile
 
    endif
 
-   if flag_calf and strlen(calfile) gt 0 then begin
+   if flag_calf && (strlen(calfile) gt 0) then begin
 
       set_plot,'ps'
       device,filename=calfile,/color,/encaps,xsize=21,ysize=29.7

@@ -267,33 +267,33 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
 		end
 ;  		404 : channel_names = ['forest','surface','double']
 		404 : names = ['forest','surface','double']
-                411 : begin
+      411 : begin
                     names = ['Mean intensity', 'Homogeneity mask']
                     select = [0,1,1]
                  end
 ;;; PolInSAR scattering vectors
-                500 : begin
+      500 : begin
                    str1 = ['HH','VV',(vdim eq 3?'sr2HV':['HV','VH'])]
                    names = str1 + '1'
                    for i=2,zdim do $
                       names = [names,str1+strcompress(i,/R)]
                    select = [1,2,0]
                 end
-                501 : begin
+      501 : begin
                    str1 = ['HH+VV','HH-VV',(vdim eq 3?'sr2*HV':['HV+VH','i(HV-VH)'])]
                    names = str1 + '1'
                    for i=2,zdim do $
                       names = [names,str1+strcompress(i,/R)]
                    select = [1,2,0]
                 end
-                502 : begin
+      502 : begin
                    str1 = ['XX','YY',(vdim eq 3?'sr2*XY':['XY','YX'])]
                    names = str1 + ' 1'
                    for i=2,zdim do $
                       names = [names,str1+strcompress(i,/R)]
                    select = [1,2,0]
                 end
-                503 : begin
+      503 : begin
                    str1 = ['XX+YY','XX-YY',(vdim eq 3?'sr2*XY':['XY+YX','i(XY-YX)'])]
                    names = str1 + '1'
                    for i=2,zdim do $
@@ -319,7 +319,7 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                    for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+' '+str[z]
                    select = [zdim+1,2*zdim+2,0]
                 end
-                512 : begin
+      512 : begin
                    n_pol  = vdim mod 3 eq 0? 3L: 4L & n_tr = zdim/n_pol
                    pol = ['XX','YY',(n_pol eq 3?'sr2*XY':['XY','YX'])]
                    str = pol+'1'
@@ -328,7 +328,7 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                    for v=0,vdim-1 do for z=0,zdim-1 do names[v,z]=str[v]+' '+str[z]
                    select = [zdim+1,2*zdim+2,0]
                 end
-                513 : begin
+      513 : begin
                    n_pol  = vdim mod 3 eq 0? 3L: 4L & n_tr = zdim/n_pol
                    pol = ['XX+YY','XX-YY',(n_pol eq 3?'sr2*XY':['XY+YX','i(XY-YX)'])]
                    str = pol+'1'
@@ -348,7 +348,7 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                    select = [zdim+1+n_pol,2*zdim+2+n_pol,n_pol]
                 end
 ;;; PolInSAR coherences
-                530 : begin ;; coherence (complex and real)
+      530 : begin ;; coherence (complex and real)
                    names = strarr(zdim*vdim)
                    cohName=vdim eq 3?['XX','YY','XY']: $
                            vdim eq 4?['XX','YY','XY','YX']:strcompress(indgen(vdim),/R) 
@@ -357,14 +357,14 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                       strjoin(strcompress(mb_ind(j)+1,/r),'x')
                    if zdim*vdim ge 3 then select = [0,1,2]
                 end
-                531 : begin ;;; obsolete !!! only for compatibility with older data sets (mn,2006)
+      531 : begin ;;; obsolete !!! only for compatibility with older data sets (mn,2006)
                    names = strarr(zdim*vdim)
                    for j=0,zdim-1 do for i=0,vdim-1 do names[i+j*vdim]='coh'+strcompress(i,/r)+strcompress(j,/r)
                    if zdim*vdim ge 3 && vdim ne zdim then select = [1,2,0]
                 end
 ;;; Optimal coherences (keep it besause of the alternative channel selection in
 ;;; comparison with general coherence! (mn,08/06))
-                532 : begin  
+      532 : begin  
                    names = strarr(zdim*vdim)
                    cohName=strcompress(indgen(vdim)+1,/r)
                    for j=0,zdim-1 do for i=0,vdim-1 do $
@@ -372,17 +372,17 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                       strjoin(strcompress(mb_ind(j)+1,/r),'x')
                    if zdim*vdim ge 3 then select = [1,0,2]
                 end
-                540 : begin
+      540 : begin
                    names1 = ['A1','A2','Hint','Aint']
                    names = strarr(zdim*vdim)
                    for j=0,zdim-1 do for i=0,vdim-1 do names[i+j*vdim]=names1[i]+'bl'+strcompress(j,/R) 
                    select = [1,0,0]
                 end
 ;;; Time-frequency sub-app data types.
-                600 : begin
+      600 : begin
                    names = 'SubAp '+strcompress(indgen(zdim),/R) 
                 end
-                601 : begin
+      601 : begin
                    str1 = 'Ch'+strcompress(indgen(vdim),/R)
                    names = str1 + ' SubAp0'
                    for i=1,zdim-1 do $
@@ -391,21 +391,21 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
                    else if vdim*zdim ge 2 then select = [0,1,1] $
                    else select=[0,0,0]
                 end
-                604 : begin
+      604 : begin
                    str1 = 'Ch'+strcompress(indgen(vdim),/R)
                    names = str1 + ' SubAp0'
                    for i=1,zdim-1 do $
                       names = [names,str1+' SubAp'+strcompress(i,/R)]
                    select = [1,2,0]
                 end
-                605 : begin
+      605 : begin
                    str1 = 'Ch'+strcompress(indgen(vdim),/R)
                    names = str1 + ' SubAp0'
                    for i=1,zdim-1 do $
                       names = [names,str1+' SubAp'+strcompress(i,/R)]
                    select = [1,2,0]
                 end
-                610 : begin
+      610 : begin
                    md = sqrt(vdim) ; matrix dim
                    str1 = 'Ch'+strcompress(indgen(md),/R)
                    str2 = strarr(md,md)

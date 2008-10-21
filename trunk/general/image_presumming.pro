@@ -118,8 +118,9 @@ pro image_presumming,CALLED = called, SMMX = smmx, SMMY = smmy
 	file.ydim = ynew
 	file_move,outputfile,finalfile,/overwrite
 
-; generate preview
+   evolute, 'Image presumming: '+strcompress(smmx, /r)+'x'+strcompress(smmy, /r)
 
+; generate preview
 	if not keyword_set(called) then begin
 		generate_preview
 		update_info_box

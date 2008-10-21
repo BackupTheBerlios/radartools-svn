@@ -29,7 +29,8 @@
 
 
 pro polin_get_info, POL_NR=pol, TRACKS_NR=n_tr, BASELINES_NR=n_bl, MATRIX=MATRIX, $
-                    USE_KZ=use_kz, KZ_FILE=kz_file, USE_BL=use_bl, BL_FILE=bl_file
+                    USE_KZ=use_kz, KZ_FILE=kz_file, USE_BL=use_bl, BL_FILE=bl_file, $
+                    BASIS_POLARIZATION=BASIS_POL
   common rat, types, file, wid, config
 
 ;;; polarimetry only!
@@ -87,6 +88,14 @@ endif
         use_bl = 0
         bl_file= ''
      endelse
+  endif
+
+;;; polarization basis
+  if arg_present(basis_pol) then begin
+     tmp1 = get_par('polbasis_ellipticity',pol_ellipt)
+     tmp2 = get_par('polbasis_orientation',pol_orient)
+     if tmp1 eq 0 && tmp2 eq 0 then basis_pol = [pol_ellipt, pol_orient] $
+     else basis_pol = -1
   endif
 
 end

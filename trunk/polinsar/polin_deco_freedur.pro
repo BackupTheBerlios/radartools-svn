@@ -76,26 +76,62 @@ function polin_deco_freedur_func, C, METHOD=METHOD
 end
 
 
+; docformat = 'rst'
+;+
+; Polarimetric Freeman-Durden for multibaseline data
+; [Double-Bounce, Volume, Surface]
+;
+; :Keywords:
+;    called: in, optional, type="flag"
+;       call routine without GUI in batchmode
+;    method: in, optional, type=int
+;       0: standard, 1: adjust the power for bad points (more correct) +more DB
+;    
+; :Params:
+;
+; :Author: Maxim Neumann
+; 
+; :Categories: PolInSAR
+;
+; :Copyright:
+; The contents of this file are subject to the Mozilla Public License
+; Version 1.1 (the "License"); you may not use this file except in
+; compliance with the License. You may obtain a copy of the License at
+; http://www.mozilla.org/MPL/
+;
+; Software distributed under the License is distributed on an "AS IS"
+; basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+; License for the specific language governing rights and limitations
+; under the License.
+;
+; The Initial Developer of the Original Code is the RAT development team.
+; All Rights Reserved.
+;-
 pro polin_deco_freedur,CALLED = called, METHOD=METHOD
   common rat, types, file, wid, config
+  compile_opt idl2
 
-  if ~(file.type ge 500 && file.type le 513) then begin
-     error = DIALOG_MESSAGE("This is wrong data type.", $
-                            DIALOG_PARENT = wid.base, TITLE='Error',/error)
-     return
-  endif
-  polin_get_info,pol=pol,tracks=n_tr,baselines=n_bl,matrix=matrix
-
-  if file.type ge 500 && file.type le 509 then begin
-     polin_k2m,/called,/gui,smmx=sx,smmy=sy ;; reform to matrix
-     if sx*sy le pol then $
-        speck_polmean,/called,/gui
-  endif
-  if file.type ne 510 && 'OK' eq $
-     dialog_message(["Performing necessary preprocessing step:","Tranformation to Lexicographic HV basis"],/cancel, DIALOG_PARENT = wid.base, TITLE='Information') $
-  then polin_basis,0,/LEX,/called
-  if file.type ne 510 then $
-     return
+  if file.type eq 220 then begin
+     pol = file.zdim
+     n_tr = 1 & n_bl = 0 & matrix = 1
+  endif else begin
+     if ~(file.type ge 500 && file.type le 513) then begin
+        error = DIALOG_MESSAGE("This is wrong data type.", $
+                               DIALOG_PARENT = wid.base, TITLE='Error',/error)
+        return
+     endif
+     polin_get_info,pol=pol,tracks=n_tr,baselines=n_bl,matrix=matrix
+     if file.type ge 500 && file.type le 509 then begin
+        polin_k2m,/called,/gui,smmx=sx,smmy=sy ;; reform to matrix
+        if sx*sy le pol then $
+           speck_polmean,/called,/gui
+     endif
+     if file.type ne 510 && 'OK' eq $
+        dialog_message(["Performing necessary preprocessing step:","Tranformation to Lexicographic HV basis"],/cancel, DIALOG_PARENT = wid.base, TITLE='Information') $
+     then polin_basis,0,/LEX,/called
+     if file.type ne 510 then $
+        return
+  endelse
 
   newtype = 211L
   WIDGET_CONTROL,/hourglass

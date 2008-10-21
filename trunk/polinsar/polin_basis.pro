@@ -51,9 +51,10 @@ end
 
 
 
-pro polin_basis,CALLED = called,predef,PAULI_TO=PAULI_TO,LEX_TO=LEX_TO
+pro polin_basis, CALLED = called, predef, PAULI_TO=PAULI_TO, LEX_TO=LEX_TO
 ;;; PAULI_TO and LEX_TO are exclusive!
   common rat, types, file, wid, config
+  compile_opt idl2
 
 ; check if array is usable
 

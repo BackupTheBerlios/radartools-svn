@@ -58,8 +58,9 @@ end
 ;
 ; :Author: RAT Team or your name(s)
 ;
-; :Categories: SAR, speckle filter, General, Infrastructure, spectral
-; tools, image enhancment, PolSAR parameters
+; :Categories: SAR, PolSAR, InSAR, PolInSAR, decomposition, speckle filter,
+; General, Infrastructure, spectral tools, image enhancment,
+; PolSAR parameters, coherence, experimental
 ;
 ; :Copyright:
 ;   usually dosn't need changes
@@ -68,7 +69,7 @@ end
 
 ; docformat = 'rst'
 ;+
-; The classical Lee speckle filter
+; Template function
 ;
 ; :Keywords:
 ;    called: in, optional, type="flag"
