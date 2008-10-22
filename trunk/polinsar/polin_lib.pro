@@ -277,6 +277,7 @@ end
 function cc_opt, T, SINGLE_SM=SINGLE_SM, EIGENVALUES=EIGENVALUES, $
                  MAGNITUDE=m, SM = SM,  POL_NR=pol, TRACKS_NR=n_tr, BL_NR=n_bl
  ;; mn, 27.08.2006
+  rmnanq,T
   if keyword_set(m) then EIGENVALUES = 1
   siz = size(T)
   if n_elements(pol) eq 0 then pol = 3
