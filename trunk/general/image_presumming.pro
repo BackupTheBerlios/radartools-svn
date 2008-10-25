@@ -26,8 +26,8 @@ pro image_presumming,CALLED = called, SMMX = smmx, SMMY = smmy
 
 	if not keyword_set(called) then begin             ; Graphical interface
 		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=3,TITLE='Image Presumming',/modal)
-		field1 = CW_FIELD(main,VALUE=2,/integer,TITLE='Presumming factor in X   : ',XSIZE=1)
-		field2 = CW_FIELD(main,VALUE=2,/integer,TITLE='Presumming factor in Y   : ',XSIZE=1)
+		field1 = CW_FIELD(main,VALUE=2,/integer,TITLE='Presumming factor in X   : ',XSIZE=3)
+		field2 = CW_FIELD(main,VALUE=2,/integer,TITLE='Presumming factor in Y   : ',XSIZE=3)
 		buttons = WIDGET_BASE(main,column=3,/frame)
 		but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
 		but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)

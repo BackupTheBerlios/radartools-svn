@@ -15,7 +15,7 @@
 ;;;   flat earth removal with fe_file
 ;;;   dem removal with dem_file and kz_file
 ;;;   RefLee or IDAN Speckle filtering
-;;;   C or T output
+;;;   C or T output (default: T)
 ;;;   
 ;;; for reflee optional parameters:
 ;;;   speckle_smm, speckle_looks, speckle_threshold, speckle_method_flag
@@ -27,14 +27,15 @@
 
 
 ;;.compile rat
-pro rat_gen_polinsar,polsar_files,outputfile,T=T, C=C, smmx=smmx,smmy=smmy, $
+pro rat_gen_polinsar,polsar_files,outputfile,T=T, COV_MATRIX=C, smmx=smmx,smmy=smmy, $
                      fe_file=fe_file, conj_fe=conj_fe, $
                      dem_file=dem_file, kz_file=kz_file, $
                      bandwidth=bandwidth, sampling_range=sampling_range, $
                      use_reflee=use_reflee, use_idan=use_idan, $
                      speckle_smm=smm, speckle_looks=looks, $
                      speckle_threshold=threshold, $
-                     speckle_method_flag=method_flag
+                     speckle_method_flag=method_flag, $
+                     calibrate=calibrate, remove_topo=remove_topo
   compile_opt idl2
 
   if n_elements(C) eq 0 &&  n_elements(T) eq 0 then T = 1
@@ -42,6 +43,14 @@ pro rat_gen_polinsar,polsar_files,outputfile,T=T, C=C, smmx=smmx,smmy=smmy, $
      message, 'ERROR: Please specify the output data type: T=coherency matrix, C=covariance matrix'
 
   rat,/nw
+  if keyword_set(calibrate) then begin
+     for i=0, n_elements(polsar_files)-1 do begin
+        open_rat, inputfile=polsar_files[i], /called
+        calib_xtalkoap, smmx=16, smmy=16, excludepix=1
+        calib_xsym, /called, method=0
+        save_rat, outputfile=polsar_files[i]
+     endfor 
+  endif
   construct_polinsar, /CALLED, FILES=polsar_files
   if n_elements(fe_file) ne 0 then begin
      rrat, fe_file, fe
@@ -51,7 +60,8 @@ pro rat_gen_polinsar,polsar_files,outputfile,T=T, C=C, smmx=smmx,smmy=smmy, $
      rrat, dem_file, dem
      rrat, kz_file,  kz
      polin_remove_topo_dem, /CALLED, dem=dem, kz=kz
-  endif
+  endif else if keyword_set(remove_topo) then $
+     polin_remove_topo, /CALLED, box=20
   polin_k2m, /CALLED, SMMX=smmx,SMMY=smmy
   if keyword_set(T) then $
      polin_c2t, /CALLED
