@@ -64,7 +64,8 @@ pro srat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,TYPE=type,PREVIEW=preview
 		writeu, eee, multi
 		leng = strlen(update_info[0])
 		new_info = byte(update_info[0])
-		if leng lt 80 then new_info = [new_info,bytarr(80-leng)+32b] else new_info = new_info[0:79]
+		if leng lt 80 then new_info = [new_info,bytarr(80-leng)+32b]
+		new_info = new_info[0:79]
 		writeu,eee,new_info
 		free_lun,eee
 		return		
