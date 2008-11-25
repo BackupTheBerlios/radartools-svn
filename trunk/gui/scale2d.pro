@@ -19,22 +19,40 @@
 function scale2d,inarr,xdim,ydim
 	common rat, types, file, wid, config
 
-	siz  = size(inarr)
-	anzx = siz[1]
-	anzy = siz[2]
+		siz  = size(inarr)
+if siz[0] eq 2 then begin
+		anzx = siz[1]
+		anzy = siz[2]
+	endif else begin
+		anzx = siz[1]
+		anzy = 1
+	endelse
 
-        if anzx eq xdim && anzy eq ydim then return, inarr
+  if anzx eq xdim && anzy eq ydim then return, inarr
 
-        if xdim le anzx and ydim le anzy and not (file.type ge 400 and file.type lt 500) then begin
-           smmx = floor(anzx / xdim) < (anzx-1)
-           smmy = floor(anzy / ydim) < (anzy-1)
-           if (anzx mod xdim eq 0 || xdim mod anzx eq 0) && (anzy mod ydim eq 0 || ydim mod anzy eq 0) $
-           then arr  = rebin  (smooth(inarr,[smmx,smmy],/ed),xdim,ydim) $
-           else arr  = congrid(smooth(inarr,[smmx,smmy],/ed),xdim,ydim) 
-        endif else begin
-           if (anzx mod xdim eq 0 || xdim mod anzx eq 0) && (anzy mod ydim eq 0 || ydim mod anzy eq 0) $
-           then arr  = rebin  (inarr,xdim,ydim) $
-           else arr  = congrid(inarr,xdim,ydim) 
-        endelse
-        return,arr
+  if siz[0] gt 1 then begin
+	  if xdim le anzx and ydim le anzy and not (file.type ge 400 and file.type lt 500) then begin
+    	smmx = floor(anzx / xdim) < (anzx-1)
+      smmy = floor(anzy / ydim) < (anzy-1)
+      if (anzx mod xdim eq 0 || xdim mod anzx eq 0) && (anzy mod ydim eq 0 || ydim mod anzy eq 0) $
+      then arr  = rebin  (smooth(inarr,[smmx,smmy],/ed),xdim,ydim) $
+      else arr  = congrid(smooth(inarr,[smmx,smmy],/ed),xdim,ydim) 
+    endif else begin
+      if (anzx mod xdim eq 0 || xdim mod anzx eq 0) && (anzy mod ydim eq 0 || ydim mod anzy eq 0) $
+      then arr  = rebin  (inarr,xdim,ydim) $
+      else arr  = congrid(inarr,xdim,ydim) 
+    endelse
+   endif else begin
+	  if xdim le anzx and not (file.type ge 400 and file.type lt 500) then begin
+    	smmx = floor(anzx / xdim) < (anzx-1)
+      if (anzx mod xdim eq 0 || xdim mod anzx eq 0) $
+      then arr  = rebin  (smooth(inarr,[smmx],/ed),xdim) $
+      else arr  = congrid(smooth(inarr,[smmx],/ed),xdim) 
+    endif else begin
+      if (anzx mod xdim eq 0 || xdim mod anzx eq 0) $
+      then arr  = rebin  (inarr,xdim) $
+      else arr  = congrid(inarr,xdim) 
+    endelse
+   endelse
+	return,arr
 end

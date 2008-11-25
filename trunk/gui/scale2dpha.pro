@@ -18,14 +18,28 @@
 ;------------------------------------------------------------------------
 function scale2dpha,inarr,xdim,ydim
 	siz  = size(inarr)
-	anzx = siz[1]
-	anzy = siz[2]
-	if xdim le anzx and ydim le anzy then begin
-		smmx = floor(anzx / xdim) < anzx-1
-		smmy = floor(anzy / ydim) < anzy-1
-		arr  = atan(congrid(smooth(exp(complex(0,inarr)),[smmx,smmy],/ed),xdim,ydim),/phase)
+	if siz[0] eq 2 then begin
+		anzx = siz[1]
+		anzy = siz[2]
 	endif else begin
-		arr  = atan(congrid(exp(complex(0,inarr)),xdim,ydim),/phase)
+		anzx = siz[1]
+		anzy = 1
 	endelse
+  if siz[0] gt 1 then begin
+		if xdim le anzx and ydim le anzy then begin
+			smmx = floor(anzx / xdim) < anzx-1
+			smmy = floor(anzy / ydim) < anzy-1
+			arr  = atan(congrid(smooth(exp(complex(0,inarr)),[smmx,smmy],/ed),xdim,ydim),/phase)
+		endif else begin
+			arr  = atan(congrid(exp(complex(0,inarr)),xdim,ydim),/phase)
+		endelse
+  endif else begin
+ 		if xdim le anzx then begin
+			smmx = floor(anzx / xdim) < anzx-1
+			arr  = atan(congrid(smooth(exp(complex(0,inarr)),[smmx],/ed),xdim),/phase)
+		endif else begin
+			arr  = atan(congrid(exp(complex(0,inarr)),xdim),/phase)
+		endelse
+ endelse
 	return,arr
 end

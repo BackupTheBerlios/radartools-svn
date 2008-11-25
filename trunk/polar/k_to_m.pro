@@ -85,8 +85,8 @@ pro k_to_m,CALLED=called,SMMX=smmx,SMMY=smmy
 	if bs_last ne bs_last / smmy * smmy then bs_last =  bs_last / smmy * smmy 
 	blocksizes[anz_blocks-1] = bs_last
 	if bs_last eq 0 then begin
-		anz_block -= 1
-		blocksizes = blocksizes[0:anz_block-1]
+		anz_blocks -= 1
+		blocksizes = blocksizes[0:anz_blocks-1]
 	endif
 
 ; calculating new dimensions

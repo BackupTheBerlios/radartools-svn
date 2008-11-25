@@ -206,6 +206,7 @@ PRO rat_event, event
                'Texture.Texture inhomogenity'                              : text_klee
                'Texture.Variation coefficient'                             : text_varcoef
                'Geometry.Slant range -> ground range'                      : slant2ground
+               'Amplitude.Remove range antenna pattern'                    : amp_rgant
                'Transform.Amplitude <-> Intensity'                         : amp2int
                'Transform.SLC -> Amplitude Image'                          : complex2abs
                'Multitemporal.Coregistration.Coarse (global offset)'       : mt_coreg_coarse
@@ -637,6 +638,8 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                      '2\Co-occurence features'   , $
                      '1\Geometry'  , $
                      '2\Slant range -> ground range', $
+                     '1\Amplitude'  , $
+                     '2\Remove range antenna pattern', $
 
    '1\Multitemporal' ,$
      '1\Coregistration' ,$

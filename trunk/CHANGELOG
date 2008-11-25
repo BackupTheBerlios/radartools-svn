@@ -4,6 +4,7 @@
 
 Version 0.21:
 
+- New routine: Range antenna profile removal
 - New routine: CDA sidelobe suppression / resolution enhancement
 - New routine: Polarimetric SERD/DERD parameters
 - New routine: Ainsworth PolSAR calibration
