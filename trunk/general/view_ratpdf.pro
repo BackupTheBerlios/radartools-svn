@@ -22,6 +22,14 @@ pro view_ratpdf, file=pdffile, path=path, GUIDE=GUIDE
   if n_elements(path) eq 0 then path=config.docdir
   if keyword_set(GUIDE) then pdffile='user_guide_v1.0.pdf'
 
+  if ~file_test(path+pdffile, /READ) then begin
+     res = dialog_message(['No User Guide could be found.', $
+                           ' ', $
+                           'Please check the online documentation', $
+                           'at the RAT homepage (see Help->Contact).'], dialog_parent=main, /ERROR)
+     return
+  endif
+
   if config.os eq 'unix' then $
      spawn,config.pdfviewer+' '+path+pdffile+' &' $
   else if config.os eq 'windows' then $
