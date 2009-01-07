@@ -33,6 +33,7 @@
 @general/undo.pro
 @general/mousebox.pro
 @general/zoom_region.pro
+@general/scatter_plot.pro
 @general/cut_region.pro
 @general/abs2int.pro
 @general/adj.pro

@@ -166,6 +166,7 @@ PRO rat_event, event
                'Resize image'                                              : image_resize
                'Presumming'                                                : image_presumming
                'Channel statistics'                                        : multi_statistics
+               'Scatter plot'										   	   : scatter_plot
                'Channel spectrum'                                          : channel_spectrum
                'Principal Components'                                      : principal_components
                'Binary transform.Complex -> Amplitude'                     : complex2abs
@@ -601,6 +602,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                         '0\Extract channels', $
                         '4\Colour palettes',$
                         '4\Channel statistics',$
+                        '0\Scatter plot',$
                         '0\Channel spectrum', $
                         '0\Principal Components',$
                         '4\Parameter Information', $
