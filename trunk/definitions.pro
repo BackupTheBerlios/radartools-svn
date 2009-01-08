@@ -20,13 +20,13 @@ pro definitions,update_pref=update_pref
 	common rat, types, file, wid, config, tiling
 	common channel, channel_names, channel_selec, color_flag, palettes, pnames
 	common rit, parstruct, evolution
-	
+
 	prefversion = 0.19 ; version .18 beta1
 ;;; please take note, that prefversion is closely related to version
 ;;; control at the beginning of the rat procedure. (adjust both
 ;;; accordingly: prefversion should never be smaller than the checked
 ;;; version)
-	
+
 	types=strarr(901)
 	types[0]   = "Unkown type"
 	types[1]   = "bytes"
@@ -85,7 +85,7 @@ pro definitions,update_pref=update_pref
 	types[222] = "covariance matrix [C], arbitrary basis"
 
 	types[230] = "polarimetric entropy"
-	types[231] = "polarimetric alpha angle"			
+	types[231] = "polarimetric alpha angle"
 	types[232] = "polarimetric anisotropy"
 	types[233] = "Entropy / Alpha / Anisotropy"
 	types[234] = "Alpha / Beta / Gamma / Delta angles"
@@ -199,8 +199,8 @@ pro definitions,update_pref=update_pref
 		block : 0b, $		;block rat widget or not
 		plugins : ptr_new(), $	;plugin names
 		info  : 0l , $        	;Info window widget ID
-                button_undo: 0l , $   	;Undo button widget ID 
-                button_redo: 0l , $   	;Redo button widget ID 
+                button_undo: 0l , $   	;Undo button widget ID
+                button_redo: 0l , $   	;Redo button widget ID
 		button_show_preview: 1L, $ ; Preview Show
 		prog1 : 0l , $        	;progress window widget ID
 		prog2 : 0l , $        	;progress window widget ID
@@ -292,7 +292,7 @@ pro definitions,update_pref=update_pref
 	endif else config.version = 0.0
 ;        config.docdir = file_dirname((routine_info('rat',/source)).path,/mark)+'doc'+path_sep()
         config.docdir = file_dirname((routine_info('definitions',/source)).path,/mark)+'doc'+path_sep()
-        
+
 	if keyword_set(update_pref) then config.version = prefversion
 
 	if FILE_TEST(config.palettes) then rrat,config.palettes,palettes
@@ -391,7 +391,8 @@ pro definitions,update_pref=update_pref
                     kz_file:		ptr_new(), $ ; connection e.g. for polin algorithms
                     bl_file:		ptr_new(), $ ; Baseline lengths
                     inc_file:		ptr_new(), $ ; Incidence angles ; connection e.g. for polin algorithms
-                    rsl_file:		ptr_new()  $ ; Slant ranges file
+                    rsl_file:		ptr_new(),  $ ; Slant ranges file
+                    transform:		ptr_new()	$ ;X-Y to Geographic transform
                     }
 
         evolution = ['']

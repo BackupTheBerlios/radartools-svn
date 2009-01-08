@@ -24,6 +24,7 @@
 @general/calc_blocks_normal.pro
 @general/complex2abs.pro
 @general/complex2pha.pro
+@general/geo_calc.pro
 @general/int2float.pro
 @general/mirror_hor.pro
 @general/mirror_vert.pro

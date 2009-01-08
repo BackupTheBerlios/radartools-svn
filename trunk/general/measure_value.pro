@@ -79,11 +79,22 @@ list_view:
 				endfor
 			endelse
 	     xo  = x & yo  = y
+		 
+		;calculate real-world co-ordinates if transform is defined
+		err = get_par('transform',transform)
+		if err eq 0 then begin
+			geo_calc,xf,yf,xreal,yreal,transform,0
+		endif
         
         infostr  = "Display coordinates : "+strcompress(x)+strcompress(y)
         infostr += newline
         infostr += "Data coordinates    : "+strcompress(xf)+strcompress(yf)
-        infostr += newline+newline
+        infostr += newline
+		if err eq 0 then begin
+			infostr += "Real coordinates    : "+strcompress(xreal)+strcompress(yreal)
+			infostr += newline
+		endif
+		infostr +=newline
         if file.var eq 6 or file.var eq 9 then begin
            infostr += "Data amplitude / phase value(s)"
            infostr += newline + newline

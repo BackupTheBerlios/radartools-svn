@@ -2,8 +2,8 @@
 ; RAT - Radar Tools
 ;------------------------------------------------------------------------
 ; RAT Module: import_info_terrasarx
-; written by    : Tisham Dhar
-; last revision : 11/2007
+; written by    : Tisham Dhar(UofA)
+; last revision : 08/01/2009
 ; Import TerraSAR-X Metadata from XML file
 ;------------------------------------------------------------------------
 ; The contents of this file are subject to the Mozilla Public License
@@ -57,26 +57,76 @@ pro import_info_terrasarx,INPUTFILE_FIRST=inputfile0
   	endelse
   endfor
 
+  ;create scene x-y lat-lon transform based on 5-points
+  ;use polynomial if available
+
+
+  gcp_arr = fltarr(5,5)
+
   ;read corner coordinates
   oNodeList = oDocument->GetElementsByTagName('sceneCornerCoord')
   cornlen = oNodeList->GetLength()
 
   for i=0,cornlen-1 do begin
+    row = (((oNodeList->Item(i))->GetElementsByTagName('refRow'))->Item(0))->GetFirstChild()
+    col = (((oNodeList->Item(i))->GetElementsByTagName('refColumn'))->Item(0))->GetFirstChild()
     lat = (((oNodeList->Item(i))->GetElementsByTagName('lat'))->Item(0))->GetFirstChild()
     lon = (((oNodeList->Item(i))->GetElementsByTagName('lon'))->Item(0))->GetFirstChild()
     ang = (((oNodeList->Item(i))->GetElementsByTagName('incidenceAngle'))->Item(0))->GetFirstChild()
     ;Test null nodes
   	if posx ne obj_new() and posy ne obj_new() and ang ne obj_new() then begin
+  	    pixel = double(col->GetNodeValue())
+  	    line = double(row->GetNodeValue())
   		latitude = double(lat->GetNodeValue())
   		longitude = double(lon->GetNodeValue())
   		incidenceAngle = double(ang->GetNodeValue())
   		print,"Latitude:"+string(latitude)
   		print,"Longitude:"+string(longitude)
   		print,"IncidenceAngle:"+string(incidenceAngle)
+
+
+  		gcp_arr[i,0] = pixel
+  		gcp_arr[i,1] = line
+  		gcp_arr[i,2] = longitude
+  		gcp_arr[i,3] = latitude
+  		gcp_arr[i,4] = incidenceAngle
   	endif else begin
   		print,'Null node'
   	endelse
   endfor
+
+
+  ;read center coordinates
+  oNodeList = oDocument->GetElementsByTagName('sceneCenterCoord')
+  cenlen = oNodeList->GetLength()
+
+  for i=0,cenlen-1 do begin
+    row = (((oNodeList->Item(i))->GetElementsByTagName('refRow'))->Item(0))->GetFirstChild()
+    col = (((oNodeList->Item(i))->GetElementsByTagName('refColumn'))->Item(0))->GetFirstChild()
+    lat = (((oNodeList->Item(i))->GetElementsByTagName('lat'))->Item(0))->GetFirstChild()
+    lon = (((oNodeList->Item(i))->GetElementsByTagName('lon'))->Item(0))->GetFirstChild()
+    ang = (((oNodeList->Item(i))->GetElementsByTagName('incidenceAngle'))->Item(0))->GetFirstChild()
+    ;Test null nodes
+  	if posx ne obj_new() and posy ne obj_new() and ang ne obj_new() then begin
+  		pixel = double(col->GetNodeValue())
+  	    line = double(row->GetNodeValue())
+  		latitude = double(lat->GetNodeValue())
+  		longitude = double(lon->GetNodeValue())
+  		incidenceAngle = double(ang->GetNodeValue())
+  		print,"Latitude:"+string(latitude)
+  		print,"Longitude:"+string(longitude)
+  		print,"IncidenceAngle:"+string(incidenceAngle)
+
+  		gcp_arr[4,0] = pixel
+  		gcp_arr[4,1] = line
+  		gcp_arr[4,2] = longitude
+  		gcp_arr[4,3] = latitude
+  		gcp_arr[4,4] = incidenceAngle
+  	endif else begin
+  		print,'Null node'
+  	endelse
+  endfor
+
 
   ;read scene average height over the ellipsoid
   oNodeList = oDocument->GetElementsByTagName('sceneAverageHeight')
@@ -84,6 +134,12 @@ pro import_info_terrasarx,INPUTFILE_FIRST=inputfile0
   	averageheight = double(((oNodeList->Item(0))->GetFirstChild())->GetNodeValue())
   	print,"SceneAverageHeight:"+string(averageheight)
   endif
+
+  ;work out geo-transform from GCP's use higher order polynom
+  ;if needed.
+  ;print,gcp_arr[*,0:3]
+  transform = gcps2transform(gcp_arr[*,0:3])
+  err=set_par('transform',transform)
 
   ;read slant and ground range + azimuth resolutions
   oNodeList = oDocument->GetElementsByTagName('slantRangeResolution')
