@@ -38,7 +38,7 @@
 ;-
 PRO spectral_cda, CALLED=called, XMAX=xmax, YMAX=ymax, XBW=xbw, YBW=ybw
    COMMON rat, types, file, wid, config, tiling
-   
+   compile_opt idl2
 ;------------------------------------------------------------------------
 ; Error handling:
 ;   -> check if file is a complex SAR image
@@ -59,11 +59,11 @@ PRO spectral_cda, CALLED=called, XMAX=xmax, YMAX=ymax, XBW=xbw, YBW=ybw
    spec_x = fltarr(file.xdim)
    spec_y = fltarr(file.ydim)
 
-   for i=0,file.xdim-1 do begin
+   for i=0l,file.xdim-1 do begin
       if i mod 100 eq 0 then progress,percent=i*100.0/(file.xdim+file.ydim),/check_cancel
       arr[i,*] = fft(arr[i,*],-1)
    endfor
-   for i=0,file.ydim-1 do begin
+   for i=0l,file.ydim-1 do begin
       if i mod 100 eq 0 then progress,percent=(i+file.xdim)*100.0/(file.xdim+file.ydim),/check_cancel 
       arr[*,i] = fft(arr[*,i],-1)
    endfor
@@ -203,12 +203,12 @@ PRO spectral_cda, CALLED=called, XMAX=xmax, YMAX=ymax, XBW=xbw, YBW=ybw
    han_y   = shift(han_y,-ybw/2)
 
    progress,Message='Spectral adjustments...',/cancel_button
-   for i=0,file.xdim-1 do begin
+   for i=0l,file.xdim-1 do begin
       if i mod 100 eq 0 then progress,percent=i*100.0/(file.xdim+file.ydim),/check_cancel
       arr[i,*] = fft(arr[i,*],+1)
       arrh[i,*] = fft(arrh[i,*]*han_y,+1)
    endfor
-   for i=0,file.ydim-1 do begin
+   for i=0l,file.ydim-1 do begin
       if i mod 100 eq 0 then progress,percent=(i+file.xdim)*100.0/(file.xdim+file.ydim),/check_cancel 
       arr[*,i] = fft(arr[*,i],+1)
       arrh[*,i] = fft(arrh[*,i]*han_x,+1)
@@ -217,7 +217,7 @@ PRO spectral_cda, CALLED=called, XMAX=xmax, YMAX=ymax, XBW=xbw, YBW=ybw
    progress,Message='CDA processing...',/cancel_button
    im = fltarr(file.xdim)
    re = fltarr(file.xdim)
-   for i=0,file.ydim-1 do begin
+   for i=0l,file.ydim-1 do begin
       if i mod 100 eq 0 then progress,percent=i*100.0/(file.ydim)
       c1 = imaginary(arr[*,i])
       c2 = imaginary(arrh[*,i])

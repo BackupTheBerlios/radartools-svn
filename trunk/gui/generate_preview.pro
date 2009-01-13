@@ -84,16 +84,15 @@ pro generate_preview, NODEFAULT = nodefault, COLOR_TABLE=color_table, NOUPDATE=n
             progress,/destroy
          endif
 
-         if i eq 0 then begin
-            dim = size(image)
-            xdim = dim[dim[0]-1]
-            ydim = dim[dim[0]]
-            if dim[0] ge 3 then zdim = dim[dim[0]-2] else zdim = 1
-            if dim[0] ge 4 then vdim = dim[dim[0]-3] else vdim = 1
-            mimage = bytarr(nfiles*zdim*vdim,xdim,ydim)
-         endif
+         dim = size(image)
+         xdim = dim[dim[0]-1]
+         ydim = dim[dim[0]]
+         if dim[0] ge 3 then zdim = dim[dim[0]-2] else zdim = 1
+         if dim[0] ge 4 then vdim = dim[dim[0]-3] else vdim = 1
+         
+         if i eq 0 then mimage = bytarr(nfiles*zdim*vdim,xdim,ydim)
 
-         mimage[i*zdim*vdim:(i+1)*zdim*vdim-1,*,*] = image
+         mimage[i*zdim*vdim:(i+1)*zdim*vdim-1,0:xdim-1,0:ydim-1] = image
 
       endfor
       image = mimage
