@@ -36,7 +36,8 @@ pro import_info_rs2,INPUTFILE_FIRST=inputfile0
 
 
   ;Read relevant XML tags
-  oDocument = OBJ_NEW('IDLffXMLDOMDocument', FILENAME=xml_file,/EXCLUDE_IGNORABLE_WHITESPACE)
+  ;RS-2 fails at valid schema !!
+  oDocument = OBJ_NEW('IDLffXMLDOMDocument', FILENAME=xml_file,MSG_ERROR='msg_method',SCHEMA_CHECKING=0,/EXCLUDE_IGNORABLE_WHITESPACE)
 
   ;read statevectors
   oNodeList = oDocument->GetElementsByTagName('stateVector')
@@ -59,4 +60,48 @@ pro import_info_rs2,INPUTFILE_FIRST=inputfile0
 
   ;rs2 seems to contain to range and azimuth resolutions but a slant
   ;to ground range transform may be we can start there.
+
+  ;For geolocation grid get all imageTiePoint nodes
+  oNodeList = oDocument->GetElementsByTagName('imageTiePoint')
+  tielen = oNodeList->GetLength()
+
+  gcp_arr = fltarr(tielen,5)
+
+  for i=0,tielen-1 do begin
+    row = (((oNodeList->Item(i))->GetElementsByTagName('line'))->Item(0))->GetFirstChild()
+    col = (((oNodeList->Item(i))->GetElementsByTagName('pixel'))->Item(0))->GetFirstChild()
+    lat = (((oNodeList->Item(i))->GetElementsByTagName('latitude'))->Item(0))->GetFirstChild()
+    lon = (((oNodeList->Item(i))->GetElementsByTagName('longitude'))->Item(0))->GetFirstChild()
+    alt = (((oNodeList->Item(i))->GetElementsByTagName('height'))->Item(0))->GetFirstChild()
+    ;Test null nodes
+  	if row ne obj_new() and col ne obj_new() and alt ne obj_new() then begin
+  		pixel = double(col->GetNodeValue())
+  	    line = double(row->GetNodeValue())
+  		latitude = double(lat->GetNodeValue())
+  		longitude = double(lon->GetNodeValue())
+  		altitude = double(alt->GetNodeValue())
+  		print,"Latitude:"+string(latitude)
+  		print,"Longitude:"+string(longitude)
+  		print,"Altitude:"+string(altitude)
+
+  		gcp_arr[i,0] = pixel
+  		gcp_arr[i,1] = line
+  		gcp_arr[i,2] = longitude
+  		gcp_arr[i,3] = latitude
+  		gcp_arr[i,4] = altitude
+  	endif else begin
+  		print,'Null node'
+  	endelse
+  endfor
+
+  ;work out geo-transform from GCP's use higher order polynom
+  ;if needed.
+  ;print,gcp_arr[*,0:3]
+  transform = gcps2transform(gcp_arr[*,0:3])
+  err=set_par('transform',transform)
+
+end
+
+pro msg_method,filename,line,col,err_msg
+	print,filename,line,col,err_msg
 end

@@ -74,7 +74,7 @@ pro import_info_terrasarx,INPUTFILE_FIRST=inputfile0
     lon = (((oNodeList->Item(i))->GetElementsByTagName('lon'))->Item(0))->GetFirstChild()
     ang = (((oNodeList->Item(i))->GetElementsByTagName('incidenceAngle'))->Item(0))->GetFirstChild()
     ;Test null nodes
-  	if posx ne obj_new() and posy ne obj_new() and ang ne obj_new() then begin
+  	if row ne obj_new() and col ne obj_new() and ang ne obj_new() then begin
   	    pixel = double(col->GetNodeValue())
   	    line = double(row->GetNodeValue())
   		latitude = double(lat->GetNodeValue())
@@ -107,7 +107,7 @@ pro import_info_terrasarx,INPUTFILE_FIRST=inputfile0
     lon = (((oNodeList->Item(i))->GetElementsByTagName('lon'))->Item(0))->GetFirstChild()
     ang = (((oNodeList->Item(i))->GetElementsByTagName('incidenceAngle'))->Item(0))->GetFirstChild()
     ;Test null nodes
-  	if posx ne obj_new() and posy ne obj_new() and ang ne obj_new() then begin
+  	if row ne obj_new() and col ne obj_new() and ang ne obj_new() then begin
   		pixel = double(col->GetNodeValue())
   	    line = double(row->GetNodeValue())
   		latitude = double(lat->GetNodeValue())
