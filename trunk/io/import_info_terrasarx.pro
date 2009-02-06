@@ -97,7 +97,7 @@ pro import_info_terrasarx,INPUTFILE_FIRST=inputfile0
 
 
   ;read center coordinates
-  oNodeList = oDocument->GetElementsByTagName('sceneCenterCoord')
+  oNodeList = ((oDocument->GetElementsByTagName("sceneInfo"))->Item(0))->GetElementsByTagName('sceneCenterCoord')
   cenlen = oNodeList->GetLength()
 
   for i=0,cenlen-1 do begin
