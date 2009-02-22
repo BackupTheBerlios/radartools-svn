@@ -56,10 +56,10 @@
 @polinsar/polin_deco_abgd.pro
 @polinsar/polin_deco_sdh.pro
 @polinsar/polin_deco_freedur.pro
-@polinsar/polin_deco_freeman2.pro
+;@polinsar/polin_deco_freeman2.pro
 @polinsar/polin_analysis_pol.pro
 @polinsar/polin_calib_natural.pro
 @polinsar/polin_basis_indiv.pro
 @polinsar/polin_din_phases.pro
 @polinsar/polin_stationarity.pro
-@polinsar/polin_orientation.pro
+;@polinsar/polin_orientation.pro
