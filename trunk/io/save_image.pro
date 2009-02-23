@@ -16,8 +16,11 @@
 ; The Initial Developer of the Original Code is the RAT development team.
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
-pro save_image,OUTPUTFILE = outputfile,PNG=png,JPG=jpg,TIFF=tiff
-	common rat, types, file, wid, config
+pro save_image,OUTPUTFILE = outputfile,PNG=png,JPG=jpg,TIFF=tiff,CALLED=called
+   common rat, types, file, wid, config
+   compile_opt idl2
+	
+   if keyword_set(called) eq 1 then foo = 1  ; circumvent IDL bug
 
 	if not keyword_set(outputfile) then begin
 		path = config.workdir

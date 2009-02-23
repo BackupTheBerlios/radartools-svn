@@ -20,7 +20,7 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-pro save_rat, OUTPUTFILE = outputfile, ADD_TOOL_BOX=add_tool_box
+pro save_rat, OUTPUTFILE = outputfile, ADD_TOOL_BOX=add_tool_box, CALLED=called
 	common rat, types, file, wid, config
 	common channel, channel_names, channel_selec, color_flag, palettes, pnames
 

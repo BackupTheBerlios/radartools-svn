@@ -1,11 +1,23 @@
-;------------------------------------------------------------------------
-; RAT - Radar Tools
-;------------------------------------------------------------------------
-; RAT Module: image_presumming
-; last revision : 14.Mar.2003
-; written by    : Andreas Reigber
-; Presumming of images             
-;------------------------------------------------------------------------
+; docformat = 'rst'
+;+
+; Presumming of images (averaging of adjacent pixels to reduce image size).
+; The current type of image is considered to perform the averaging in
+; an optimal way. Attention when presumming complex images: This is probably
+; not what you want to do!
+;
+; :Keywords:
+;    smmx: in, optional, type=integer
+;       the horizontal presumming factor
+;    smmy: in, optional, type=integer
+;       the vertical presumming factor
+;    called: in, optional, type=flag
+;       run in batch mode without gui
+;       
+;
+; :Author: RAT team
+; :Categories: general
+;
+; :Copyright:
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in
 ; compliance with the License. You may obtain a copy of the License at
@@ -18,9 +30,7 @@
 ;
 ; The Initial Developer of the Original Code is the RAT development team.
 ; All Rights Reserved.
-;------------------------------------------------------------------------
-
-
+;-
 pro image_presumming,CALLED = called, SMMX = smmx, SMMY = smmy
 	common rat, types, file, wid, config
 
@@ -63,9 +73,10 @@ pro image_presumming,CALLED = called, SMMX = smmx, SMMY = smmy
 	
 ; change mousepointer
 
-	WIDGET_CONTROL,/hourglass
+   WIDGET_CONTROL,/hourglass
 
 ; undo function
+
    undo_prepare,outputfile,finalfile,CALLED=CALLED
 
 ; scaling factors
@@ -111,19 +122,9 @@ pro image_presumming,CALLED = called, SMMX = smmx, SMMY = smmy
 	endfor
 	free_lun,ddd,eee
 
-; update file information
-	
-	file.name = finalfile
-	file.xdim = xnew
-	file.ydim = ynew
-	file_move,outputfile,finalfile,/overwrite
+; update everything
 
+   rat_finalise,outputfile,finalfile,CALLED=called
    evolute, 'Image presumming: '+strcompress(smmx, /r)+'x'+strcompress(smmy, /r)
-
-; generate preview
-	if not keyword_set(called) then begin
-		generate_preview
-		update_info_box
-	endif else progress,/destroy
 
 end
