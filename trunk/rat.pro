@@ -28,6 +28,7 @@
 @insar/compile.pro
 @polinsar/compile.pro
 @subap/compile.pro
+@plugins/compile.pro
 
 PRO rat_event, event
    common rat, types, file, wid, config
@@ -482,14 +483,14 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
 ;;; a new rat_install may be necessary in case of addition of new
 ;;; icons, or color palettes, as well as through changes in
 ;;; configuration structure variables. (mn, 06.07)
-   if config.version lt 0.19 then begin
+   if config.version lt 0.21 then begin
       info = DIALOG_MESSAGE(["Congratulations!","You obtained a new version of RAT.","This requires the re-installation of some configuration files."], TITLE='RAT Installation Update',/info,/cancel,/center)
       if info eq 'Cancel' then return
       rat_install
       definitions
    endif
    if n_elements(no_preview_image) ne 0 then $
-     config.show_preview = ~keyword_set(no_preview_image)
+      config.show_preview = ~keyword_set(no_preview_image)
    config.batch = keyword_set(batch)
    if config.batch then config.show_preview = 0
    wid.block = keyword_set(block)
@@ -910,6 +911,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
 
 ;;; menu adjustment for PlugIn's
    menues = ["file","general","sar","polsar","polinsar","insar","help"]
+
    if wid.plugins ne ptr_new() then begin
       for i=0,n_elements(menues)-1 do begin
          curr = where((*wid.plugins)[*].menu_pos eq menues[i],nr)
@@ -944,7 +946,6 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                                                   '2\'+(*wid.plugins)[curr[nr-1]].menu_name]: $
                                          '2\'+(*wid.plugins)[curr[nr-1]].menu_name),desc_help_menu]
    endif
-
 
    m_file     = CW_PDMENU(file_menu,desc_file_menu,/MBAR,/RETURN_FULL_NAME,UVALUE = 'file')
    m_general  = CW_PDMENU(general_menu,desc_general_menu,/MBAR,/RETURN_FULL_NAME, UVALUE = 'general')

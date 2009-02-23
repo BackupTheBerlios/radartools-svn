@@ -23,7 +23,7 @@ pro about
 	infostring = [ $
 	'RAT - Radar Tools  (Version SVN-HEAD)',$
 	'---------------------------------------------',$
-	'(c) 2003-2008 by the RAT development team',$
+	'(c) 2003-2009 by the RAT development team',$
 	'---------------------------------------------',$
 	'Current coordination & main programming:',$
    'Andreas Reigber, Maxim Neumann & Tisham Dhar',$

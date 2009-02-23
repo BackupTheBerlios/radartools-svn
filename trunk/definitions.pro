@@ -21,7 +21,7 @@ pro definitions,update_pref=update_pref
 	common channel, channel_names, channel_selec, color_flag, palettes, pnames
 	common rit, parstruct, evolution
 
-	prefversion = 0.19 ; version .18 beta1
+	prefversion = 0.21 ; version .18 beta1
 ;;; please take note, that prefversion is closely related to version
 ;;; control at the beginning of the rat procedure. (adjust both
 ;;; accordingly: prefversion should never be smaller than the checked
@@ -316,8 +316,7 @@ pro definitions,update_pref=update_pref
         plugin_dirs  = [config.prefdir,file_dirname((routine_info('definitions',/source)).path,/mark)]+'plugins'+path_sep()
         heap_free,wid.plugins
         wid.plugins=ptr_new()
-        if ~strmatch(!path,"*"+strjoin(plugin_dirs+':')+"*") then $
-           !path=strjoin(plugin_dirs+':')+!path
+        if ~strmatch(!path,"*"+strjoin(plugin_dirs+':')+"*") then !path=strjoin(plugin_dirs+':')+!path
 ;        if ~strmatch(!path,"*"+strjoin(':'+plugin_dirs)+"*") then $
 ;           !path=strjoin(':'+plugin_dirs)+!path
         plugins = [{pro_name:'',menu_name:'',menu_pos:''}]
