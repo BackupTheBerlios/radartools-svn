@@ -1,12 +1,24 @@
-;------------------------------------------------------------------------
-; RAT - Radar Tools
-;------------------------------------------------------------------------
-; RAT Module: cut_region
-; written by    : Andreas Reigber (TUB), Stephane Guillaso (TUB)
-; last revision : 28. March 2004
-; last modified : Jan'08 (Maxim Neumann)
-; Enlarge region selectable by the mouse
-;------------------------------------------------------------------------
+; docformat = 'rst'
+;+
+; Cut out/Crop a rectangular part of the currently loaded image
+;
+; :Keywords:
+;    xmin: in, optional, type=integer
+;       the horizontal start of the region to cut out
+;    xmax: in, optional, type=integer
+;       the horizontal end of the region to cut out
+;    ymin: in, optional, type=integer
+;       the vertical start of the region to cut out
+;    ymax: in, optional, type=integer
+;       the vertical end of the region to cut out
+;    called: in, optional, type=flag
+;       run in batch mode without gui
+;       
+;
+; :Author: RAT team
+; :Categories: general
+;
+; :Copyright:
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in
 ; compliance with the License. You may obtain a copy of the License at
@@ -19,19 +31,19 @@
 ;
 ; The Initial Developer of the Original Code is the RAT development team.
 ; All Rights Reserved.
-;------------------------------------------------------------------------
+;-
+pro cut_region, CALLED=CALLED, XMIN=xminf, XMAX=xmaxf, YMIN=yminf, YMAX=ymaxf
 
-pro cut_region, CALLED=CALLED, update_system=update_system, XMIN=xminf, XMAX=xmaxf, YMIN=yminf, YMAX=ymaxf
-  common rat, types, file, wid, config
+   common rat, types, file, wid, config, tiling
+   compile_opt idl2
 
-  if n_elements(update_system) eq 0 then update_system=0
-  if n_elements(xminf) eq 0 then xminf=0
-  if n_elements(xmaxf) eq 0 then xmaxf=file.xdim-1
-  if n_elements(yminf) eq 0 then yminf=0
-  if n_elements(ymaxf) eq 0 then ymaxf=file.ydim-1
+   if n_elements(xminf) eq 0 then xminf=0
+   if n_elements(xmaxf) eq 0 then xmaxf=file.xdim-1
+   if n_elements(yminf) eq 0 then yminf=0
+   if n_elements(ymaxf) eq 0 then ymaxf=file.ydim-1
 
 
-  if ~keyword_set(CALLED) then begin 
+   if not keyword_set(CALLED) then begin 
 
 ;------------------------------------------------------------------------
 ; - set the input airborne parameter file name to an empty string
@@ -146,31 +158,17 @@ pro cut_region, CALLED=CALLED, update_system=update_system, XMIN=xminf, XMAX=xma
                        'RAT module written 08/2003 by Andreas Reigber']
            info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
         endif
+
         if event.id eq field1 or event.id eq  field2 or event.id eq field3 or event.id eq field4 then begin ; Info Button clicked
            widget_control,field1,GET_VALUE=xminf
            widget_control,field2,GET_VALUE=yminf
            widget_control,field3,GET_VALUE=xmaxf
            widget_control,field4,GET_VALUE=ymaxf
            
-           if xminf lt 0 then xminf = 0
-           if xminf gt file.xdim then xminf = file.xdim - 1
-           if xmaxf lt 0 then xmaxf = 0
-           if xmaxf gt file.xdim then xmaxf = file.xdim - 1
-;  			if xminf gt xmaxf then begin
-;  				dummy = xminf
-;  				xminf = xmaxf
-;  				xmaxf = dummy
-;  			endif
-           if yminf lt 0 then yminf = 0
-           if yminf gt file.ydim then yminf = file.ydim - 1
-           if ymaxf lt 0 then ymayf = 0
-           if ymaxf gt file.ydim then ymaxf = file.ydim - 1
-
-;  			if yminf gt ymaxf then begin
-;  				dummy = yminf
-;  				yminf = ymaxf
-;  				ymaxf = dummy
-;  			endif
+           if xminf lt 0 or xminf ge file.xdim then xminf = 0
+           if xmaxf lt 0 or xmaxf ge file.xdim then xmaxf = file.xdim - 1
+           if yminf lt 0 or yminf ge file.ydim then yminf = 0
+           if ymaxf lt 0 or ymaxf ge file.ydim then ymaxf = file.ydim - 1
            
            difxf = xmaxf - xminf + 1
            difyf = ymaxf - yminf + 1
@@ -191,11 +189,11 @@ pro cut_region, CALLED=CALLED, update_system=update_system, XMIN=xminf, XMAX=xma
            xmaxf = xminf + difxf - 1
            ymaxf = yminf + difyf - 1
            
-           if xmaxf gt file.xdim then begin
+           if xmaxf ge file.xdim then begin
               xmaxf = file.xdim - 1
               difxf = xmaxf - xminf + 1
            endif
-           if ymaxf gt file.ydim then begin
+           if ymaxf ge file.ydim then begin
               ymaxf = file.ydim - 1 
               difyf = ymaxf - yminf + 1
            endif
@@ -241,14 +239,11 @@ pro cut_region, CALLED=CALLED, update_system=update_system, XMIN=xminf, XMAX=xma
      widget_control,field2,GET_VALUE=yminf
      widget_control,field3,GET_VALUE=xmaxf
      widget_control,field4,GET_VALUE=ymaxf
-     if xminf lt 0 then xminf = 0
-     if xminf gt file.xdim then xminf = file.xdim - 1
-     if xmaxf lt 0 then xmaxf = 0
-     if xmaxf gt file.xdim then xmaxf = file.xdim - 1
-     if yminf lt 0 then yminf = 0
-     if yminf gt file.ydim then yminf = file.ydim - 1
-     if ymaxf lt 0 then ymaxf = 0
-     if ymaxf gt file.ydim then ymaxf = file.ydim - 1
+
+     if xminf lt 0 or xminf ge file.xdim then xminf = 0
+     if xmaxf lt 0 or xmaxf ge file.xdim then xmaxf = file.xdim - 1
+     if yminf lt 0 or yminf ge file.ydim then yminf = 0
+     if ymaxf lt 0 or ymaxf ge file.ydim then ymaxf = file.ydim - 1
 
      if not closed then widget_control,main,/destroy ; remove main widget
 
@@ -257,28 +252,21 @@ pro cut_region, CALLED=CALLED, update_system=update_system, XMIN=xminf, XMAX=xma
 ;------------------------------------------------------------------------
 ; - Transform the arrow mouse pointer into a hourglass
 ;------------------------------------------------------------------------
-  if not keyword_set(called) then widget_control, /hourglass
-
-
-; undo function
-     undo_prepare,outputfile,finalfile,CALLED=CALLED
-
-
-; Write new file
-
-;  	rrat,file.name,inblock,INFO=info,block=[xminf,yminf,xmaxf-xminf+1,ymaxf-yminf+1],TYPE=type
-;  	srat,outputfile,inblock,INFO=info,TYPE=type
-;  
-
-  head = 1l
-  rrat,file.name,ddd,header=head,info=info,type=type
-  head[head[0]-1] = xmaxf-xminf+1	
-  head[head[0]]   = ymaxf-yminf+1
-  byt=[0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8] ; bytelength of the different variable typos
-  point_lun,-ddd,file_pos
-  point_lun,ddd,file_pos + long64(yminf) * file.vdim * file.zdim * file.xdim * byt[file.var]
   
-  srat,outputfile,eee,header=head,info=file.info,type=file.type
+   widget_control, /hourglass
+   undo_prepare,outputfile,finalfile,CALLED=CALLED
+
+; read / write header
+
+   rrat,file.name, ddd,header=head,info=info,type=type		
+   head = 1l
+   rrat,file.name,ddd,header=head,info=info,type=type
+   head[head[0]-1] = xmaxf-xminf+1	
+   head[head[0]]   = ymaxf-yminf+1
+   byt=[0,1,4,8,4,8,8,0,0,16,0,0,4,4,8,8] ; bytelength of the different variable typos
+   point_lun,-ddd,file_pos
+   point_lun,ddd,file_pos + long64(yminf) * file.vdim * file.zdim * file.xdim * byt[file.var]
+   srat,outputfile,eee,header=head,info=file.info,type=file.type
 
 ; calculating preview size and number of blocks
 
@@ -299,56 +287,9 @@ pro cut_region, CALLED=CALLED, update_system=update_system, XMIN=xminf, XMAX=xma
   endfor
   free_lun,ddd,eee
 
-; ---- Update insar information if existing
-  if update_system eq 1 then begin
-     path = config.workdir
-     inputfile = dialog_pickfile(title='Open airborne system file', dialog_parent=wid.base, filter='*.par', /must_exist, path=path, get_path=path)
+; update everything
 
-     if inputfile eq '' then begin
-        mes = "You have not choose an airborne system file, the system will not update it"
-        error = dialog_message(mes, dialog_parent=wid.base, title='Error', /error)
-     endif else begin
-
-        openr,ddd,inputfile,/xdr,/get_lun
-        type = 0l & readu,ddd,type
-        if type ne 399 then begin
-           error = dialog_message("Wrong airborne system file, the system will not update it", dialog_parent=wid.base, title='Error', /error)
-           free_lun,ddd
-        endif
-        readu,ddd,insar
-        free_lun,ddd
-        insar.xmin = insar.xmin + xminf
-        insar.xmax = insar.xmin + xmaxf - xminf
-        insar.xdim = xmaxf - xminf + 1
-        insar.ymin = insar.ymin + yminf
-        insar.ymax = insar.ymin + ymaxf - yminf
-        insar.ydim = ymaxf - yminf + 1
-        openw,ddd,inputfile, /xdr, /get_lun
-        writeu,ddd,399l,insar
-        free_lun,ddd
-     endelse
-  endif
-
-; update file information
-  
-  file.name = finalfile
-  file.xdim = xmaxf-xminf+1
-  file.ydim = ymaxf-yminf+1
-  file_move,outputfile,finalfile,/overwrite
-
-  evolute,'Cut out region: ['+strcompress(xminf,/r)+':'+strcompress(xmaxf,/r)+';'+strcompress(yminf,/r)+':'+strcompress(ymaxf,/r)+']'
-  
-; generate preview
-
-  if not keyword_set(called) then begin
-     generate_preview
-     update_info_box
-  endif
-
-; switch back to main draw widget
-
-  widget_control,wid.draw,get_value=index
-  wset,index
-
+   rat_finalise,outputfile,finalfile,CALLED=called
+   evolute,'Cut out region: ['+strcompress(xminf,/r)+':'+strcompress(xmaxf,/r)+';'+strcompress(yminf,/r)+':'+strcompress(ymaxf,/r)+']'
 
 end
