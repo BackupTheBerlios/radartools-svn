@@ -244,15 +244,23 @@ end
 pro progress, message=message, drawsize=drawsize, percent=percent, destroy=destroy, $
               check_cancel=check_cancel, cancel_button=cancel_button, $
               submessage = submessage, subpercent = subpercent
-	common rat, types, file, wid, config
+   common rat, types, file, wid, config
 
-        if config.batch then begin
-           if n_elements(message) ne 0 then print,'Progress of '+message+' : '
-           if n_elements(submessage) ne 0 then print,'    Subprogress of '+submessage+' : '
-           if n_elements(percent) ne 0 then print,'  ('+string(percent,f='(f0.2)')+'%)*'
-           if n_elements(subpercent) ne 0 then print,'      {'+string(percent,f='(f0.2)')+'%}+'
-           return
-        endif
+   if config.batch then begin
+      if n_elements(message) ne 0 then begin
+         print,''
+         print,format='(A,%"\r\t\t\t\t\t\t",$)','Progress of '+message+' : '
+         print,format='(A,%"\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",$)','       [                    ]'
+      endif
+               
+      if n_elements(submessage) ne 0 then print,'    Subprogress of '+submessage+' : '
+      if n_elements(percent) ne 0 then begin
+         for k=1,percent/5.0 do print,format='(A,$)','.'
+         for k=1,percent/5.0 do print,format='(%"\b",$)'
+      endif
+      if n_elements(subpercent) ne 0 then print,'      {'+string(percent,f='(f0.2)')+'%}+'
+      return
+   endif
 	
 	if not keyword_set(drawsize) then drawsize = 250
 	pos = center_box(drawsize)
