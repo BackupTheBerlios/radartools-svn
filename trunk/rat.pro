@@ -167,7 +167,7 @@ PRO rat_event, event
                'Resize image'                                              : image_resize
                'Presumming'                                                : image_presumming
                'Channel statistics'                                        : multi_statistics
-               'Scatter plot'										   	   : scatter_plot
+               'Scatter plot'                                              : scatter_plot
                'Channel spectrum'                                          : channel_spectrum
                'Principal Components'                                      : principal_components
                'Binary transform.Complex -> Amplitude'                     : complex2abs
@@ -1021,10 +1021,15 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
 
    device,/cursor_original
 
+;    if float(strmid(!version.release,0,3)) lt 6.2 then begin
+;       error = DIALOG_MESSAGE(["Sorry, IDL / IDL virtual machine version >= 6.2 required"], DIALOG_PARENT = wid.base, TITLE='Error')
+;       widget_control, wid.base, /destroy
+;       return
+;    endif
+
    if float(strmid(!version.release,0,3)) lt 6.2 then begin
-      error = DIALOG_MESSAGE(["Sorry, IDL / IDL virtual machine version >= 6.2 required"], DIALOG_PARENT = wid.base, TITLE='Error')
-      widget_control, wid.base, /destroy
-      return
+      error = DIALOG_MESSAGE(["Sorry, IDL / IDL virtual machine version >= 6.2 required!",$
+                              "Enjoy the errors which will occur... (most things will work)"], DIALOG_PARENT = wid.base, TITLE='Error')
    endif
 
 ;       !prompt='RAT: '
