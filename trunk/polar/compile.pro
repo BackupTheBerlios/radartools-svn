@@ -29,6 +29,7 @@
 @polar/decomp_sdh
 @polar/decomp_fredur
 @polar/decomp_moriyama
+@polar/decomp_tvsm
 @polar/decomp_erd
 @polar/speck_polmean
 @polar/speck_polreflee

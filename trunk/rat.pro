@@ -1,5 +1,5 @@
 ;------------------------------------------------------------------------
-; RAT - Radar Tools 
+; RAT - Radar Tools
 ;------------------------------------------------------------------------
 ; Main program & event loop
 ;------------------------------------------------------------------------
@@ -262,6 +262,7 @@ PRO rat_event, event
                'Decompositions.Freeman-Durden'                             : decomp_fredur
                'Decompositions.Moriyama'                                   : decomp_moriyama
                'Decompositions.Sphere / Diplane / Helix'                   : decomp_sdh
+               'Decompositions.TVSM'									   : decomp_tvsm
 ;              'Decomposition.Cameron'                                     : classif_cameron
                'Classification.K-means Wishart (general)'                  : classif_wishart
                'Classification.K-means Wishart (H/a/A)'                    : classif_wishart_opt
@@ -711,6 +712,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                        '0\Pauli decomposition', $
                        '0\Eigenvalue / Eigenvector', $
                        '0\Freeman-Durden', $
+                       '0\TVSM',$
 ;		'0\Cameron', $
    '0\Moriyama', $
      '2\Sphere / Diplane / Helix', $
