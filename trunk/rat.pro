@@ -274,7 +274,7 @@ PRO rat_event, event
                'Classification.Physical classification'                    : classif_physic
                'Classification.Number of sources'                          : classif_nrsources
                'Post-classification.Resort clusters'                       : pclass_resort
-               'Post-classification.Median filter'                         : speck_median,smm=3
+               'Post-classification.Median filter'                         : speck_median,boxsize=3
                'Post-classification.Freeman Durden Palette'                : pclass_fredur
                'Calculate.Span image'                                      : pol_to_span
                'Calculate.Amplitude ratio'                                 : calc_ampratio

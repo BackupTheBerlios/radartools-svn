@@ -1,13 +1,18 @@
-;------------------------------------------------------------------------
-; RAT - Radar Tools
-;------------------------------------------------------------------------
-; RAT Module: speck_median
-; last revision : 12.Feb.2003
-; written by    : Bert Wolf
-;                 Matthias Weller
-;                 Andreas Reigber
-; Median filter for real variable types (complex median does not exist)                   
-;------------------------------------------------------------------------
+; docformat = 'rst'
+;+
+; Median filter for real variable types (complex median does not exist).
+; May also used for improving classification results
+;
+; :Keywords:
+;    boxsize: in, optional, type=integer
+;       default window size for filtering (default 7)
+;    called: in, optional, type=flag
+;       run in batch mode without gui
+;
+; :Author: RAT team
+; :Categories: SAR, speckle filter
+;
+; :Copyright:
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in
 ; compliance with the License. You may obtain a copy of the License at
@@ -20,15 +25,14 @@
 ;
 ; The Initial Developer of the Original Code is the RAT development team.
 ; All Rights Reserved.
-;------------------------------------------------------------------------
-
-
+;-
 pro speck_median,CALLED = called, BOXSIZE = boxsize
-	common rat, types, file, wid, config, tiling
-	
-	if not keyword_set(boxsize) then boxsize = 7                  ; Default values
-	
-	if not keyword_set(called) then begin             ; Graphical interface
+   common rat, types, file, wid, config, tiling
+   compile_opt idl2
+   
+   if not keyword_set(boxsize) then boxsize = 7                  ; Default values
+
+   if not keyword_set(called) and not config.batch then begin             ; Graphical interface
 		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=2,TITLE='Median Filter',/floating,/tlb_kill_request_events,/tlb_frame_attr)
 		field1   = CW_FIELD(main,VALUE=boxsize,/integer,TITLE='Filter boxsize     : ',XSIZE=3)
 		buttons  = WIDGET_BASE(main,column=3,/frame)
@@ -53,7 +57,7 @@ pro speck_median,CALLED = called, BOXSIZE = boxsize
 		widget_control,field1,GET_VALUE=boxsize
 		widget_control,main,/destroy
 		if event.id ne  but_ok then return                    ; OK button _not_ clicked
-	endif
+   endif
 	
 ; Error Handling
 
@@ -92,7 +96,7 @@ pro speck_median,CALLED = called, BOXSIZE = boxsize
 
 ;start block processing
 
-	for i=0,tiling.nr_blocks-1 do begin   
+   for i=0,tiling.nr_blocks-1 do begin   
 		progress,percent=(i+1)*100.0/tiling.nr_blocks,/check_cancel
 		if wid.cancel eq 1 then return
 
@@ -102,12 +106,12 @@ pro speck_median,CALLED = called, BOXSIZE = boxsize
 ; -------- THE FILTER ----------
 		tiling_write,eee,i,temporary(block)
 		tiling_jumpback,ddd
-	endfor
-	free_lun,ddd,eee
+   endfor
+   free_lun,ddd,eee
 
 ; update everything
 
-	rat_finalise,outputfile,finalfile,CALLED=called
-	evolute,'Speckle filtering (Median). Boxsize: '+strcompress(boxsize,/R)
+   rat_finalise,outputfile,finalfile,CALLED=called
+   evolute,'Speckle filtering (Median). Boxsize: '+strcompress(boxsize,/R)
 
 end

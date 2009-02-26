@@ -22,8 +22,9 @@
 ;------------------------------------------------------------
 ; Your private filtering function
 ;------------------------------------------------------------
+
 function myfilter,arr,boxsize
-	return,smooth(arr,[1,1,boxsize,boxsize])
+   return,smooth(arr,[1,1,boxsize,boxsize])
 end
 
 ;------------------------------------------------------------
@@ -97,7 +98,7 @@ end
 ;-
 pro template_overlap, CALLED = called, BOXSIZE = boxsize
 
-	common rat, types, file, wid, config, tiling
+   common rat, types, file, wid, config, tiling
    compile_opt idl2
 
 ;------------------------------------------------------------
@@ -105,11 +106,18 @@ pro template_overlap, CALLED = called, BOXSIZE = boxsize
 ; -> check if the input file is suitable for the routine
 ; -> all file type numbers can be found in definitions.pro
 ;------------------------------------------------------------
-	if file.type ne 100 then begin
-		error_button = DIALOG_MESSAGE(['Data have to be a SAR amplitude data'], DIALOG_PARENT = wid.base, TITLE='Error',/ERROR)
-		return
-	endif
+   
+   if file.type ne 100 then begin
+      error_button = DIALOG_MESSAGE(['Data have to be a SAR amplitude data'], DIALOG_PARENT = wid.base, TITLE='Error',/ERROR)
+      return
+   endif
 
+;------------------------------------------------------------
+; Batch mode (FIXED+EXAMPLE)
+; -> take parameters from keywords or use default values
+;------------------------------------------------------------
+   
+   if not keyword_set(boxsize) then boxsize = 7l       ; Default values
 
 ;------------------------------------------------------------
 ; Graphical interface mode (FIXED+EXAMPLE)
@@ -117,64 +125,58 @@ pro template_overlap, CALLED = called, BOXSIZE = boxsize
 ;    this is important as possibly other routines want to use
 ;    your routine as a batch process
 ;------------------------------------------------------------
-	if not keyword_set(called) then begin             ; Graphical interface
-		main = WIDGET_BASE(GROUP_LEADER=wid.base,row=3,TITLE='Template Filter',/floating,/tlb_kill_request_events,/tlb_frame_attr)
-		field1   = CW_FIELD(main,VALUE=7,/integer,  TITLE='Filter boxsize        : ',XSIZE=3)
-		buttons  = WIDGET_BASE(main,column=3,/frame)
-		but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
-		but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
-		but_info = WIDGET_BUTTON(buttons,VALUE=' Info ',xsize=60)
-		WIDGET_CONTROL, main, /REALIZE, default_button = but_ok,tlb_get_size=toto
-		pos = center_box(toto[0],drawysize=toto[1])
-		widget_control, main, xoffset=pos[0], yoffset=pos[1]
+
+   if not keyword_set(called) and not config.batch then begin             ; Graphical interface
+      main = WIDGET_BASE(GROUP_LEADER=wid.base,row=3,TITLE='Template Filter',/floating,/tlb_kill_request_events,/tlb_frame_attr)
+      field1   = CW_FIELD(main,VALUE=boxsize,/integer,  TITLE='Filter boxsize        : ',XSIZE=3)
+      buttons  = WIDGET_BASE(main,column=3,/frame)
+      but_ok   = WIDGET_BUTTON(buttons,VALUE=' OK ',xsize=80,/frame)
+      but_canc = WIDGET_BUTTON(buttons,VALUE=' Cancel ',xsize=60)
+      but_info = WIDGET_BUTTON(buttons,VALUE=' Info ',xsize=60)
+      WIDGET_CONTROL, main, /REALIZE, default_button = but_ok,tlb_get_size=toto
+      pos = center_box(toto[0],drawysize=toto[1])
+      widget_control, main, xoffset=pos[0], yoffset=pos[1]
 	
-		repeat begin
-			event = widget_event(main)
-			if event.id eq but_info then begin               ; Info Button clicked
-				infotext = ['TEMPLATE FILTER EXAMPLE',$
-				' ',$
-				'RAT module written 10/2007 by Max Musterman',$
-				' ',$
-				'further information:',$
-				'M.S. Godroth: Advanced template filtering of ergodic signals',$
-				'IEEE Transactions on Template Programming, Vol.17, pp. 24-32, 1998']
-				info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
-			end
-		endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
-		widget_control,field1,GET_VALUE=boxsize
-		widget_control,main,/destroy                        ; remove main widget
-		if event.id ne but_ok then return                   ; OK button _not_ clicked
-	endif else begin                                       ; Routine called with keywords
-
-
-;------------------------------------------------------------
-; Batch mode (FIXED+EXAMPLE)
-; -> take parameters from keywords or use default values
-;------------------------------------------------------------
-		if not keyword_set(boxsize) then boxsize = 7l       ; Default values
-	endelse
-
+      repeat begin
+         event = widget_event(main)
+         if event.id eq but_info then begin               ; Info Button clicked
+            infotext = ['TEMPLATE FILTER EXAMPLE',$
+            ' ',$
+            'RAT module written 10/2007 by Max Musterman',$
+            ' ',$
+            'further information:',$
+            'M.S. Godroth: Advanced template filtering of ergodic signals',$
+            'IEEE Transactions on Template Programming, Vol.17, pp. 24-32, 1998']
+            info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = main, TITLE='Information')
+         endif
+      endrep until (event.id eq but_ok) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
+      widget_control,field1,GET_VALUE=boxsize
+      widget_control,main,/destroy                        ; remove main widget
+      if event.id ne but_ok then return                   ; OK button _not_ clicked
+   endif
 
 ;------------------------------------------------------------
 ; Error Handling 2 (EXAMPLE)
 ; -> check validity of parameters
 ;------------------------------------------------------------
-	if boxsize lt 3 then begin                                 ; Wrong box size ?
-		error = DIALOG_MESSAGE("Boxsize has to be >= 3", DIALOG_PARENT = wid.base, TITLE='Error',/error)
-		return
-	endif
+
+   if boxsize lt 3 then begin                                 ; Wrong box size ?
+      error = DIALOG_MESSAGE("Boxsize has to be >= 3", DIALOG_PARENT = wid.base, TITLE='Error',/error)
+      return
+   endif
 
 ;------------------------------------------------------------
 ; change mousepointer to hourglass (FIXED)
 ;------------------------------------------------------------
-	WIDGET_CONTROL,/hourglass
+   
+   WIDGET_CONTROL,/hourglass
 
 ;------------------------------------------------------------
 ; Undo function (FIXED)
 ; -> save actual data set in temporary directory
 ;------------------------------------------------------------
+   
    undo_prepare,outputfile,finalfile,CALLED=CALLED
-	
 
 ;------------------------------------------------------------
 ; Read / write file header (FIXED+EXAMPLE)
@@ -182,66 +184,77 @@ pro template_overlap, CALLED = called, BOXSIZE = boxsize
 ;    to the input data, a different (correct) header has to
 ;    be written
 ;------------------------------------------------------------
-	head = 1l
-	rrat,file.name, ddd,header=head,info=info,type=type		
-	srat,outputfile,eee,header=head,info=info,type=type		
-		
+   
+   head = 1l
+   rrat,file.name, ddd,header=head,info=info,type=type		
+   srat,outputfile,eee,header=head,info=info,type=type		
+
 ;------------------------------------------------------------
 ; Initialise vertical tiling with overlap (FIXED)
 ; -> omit keyword if no overlap is desired
 ;------------------------------------------------------------
-	tiling_init,overlap=(boxsize+1)/2
+   
+   tiling_init,overlap=(boxsize+1)/2
 
 ;------------------------------------------------------------
 ; Pop up progress window (FIXED)
 ;------------------------------------------------------------
-	progress,Message='Template Filter...',/cancel_button
+   
+   progress,Message='Template Filter...',/cancel_button
 
 ;------------------------------------------------------------
 ; Start block processing (FIXED)
 ;------------------------------------------------------------
-	for i=0,tiling.nr_blocks-1 do begin   
-		progress,percent=(i+1)*100.0/tiling.nr_blocks,/check_cancel
-		if wid.cancel eq 1 then return
+   
+   for i=0,tiling.nr_blocks-1 do begin   
+      progress,percent=(i+1)*100.0/tiling.nr_blocks,/check_cancel
+      if wid.cancel eq 1 then return
 
 ;------------------------------------------------------------
 ; Read tile from input file (FIXED)
 ; -> after reading the array is 4-dimensional. To get rid of
 ;    leading empty dimensions use the reform() command
 ;------------------------------------------------------------
-		tiling_read,ddd,i,block
-		
+   
+      tiling_read,ddd,i,block
+
 ; -------- YOUR FILTER CALL----------	
-		block = myfilter(block,boxsize)
+      block = myfilter(block,boxsize)
 ; -------- YOUR FILTER CALL----------	
 
 ;------------------------------------------------------------
 ; Write tile to output file (FIXED)
 ;------------------------------------------------------------
-		tiling_write,eee,i,temporary(block)
+
+      tiling_write,eee,i,temporary(block)
 
 ;------------------------------------------------------------
 ; Jump back in input file to solve overlap problems (FIXED)
 ;------------------------------------------------------------
- 		tiling_jumpback,ddd
-	
-	endfor
+
+      tiling_jumpback,ddd
+   endfor
+
 ;------------------------------------------------------------
 ; Free LUNs (FIXED)
 ;------------------------------------------------------------
-	free_lun,ddd,eee
+   
+   free_lun,ddd,eee
 
 ;------------------------------------------------------------
 ; Update RATs structures and windows information (FIXED)
 ; -> Set keyword PALETTE to a number of a colour palette
 ;    if omitted b/w colour is used
 ;------------------------------------------------------------
-	rat_finalise,outputfile,finalfile,CALLED=CALLED
+   
+   rat_finalise,outputfile,finalfile,CALLED=CALLED
 
 ;------------------------------------------------------------
 ; For the text-history of the changes of the data files.
 ; -> Content is found in the .rit file an via the RAT menue
 ;------------------------------------------------------------
-	evolute,'Template filtering, boxsize : '+strcompress(boxsize,/R)
+   
+   evolute,'Template filtering, boxsize : '+strcompress(boxsize,/R)
+
 end
 
