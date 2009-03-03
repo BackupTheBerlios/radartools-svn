@@ -124,27 +124,27 @@ pro inspect_corner
 	
 	px1 = 128
 	px2 = 128
-	while profx[px1] gt 0.5 do px1 = px1 + 1
-	while profx[px2] gt 0.5 do px2 = px2 - 1
+	while profx[px1] gt 0.5 and px1 lt 255 do px1++
+	while profx[px2] gt 0.5 and px2 gt 0   do px2--
 	resx1 = (px1-px2)/10.0
-	while profx[px1] lt profx[px1-1] do px1 = px1 + 1
-	while profx[px2] lt profx[px2+1] do px2 = px2 - 1
+	while profx[px1] lt profx[px1-1] and px1 lt 255 do px1++
+	while profx[px2] lt profx[px2+1] and px2 gt 0   do px2--
 	resx2 = (px1-px2)/20.0
-	while profx[px1] gt profx[px1-1] do px1 = px1 + 1
-	while profx[px2] gt profx[px2+1] do px2 = px2 - 1
+	while profx[px1] gt profx[px1-1] and px1 lt 255 do px1++
+	while profx[px2] gt profx[px2+1] and px2 gt 0   do px2--
 	pslrx1 = -alog10(1.0 / profx[px1]) * 20
 	pslrx2 = -alog10(1.0 / profx[px2]) * 20
 
 	py1 = 128
 	py2 = 128
-	while profy[py1] gt 0.5 do py1 = py1 + 1
-	while profy[py2] gt 0.5 do py2 = py2 - 1
+	while profy[py1] gt 0.5 and py1 lt 255 do py1++
+	while profy[py2] gt 0.5 and py2 gt 0   do py2--
 	resy1 = (py1-py2)/10.0
-	while profy[py1] lt profy[py1-1] do py1 = py1 + 1
-	while profy[py2] lt profy[py2+1] do py2 = py2 - 1
+	while profy[py1] lt profy[py1-1] and py1 lt 255 do py1++
+	while profy[py2] lt profy[py2+1] and py2 gt 0   do py2--
 	resy2 = (py1-py2)/20.0
-	while profy[py1] gt profy[py1-1] do py1 = py1 + 1
-	while profy[py2] gt profy[py2+1] do py2 = py2 - 1
+	while profy[py1] gt profy[py1-1] and py1 lt 255 do py1++
+	while profy[py2] gt profy[py2+1] and py2 gt 0   do py2--
 	pslry1 = -alog10(1.0 / profy[py1]) * 20
 	pslry2 = -alog10(1.0 / profy[py2]) * 20
 

@@ -18,7 +18,7 @@
 ;------------------------------------------------------------------------
 
 print,"FATAL ERROR: this was completely the wrong way of starting RAT!!!"
-print,"please try to follow just a bit instructions given on the website..."
+print,"please try to follow just a bit the instructions given on the website..."
 exit
 
 @rat_install
