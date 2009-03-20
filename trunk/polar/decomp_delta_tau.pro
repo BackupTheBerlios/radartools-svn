@@ -77,10 +77,10 @@ pro decomp_delta_tau, CALLED = called
   common rat, types, file, wid, config, tiling
   compile_opt idl2
   
-  if  file.type eq 221 then begin
-;   if ~((file.type ge 500 && file.type le 513) $
-;        || file.type eq 221) then begin
-;   not yet extended to MB-PolInSAR case...
+;  if  file.type ne 221 then begin
+  if ~((file.type ge 500 && file.type le 513) $
+       || file.type eq 221) then begin
+;  not yet extended to MB-PolInSAR case...
      error = DIALOG_MESSAGE(["This is wrong data type.", $
                              '', $
                              'This procedure needs a coherency matrix T'], $
