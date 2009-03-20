@@ -17,9 +17,9 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-print,"FATAL ERROR: this was completely the wrong way of starting RAT!!!"
-print,"please try to follow just a bit the instructions given on the website..."
-exit
+; print,"FATAL ERROR: this was completely the wrong way of starting RAT!!!"
+; print,"please try to follow just a bit the instructions given on the website..."
+; exit
 
 @rat_install
 @definitions
@@ -258,6 +258,7 @@ PRO rat_event, event
                'Basis transforms.-> linar at 45 deg'                       : polar_basis,2
                'Basis transforms.Others'                                   : polar_basis
                'Parameters.Entropy / Alpha / Anisotropy'                   : decomp_entalpani
+               'Parameters.Delta / Tau (Scattering mechanism / Orientation randomness)' : decomp_delta_tau
                'Parameters.Alpha / Beta / Gamma / Delta angles'            : decomp_alpbetgam
                'Parameters.SERD / DERD'                                    : decomp_erd
                'Decompositions.Pauli decomposition'                        : decomp_pauli
@@ -710,6 +711,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                        '5\Parameters', $
                        '0\SERD / DERD',$
                        '0\Entropy / Alpha / Anisotropy',$
+                       '0\Delta / Tau (Scattering mechanism / Orientation randomness)', $
                        '2\Alpha / Beta / Gamma / Delta angles',$
                        '1\Decompositions', $
                        '0\Pauli decomposition', $

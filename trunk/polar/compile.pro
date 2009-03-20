@@ -31,6 +31,7 @@
 @polar/decomp_moriyama
 @polar/decomp_tvsm
 @polar/decomp_erd
+@polar/decomp_delta_tau
 @polar/speck_polmean
 @polar/speck_polreflee
 @polar/speck_pollee

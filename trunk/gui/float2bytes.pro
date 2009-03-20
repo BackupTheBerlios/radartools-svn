@@ -163,6 +163,13 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
          arr = bytscl(temporary(arr),-1,1)
       end
 
+      (type eq 236): begin      ; delta/tau
+;         scaling = 0
+         arr[0, *, *, *] = atan(arr[0, *, *, *])
+         sar_scl = 0
+         amp_scl = 0 			
+         ch_scl  = 2
+      end
 
 
       (type eq 230): begin

@@ -16,7 +16,7 @@
 ; The Initial Developer of the Original Code is the RAT development team.
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
-pro definitions,update_pref=update_pref
+pro definitions, update_pref=update_pref
 	common rat, types, file, wid, config, tiling
 	common channel, channel_names, channel_selec, color_flag, palettes, pnames
 	common rit, parstruct, evolution
@@ -89,7 +89,8 @@ pro definitions,update_pref=update_pref
 	types[232] = "polarimetric anisotropy"
 	types[233] = "Entropy / Alpha / Anisotropy"
 	types[234] = "Alpha / Beta / Gamma / Delta angles"
-        types[235] = "ERD parameters"
+   types[235] = "ERD parameters"
+   types[236] = "Delta Mag / Delta Pha / Tau" ; particle scattering anisotropy (mag + pha), orientation randomness
 
 	types[250] = "polarimetric span image"
 	types[280] = "ENVISAT partial polarimetry scattering vector"

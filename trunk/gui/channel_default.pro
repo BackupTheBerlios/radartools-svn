@@ -175,32 +175,13 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
 								'Eigenvector 4 (val1)','Eigenvector 4 (val2)','Eigenvector 4 (val3)','Eigenvector 4 (val4)','Eigenvalue 4']
 					select = [16,17,18]
 				endif 
-		end
-		233 : begin
-			select = [0,1,2]
-                        if file.vdim eq 3 && file.zdim gt 1 then $
-                           names = ['Entropy'+strcompress(indgen(file.zdim)),'Alpha'+strcompress(indgen(file.zdim)),'Anisotropy'+strcompress(indgen(file.zdim))] $
-                        else $
-                           names = ['Entropy','Alpha','Anisotropy']
-                     end
-		234 : begin
-                   	str = ['Alpha 1','Alpha 2','Alpha 3','Beta 1','Beta 2','Beta 3','Gamma 1','Gamma 2','Gamma 3','Delta 1','Delta 2','Delta 3']
-                        if file.vdim eq 3*4 && file.zdim gt 1 then begin
-                           names = strarr(4*3,file.zdim)
-                           for i=0,file.zdim-1 do $
-                              names[*,i] = str+' track'+strcompress(i)
-                           names=reform(transpose(names),/overwrite)
-                        endif else begin
-                           names = ['Alpha 1','Alpha 2','Alpha 3','Beta 1','Beta 2','Beta 3','Gamma 1','Gamma 2','Gamma 3','Delta 1','Delta 2','Delta 3']
-                        endelse
-                        select = [0,1,2]
-                     end
-                
-                235 : begin
-                   names = ['SERD','DERD']
-                   select = [0,0,1]
-                end
+         end
 
+      216 : begin               ; Moriyama decomp.
+         names = ['Double bounce', 'Surface', 'Volume', 'Urban/Nature']
+         select = [0, 1, 2]
+      end
+      
 		220 : begin
 ;  			if file.vdim eq 3 then begin
 ;  				channel_names = ['C_11','C_21','C_31','C_12','C_22','C_32','C_13','C_23','C_33']
@@ -247,17 +228,45 @@ pro channel_default,type=type,select=select,dim=dim,arr_size=arr_size,c_flag=c_f
 				select = [5,10,0]
 			endif
 		end
-                216 : begin     ; Moriyama decomp.
-;        	 channel_names = ['Double bounce', 'Surface', 'Volume', 'Urban/Nature']
-;        	 channel_selec = [0, 1, 2]
-                   names = ['Double bounce', 'Surface', 'Volume', 'Urban/Nature']
-                   select = [0, 1, 2]
-                end
-                280 : begin
+
+		233 : begin
+			select = [0,1,2]
+                        if file.vdim eq 3 && file.zdim gt 1 then $
+                           names = ['Entropy'+strcompress(indgen(file.zdim)),'Alpha'+strcompress(indgen(file.zdim)),'Anisotropy'+strcompress(indgen(file.zdim))] $
+                        else $
+                           names = ['Entropy','Alpha','Anisotropy']
+                     end
+		234 : begin
+                   	str = ['Alpha 1','Alpha 2','Alpha 3','Beta 1','Beta 2','Beta 3','Gamma 1','Gamma 2','Gamma 3','Delta 1','Delta 2','Delta 3']
+                        if file.vdim eq 3*4 && file.zdim gt 1 then begin
+                           names = strarr(4*3,file.zdim)
+                           for i=0,file.zdim-1 do $
+                              names[*,i] = str+' track'+strcompress(i)
+                           names=reform(transpose(names),/overwrite)
+                        endif else begin
+                           names = ['Alpha 1','Alpha 2','Alpha 3','Beta 1','Beta 2','Beta 3','Gamma 1','Gamma 2','Gamma 3','Delta 1','Delta 2','Delta 3']
+                        endelse
+                        select = [0,1,2]
+                     end
+                
+      235 : begin
+         names = ['SERD','DERD']
+         select = [0,0,1]
+      end
+
+      236: begin
+         names = ['arctan(Delta Mag) (Scattering Mechanism)', $
+                  'Delta Pha (Preferred Orientation)', $
+                  'Tau (Orientation Randomness)']
+         select = [0, 1, 2]
+      end
+
+
+      280 : begin
 ;  			channel_names = channel_names
 ;  			channel_selec = [0,0,1]
 			select = [0,0,1]
-		end
+      end
 		300 : begin
 ;  			channel_names = ['Master track','Slave track']
 ;  			channel_selec = [0,0,1]

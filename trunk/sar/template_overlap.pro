@@ -185,7 +185,6 @@ pro template_overlap, CALLED = called, BOXSIZE = boxsize
 ;    be written
 ;------------------------------------------------------------
    
-   head = 1l
    rrat,file.name, ddd,header=head,info=info,type=type		
    srat,outputfile,eee,header=head,info=info,type=type		
 
