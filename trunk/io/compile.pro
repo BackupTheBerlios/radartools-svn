@@ -32,6 +32,7 @@
 @io/save_rat.pro
 @io/save_image.pro
 @io/save_generic.pro
+@io/save_polsarpro.pro
 @io/construct_insar.pro
 @io/construct_polsar.pro
 @io/construct_dualpol.pro

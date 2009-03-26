@@ -132,6 +132,7 @@ PRO rat_event, event
                'Import system info.RADARSAT-2   (CSA)'                     : import_info_rs2
                'Import system info.Generic'                                : import_info_generic
                'Save external.Generic binary'                              : save_generic
+               'Save external.POLSARPRO'                                   : save_polsarpro
                'Save external.ENVI Standard'                               : save_generic,/envi
                'Save pixmap.Save PNG'                                      : save_image,/png
                'Save pixmap.Save JPEG'                                     : save_image,/jpg
@@ -584,6 +585,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                     '4\Save RAT file', $
                     '1\Save external' , $
                     '0\ENVI Standard' , $
+                    '0\POLSARPRO' , $
                     '2\Generic binary' , $
                     '1\Save pixmap' , $
                     '0\Save PNG'  , $
