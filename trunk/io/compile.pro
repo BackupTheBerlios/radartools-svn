@@ -71,3 +71,8 @@
 @io/import_info_generic.pro
 @io/import_var.pro
 @io/export_var.pro
+@io/ersdac_palsar_get_headerinfo.pro
+@io/ersdac_palsar_create_polar_stokes.pro
+@io/open_palsar_ersdac_ceos.pro
+@io/open_palsar_ersdac.pro
+@io/ersdac_chk_ceos.pro

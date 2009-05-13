@@ -4,11 +4,13 @@
 
 Version 0.21:
 
+- New routine: Import of PALSAR ERSDAC (CEOS and VEXCEL) format
 - New routine: Range antenna profile removal
 - New routine: CDA sidelobe suppression / resolution enhancement
 - New routine: Polarimetric SERD/DERD parameters
 - New routine: Ainsworth PolSAR calibration
 - New routine: Polarimetric SNR estimation
+- Improvemed batch mode
 - Faster preview calculation & zoom
 - Inline documentation based on IDLdoc
 - Various small improvements and bug fixes

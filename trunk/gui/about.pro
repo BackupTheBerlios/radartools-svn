@@ -29,10 +29,10 @@ pro about
    'Andreas Reigber, Maxim Neumann & Tisham Dhar',$
 	' ',$
 	'Additional programming: ',$
-	'Markus Steiof, Stephane Guillaso, Franz Mayer, ',$
-	'Marcus Saemmang, Jan-Christoph Unger, Marc Jaeger,',$
-	'Thomas Weser, Oliver Bach, Bert Wolff',$
-	'Andre Lehmann, Nicole Bouvier, Mathias Weller']
+	'Masaki Kawai,',$
+   'Markus Steiof, Stephane Guillaso, Franz Mayer, Marcus Saemmang,',$
+	'Jan-Christoph Unger, Marc Jaeger, Thomas Weser, Oliver Bach,',$
+	'Bert Wolff, Andre Lehmann, Nicole Bouvier, Mathias Weller']
 
 	dummy=DIALOG_MESSAGE(infostring,DIALOG_PARENT = wid.base, TITLE='About RAT',/INFORMATION)
 end

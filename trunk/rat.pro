@@ -108,7 +108,7 @@ PRO rat_event, event
                'Open external.EMISAR       (DCRS)'                         : open_emisar
                'Open external.PI-SAR       (NASDA-CRL)'                    : open_pisar
                'Open external.CONVAIR      (CCRS)'                         : open_convair
-               'Open external.ASF SAR DATA.SLC DATA.RADARSAT-1'	           : open_asf_slcs
+               'Open external.ASF SAR DATA.SLC DATA.RADARSAT-1'	         : open_asf_slcs
                'Open external.ASF SAR DATA.SLC DATA.ERS-1/2'               : open_asf_slcs
                'Open external.ASF SAR DATA.SLC DATA.JERS'                  : open_asf_slcs
                'Open external.ASF SAR DATA.DETECTED DATA.RADARSAT-1'       : open_asf_slcs
@@ -116,6 +116,8 @@ PRO rat_event, event
                'Open external.ASF SAR DATA.DETECTED DATA.JERS'             : open_asf_slcs
                'Open external.ENVISAT-ASAR (ESA)'                          : open_envisat
                'Open external.ALOS-PALSAR  (JAXA)'                         : open_palsar
+               'Open external.ALOS-PALSAR  (ERSDAC CEOS)'                  : open_palsar_ersdac_ceos
+               'Open external.ALOS-PALSAR  (ERSDAC VEXCEL)'                : open_palsar_ersdac
                'Open external.TERRASAR-X   (DLR)'                          : open_cosar
                'Open external.RADARSAT-2   (CSA)'                          : open_radarsat2
                'Open external.RAMSES       (ONERA)'                        : open_ramses
@@ -141,7 +143,7 @@ PRO rat_event, event
                'Construct.Multitemporal.Change existing multitemporal set' : construct_multi, /called
                'Construct.Multitemporal'                                   : construct_multi
                'Construct.PolSAR vector'                                   : construct_polsar
-               'Construct.Dual-Pol vector'								   : construct_dualpol
+               'Construct.Dual-Pol vector'								         : construct_dualpol
                'Construct.InSAR pair'                                      : construct_insar
                'Construct.MB-PolInSAR vector'                              : construct_polinsar
 ;              'Construct.MB-SAR vector'                                   : construct_polinsar
@@ -550,6 +552,8 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                     '0\CONVAIR      (CCRS)', $
                     '4\ENVISAT-ASAR (ESA)', $
                     '0\ALOS-PALSAR  (JAXA)', $
+                    '0\ALOS-PALSAR  (ERSDAC CEOS)', $
+                    '0\ALOS-PALSAR  (ERSDAC VEXCEL)', $
                     '0\TERRASAR-X   (DLR)',$
                     '0\RADARSAT-2   (CSA)', $
                     '1\ASF SAR DATA', $
