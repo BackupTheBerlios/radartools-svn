@@ -24,22 +24,29 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
- 
+
 pro srat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,TYPE=type,PREVIEW=preview,update_info=update_info,MT=mt,MULTI=multi
    ;on_error,2
 
-	if keyword_set(noxdr) then xflag=0 else xflag=1   
+	if keyword_set(noxdr) then xflag=0 else xflag=1
 	if not keyword_set(multi) then multi = 1
-	
+
 	if keyword_set(update_info) then begin
 		;--> Read information about original data
-		dim  = 0l
+      openr,ddd,file,/get_lun,/xdr
+      dim  = 0l
+      readu,ddd,dim
+      free_lun,ddd
+      if dim gt 0 and dim lt 9 then xflag=1 else xflag=0 ; if outside, very likely file is not xdr
+      if keyword_set(noxdr) then xflag=0                 ; override autodetection..?
+
+      dim  = 0l
 		var  = 0l
 		type = 0l
 		pointeur_preview = long64(0)
 		multi= 0l
 		dummy= 0l
-		info = bytarr(80)  
+		info = bytarr(80)
 		openr,ddd,file,/get_lun,xdr=xflag
 		readu,ddd,dim
 		siz=lonarr(dim)
@@ -51,7 +58,7 @@ pro srat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,TYPE=type,PREVIEW=preview
 		readu,ddd,info
 		free_lun,ddd
 		openw,eee,file,/append,xdr=xflag,/get_lun
-		
+
 		;--> Calculate the pointer to update the info string
 		;position = 24 + dim*4
 		;point_lun,eee,position
@@ -68,27 +75,34 @@ pro srat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,TYPE=type,PREVIEW=preview
 		new_info = new_info[0:79]
 		writeu,eee,new_info
 		free_lun,eee
-		return		
+		return
 	endif
-	
+
 	if keyword_set(preview) then begin
-   	
-		;--> Read information about original data
-		dim  = 0l
-   		var  = 0l
+
+;--> Read information about original data
+      openr,ddd,file,/get_lun,/xdr
+      dim  = 0l
+      readu,ddd,dim
+      free_lun,ddd
+      if dim gt 0 and dim lt 9 then xflag=1 else xflag=0 ; if outside, very likely file is not xdr
+      if keyword_set(noxdr) then xflag=0                 ; override autodetection..?
+
+      dim  = 0l
+      var  = 0l
 		type = 0l
 		pointeur_preview = long64(0)
 		multi= 0l
-   		info = bytarr(80)  
-   		openr,ddd,file,/get_lun,xdr=xflag
-   		readu,ddd,dim
-   		siz=lonarr(dim)
-   		readu,ddd,siz
-   		readu,ddd,var
+      info = bytarr(80)
+      openr,ddd,file,/get_lun,xdr=xflag
+      readu,ddd,dim
+      siz=lonarr(dim)
+      readu,ddd,siz
+      readu,ddd,var
 		readu,ddd,type
 		readu,ddd,pointeur_preview
 		readu,ddd,multi
-	   	readu,ddd,info
+      readu,ddd,info
 		if multi gt 1 then begin  ; Find end of multifile
 			ifile = ""
 			for i=1,multi do readu,ddd,ifile
@@ -97,7 +111,7 @@ pro srat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,TYPE=type,PREVIEW=preview
 		free_lun,ddd
 
 		openw,eee,file,/append,xdr=xflag,/get_lun
-		
+
 		;--> Calculate the pointeur to update the pointeur_preview
 		position = 12 + dim*4
 		;--> Calculate the pointeur preview position
@@ -105,14 +119,14 @@ pro srat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,TYPE=type,PREVIEW=preview
 			byt=[0,1,4,4,4,8,8,0,0,16,0,0,4,4,8,8]	  ; bytelength of the different variable typos
   			pointeur_preview = long64(108) + long64(dim)*long64(4) + long64(product(long64(siz)))*long64(byt[var])
 		endif
-		
+
 		;go to position
 		point_lun,eee,position
 		writeu,eee,long64(pointeur_preview)
-		
+
 		;go to pointeur_preview
 		point_lun,eee,pointeur_preview
-		
+
 		; write header
 		dim = size(bild)
 		xdim = dim[dim[0]-1]
@@ -124,20 +138,20 @@ pro srat,file,bild,INFO=info,NOXDR=noxdr,HEADER=header,TYPE=type,PREVIEW=preview
 		free_lun,eee
 		return
 	endif
-	
-	if not keyword_set(info) then info = "unknown content"		
-	if not keyword_set(type) then type = 0l		
+
+	if not keyword_set(info) then info = "unknown content"
+	if not keyword_set(type) then type = 0l
 	pointeur_preview = long64(0)
 	dummy = 0l
 	type = long(type)
-	
+
 	leng = strlen(info)
 	bytinfo = byte(info)
 	if leng lt 80 then bytinfo = [bytinfo,bytarr(80-leng)+32b] $
 	              else bytinfo = bytinfo[0:79]
         s=size(bild)
         s=s[0:s[0]+1]
-	
+
         if n_elements(header) ne 0 then begin
 		if multi gt 1 and arg_present(mt) then begin
 			mt[*].file2 += +'_part'
