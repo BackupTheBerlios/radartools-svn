@@ -27,6 +27,20 @@ pro open_esar,INPUTFILE = inputfile, PATH = path
 ; define known formats
 
 	image_types = [$
+	;SingleLook Complex Image, Ground Range (Int)
+	{$
+		search_string:'int_slc_geo',	$
+		intype:2l,		$
+		outype:6l,		$
+		xdrflag:0l,		$
+		offset:0l,		$
+		filetype:101l,		$
+		blocksize:1l,		$
+		convert_to_float:0l,	$
+		prefix:['i'],		$
+		channel_search:1l	$
+		},$
+
 	;SingleLook Complex Image, SLANT  Range (Float)
 	 {$
 		search_string:'_slc',	$
@@ -399,6 +413,8 @@ pro open_esar,INPUTFILE = inputfile, PATH = path
 		blocksizes = intarr(anz_blocks)+bs
 		blocksizes[anz_blocks-1] = bs_last
 
+		if imageformat eq 0 then anzx=anzx/2
+
 ; now read the image(s)
 		if readrgb gt 1 then begin ;3 or 4 channels
 			srat,config.tempdir+config.workfile1,eee,header=[3l,readrgb,anzx(0),anzy(0),outype],type=200l
@@ -406,13 +422,21 @@ pro open_esar,INPUTFILE = inputfile, PATH = path
 			for i=0,anz_blocks-1 do begin
 
 				block = make_array([anzx(0),blocksizes[i]],type=intype)
+				if imageformat eq 0 then begin
+					block = make_array([anzx(0)*2,blocksizes[i]],type=intype)
+				endif
 
 				oblock = make_array([readrgb,anzx(0),blocksizes[i]],type=outype)
 				for j=0,readrgb-1 do begin
 					dummy=files(j)
 					readu,dummy,block
 					if convert_to_float eq 1 then block=float(block)+offset
-					oblock[j,*,*] = block
+					if imageformat eq 0 then begin
+						refblock = reform(block,2,anzx[0],blocksizes[i])
+						oblock[j,*,*] = complex(reform(refblock[0,*,*]),reform(refblock[1,*,*]))
+					endif else begin
+						oblock[j,*,*] = block
+					endelse
 				endfor
 ;  				if readrgb eq 2 then begin
 ;  					dummy=make_array([anzx(0),blocksizes[i]],type=intype)
@@ -431,10 +455,17 @@ pro open_esar,INPUTFILE = inputfile, PATH = path
 
 			for i=0,anz_blocks-1 do begin
 				block = make_array([anzx(0),blocksizes[i]],type=intype)
+				if imageformat eq 0 then begin
+					block = make_array([anzx(0)*2,blocksizes[i]],type=intype)
+				endif
 				dummy=files(0)
 				readu,dummy,block
 				if convert_to_float eq 1 then block=float(block)+offset else block+=offset
 				if file.type eq 310l then block=block/255
+				if imageformat eq 0 then begin
+						refblock = reform(block,2,anzx[0],blocksizes[i])
+						block = complex(reform(refblock[0,*,*]),reform(refblock[1,*,*]))
+				endif
 				writeu,eee,block
 			endfor
 			dummy=files(0)
@@ -463,11 +494,11 @@ pro open_esar,INPUTFILE = inputfile, PATH = path
 		file.var  = outype
 
 ; update file generation history (evolution)
-		
+
 		evolute,'Import SAR data from ESAR.'
 
 ; read palette information
-	
+
 		palettes[0,*,*] = palettes[2,*,*] ; set variable palette to b/w linear
 		palettes[1,*,*] = palettes[2,*,*] ; set variable palette to b/w linear
 
