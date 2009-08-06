@@ -307,17 +307,21 @@ function oap_xtalk,covar
 end
 
 
-pro calib_xtalkoap, CALLED=CALLED, SMMX=smmx,SMMY=smmy,EXCLUDEPIX=excludepix,CALFILE=calfile
+pro calib_xtalkoap, CALLED=CALLED, SMMX=smmx,SMMY=smmy, EXCLUDEPIX=excludepix, CALFILE=calfile
 
    common rat, types, file, wid, config, tiling
 
    if not keyword_set(smmx) then smmx = 16 ; Routine called with keywords
    if not keyword_set(smmy) then smmy = 128 ; Default values
    if not keyword_set(excludepix) then excludepix = 0 ; Default values
-   if n_elements(calfile) eq 0 then calfile = ''
 
    if not keyword_set(flag_chck) then flag_chck = ~keyword_set(CALLED) ; Default values
    if not keyword_set(flag_calf) then flag_calf = 0 ; Default values
+   if n_elements(calfile) eq 0 then begin
+      calfile = ''
+   endif else begin
+      flag_calf = 1
+   endelse
 
 ; ---- CHECK IF ARRAY IS USABLE ----
 
