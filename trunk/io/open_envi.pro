@@ -4,7 +4,7 @@
 ; RAT Module: open_envi
 ; last revision : 1.October 2003
 ; written by    : Andreas Reigber
-; Reads data in ENVI standard format (at least in most of the cases)              
+; Reads data in ENVI standard format (at least in most of the cases)
 ;------------------------------------------------------------------------
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in
@@ -36,7 +36,7 @@ pro open_envi,INPUTFILE = inputfile
 	if strlen(inputfile) gt 0 then begin
 
 ; change mousepointer
-	
+
 		WIDGET_CONTROL,/hourglass
 
 ; undo function
@@ -45,7 +45,14 @@ pro open_envi,INPUTFILE = inputfile
 
 ; analyse HDR file
 
+; try to find the right name for the .hdr file this can be file.hdr or file.dat.hdr
+; check if input file ends with .dat
+; lots and lots of guesswork involved
 		hdrfile = inputfile + '.hdr'
+		if FILE_TEST(hdrfile) eq 0 then begin
+			hdrfile = STRMID(inputfile,0, STRPOS(inputfile,'.dat')) + '.hdr'
+			print,hdrfile
+		endif
 		rstr  = ''
 		openr,ddd,hdrfile,/get_lun
 		readf,ddd,rstr
@@ -56,7 +63,7 @@ pro open_envi,INPUTFILE = inputfile
 
 ; set file type
 
-		whatisthis	
+		whatisthis
 
 ; -------------
 
@@ -82,13 +89,13 @@ pro open_envi,INPUTFILE = inputfile
 			endcase
 		endrep until eof(ddd)
 		free_lun,ddd
-		file.vdim = 1l		
+		file.vdim = 1l
 
 ; Byte data? If yes convert to integer
-		
-		invar = file.var	
+
+		invar = file.var
 		if file.var eq 1 then file.var = 2
-;  					
+;
 ; Read and convert data
 
 		if file.dim eq 2 then begin  ; single channel data (no interleave conversion)
@@ -104,40 +111,40 @@ pro open_envi,INPUTFILE = inputfile
 				writeu,eee,block
 			endfor
 		endif
-		
+
 		if file.dim eq 3 then begin ; multi channel data
 			openr,ddd,inputfile,/get_lun
 			srat,config.tempdir+config.workfile1,eee,header=[3l,file.zdim,file.xdim,file.ydim,file.var],type=file.type
 			point_lun,ddd,offset
 			case interl of
 
-; band interleave				
+; band interleave
 				'bsq': begin
 					block  = make_array([file.xdim,file.ydim],type=invar)
 					oblock = make_array([file.zdim,file.xdim,file.ydim],type=file.var)
 					for i=0,file.zdim-1 do begin
-						readu,ddd,block	
+						readu,ddd,block
 						if endian eq 1 then block = swap_endian(block)
 						oblock[i,*,*] = block
 					endfor
 					if invar eq 1 then oblock = fix(oblock)
 					writeu,eee,oblock
 				end
-				
-; pixel interleave				
-				'bip': begin 
+
+; pixel interleave
+				'bip': begin
 					for i=0,file.ydim-1 do begin
 						block  = make_array([file.zdim,file.xdim],type=invar)
-						readu,ddd,block	
+						readu,ddd,block
 						if endian eq 1 then block = swap_endian(block)
 						if invar eq 1 then block = fix(block)
 						writeu,eee,block
 					endfor
 
 				end
-				
-; line interleave				
-				'bil': begin 
+
+; line interleave
+				'bil': begin
 					error = DIALOG_MESSAGE("line interleave not yet supported", DIALOG_PARENT = wid.base, TITLE='Error',/error)
 					return
 				end
@@ -151,11 +158,11 @@ pro open_envi,INPUTFILE = inputfile
 		file.name = config.tempdir+config.workfile1
 
 ; update file generation history (evolution)
-	
+
 	evolute,'Import SAR data from ENVI.'
 
 ; read palette information
-	
+
 	palettes[0,*,*] = palettes[2,*,*] ; set variable palette to b/w linear
 	palettes[1,*,*] = palettes[2,*,*] ; set variable palette to b/w linear
 
@@ -164,6 +171,6 @@ pro open_envi,INPUTFILE = inputfile
 	file.window_name = 'Untitled.rat'
 	generate_preview
 	update_info_box
-	
-	endif	
+
+	endif
 end
