@@ -5,6 +5,10 @@
 ; written by    : Thomas Weser (TUB)
 ; last revision : 16. Januar 2004
 ; Open files in DLR E-SAR format
+;
+; revision      : mn, oct'09
+; open multiple files in batch mode
+; (just provide list of correct files; not many checks are done)
 ;------------------------------------------------------------------------
 ; The contents of this file are subject to the Mozilla Public License
 ; Version 1.1 (the "License"); you may not use this file except in
@@ -20,9 +24,18 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-pro open_esar,INPUTFILE = inputfile, PATH = path
+pro open_esar, CALLED=CALLED, INPUTFILE = inputfile, PATH = path
 	common rat, types, file, wid, config
 	common channel, channel_names, channel_selec, color_flag, palettes, pnames
+
+;;; if more than 1 inputfiles are provided
+   if n_elements(inputfile) gt 1 then begin
+      readrgb = n_elements(inputfile)
+      result  = inputfile
+      rgb = indgen(readrgb)
+      inputfile = file_basename(result[0])
+      path = file_dirname(result[0])
+   endif
 
 ; define known formats
 
@@ -167,6 +180,8 @@ pro open_esar,INPUTFILE = inputfile, PATH = path
 
 ;------------------------------------------------------------
 
+; stop
+
 	if not (keyword_set(inputfile) or keyword_set(path))  then begin
 		path = config.workdir
 		inputfile = cw_rat_dialog_pickfile(TITLE='Open E-SAR file', $
@@ -181,11 +196,12 @@ pro open_esar,INPUTFILE = inputfile, PATH = path
 		WIDGET_CONTROL,/hourglass
 
 ; undo function
-                undo_prepare,outputfile,finalfile,CALLED=CALLED
-                open_rit,/EMPTY ; no parameters are set: delete the old ones!
+		undo_prepare,outputfile,finalfile,CALLED=CALLED
+		open_rit,/EMPTY ; no parameters are set: delete the old ones!
 
 ; converting Rolf's format to RAT
-		filename = StrMid( inputfile, StrLen(Path) )
+;		filename = StrMid( inputfile, StrLen(Path) )
+      filename = file_basename(inputfile)
 
 		;search for known formats
 		for i=0, (size(image_types,/N_ELEMENTS)-1) do begin
@@ -222,6 +238,8 @@ pro open_esar,INPUTFILE = inputfile, PATH = path
 		channel_search = image_types[imageformat].channel_search
 
 ;--------------------------------------------------------------------------
+
+      if n_elements(result) le 1 then begin
 ; load more channels if possible
 		rgb=intarr(1)
 		rgb[0]=0
@@ -316,9 +334,9 @@ pro open_esar,INPUTFILE = inputfile, PATH = path
 					end
 			end
 		end
+      end
+
 ; open the image(s)
-
-
 		files= lonarr(readrgb)
 		anzx  = lonarr(readrgb)
 		anzy  = lonarr(readrgb)
