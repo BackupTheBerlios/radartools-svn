@@ -20,8 +20,9 @@ function block3mmtr,in1,in2   ; trace of a matrix multiplication
 	nrx = (size(in2))[1]
 	nry = (size(in2))[2]
 	out = make_array(nrx,nry)
-	for vv = 0,2 do $
-		for kk = 0,2 do $
+   pol = (size(in1))[1]
+	for vv = 0,pol-1 do $
+		for kk = 0,pol-1 do $
 			out += reform(in1[kk,vv] * in2[*,*,vv,kk])
 	return,out
 end
