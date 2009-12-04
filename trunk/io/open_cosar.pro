@@ -92,7 +92,7 @@ pro open_cosar,INPUTFILE = inputfile
 		progress,message='Reading TerraSAR-X Cosar file...'
 
 		for i=0,nr_y-1 do begin                  ; read and write blocks
-			progress,percent=((i+1)*100)/nr_y     ; display progress bar
+			progress,percent=((i+1)*100.)/nr_y     ; display progress bar
 			readu,ddd,block
 			;drop RSFV and RSLV
 			subblock = block[4:anzx*2+3,*]

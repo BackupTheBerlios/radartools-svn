@@ -105,6 +105,7 @@ PRO rat_event, event
                'Open internal.rarr / sarr'                                 : open_rarr
                'Open internal.2*long + complex'                            : open_2lcmp
                'Open external.E-SAR        (DLR)'                          : open_esar
+               'Open external.F-SAR        (DLR)'                          : open_envi,/fsar
                'Open external.EMISAR       (DCRS)'                         : open_emisar
                'Open external.PI-SAR       (NASDA-CRL)'                    : open_pisar
                'Open external.CONVAIR      (CCRS)'                         : open_convair
@@ -546,6 +547,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                     '2\Wavenumber file' , $
                     '1\Open external', $
                     '0\E-SAR        (DLR)', $
+                    '0\F-SAR        (DLR)', $
                     '0\EMISAR       (DCRS)', $
                     '0\PI-SAR       (NASDA-CRL)', $
                     '0\RAMSES       (ONERA)', $
