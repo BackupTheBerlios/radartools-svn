@@ -23,6 +23,7 @@
 ;------------------------------------------------------------------------
 
 function coreg_ampsub,arr1,arr2,quality
+   compile_opt idl2
 	bs = (size(arr1))[1]
 	auxcor = abs(fft(fft(arr1,-1)*conj(fft(arr2,-1)),+1))
 	aux    = max(auxcor, auxpos )
@@ -74,6 +75,7 @@ function coreg_ampsub,arr1,arr2,quality
 end
 
 pro coreg_patch,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
+   compile_opt idl2
 	common rat, types, file, wid, config
 
 	if file.type ne 300 and file.type ne 301 and file.type ne 302 then begin                   
@@ -242,13 +244,13 @@ pro coreg_patch,CALLED = called, OFFSETX = offsetx, OFFSETY = offsety
 	if overx gt 1 then begin
 		bsx = 2                      ; search automatically for good blocksize
 		while 2l^bsx lt file.xdim do bsx++  
-		bsx1 = 2^bsx
+		bsx1 = 2UL^bsx
 		bsx2 = overx*bsx1
 	endif
 	if overy gt 1 then begin
 		bsy = 2                      ; search automatically for good blocksize
 		while 2l^bsy lt bs do bsy++  
-		bsy1 = 2^bsy
+		bsy1 = 2UL^bsy
 		bsy2 = overy*bsy1
 	endif
 	
