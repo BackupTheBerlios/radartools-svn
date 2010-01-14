@@ -253,31 +253,39 @@ pro definitions, update_pref=update_pref
 		homedir  = getenv("HOME")
 		tempbase = getenv("TMP")
 		if tempbase eq '' then tempbase = homedir
-		config.tempbase = tempbase+'/'
-		config.tempdir  = tempbase+'/'
-		config.workdir  = homedir+'/'
-		config.pref     = homedir+'/.rat/preferences'
-		config.imagedir = homedir+'/.rat/icons/'
 		config.prefdir  = homedir+'/.rat/'
-		config.palettes = homedir+'/.rat/palettes.rat'
-		config.pnames   = homedir+'/.rat/palettes.txt'
 		config.pdfviewer= 'xpdf'
+		;; config.tempbase = tempbase+'/'
+		;; config.tempdir  = tempbase+'/'
+		;; config.workdir  = homedir+'/'
+		;; config.pref     = homedir+'/.rat/preferences'
+		;; config.imagedir = homedir+'/.rat/icons/'
+		;; config.palettes = homedir+'/.rat/palettes.rat'
+		;; config.pnames   = homedir+'/.rat/palettes.txt'
 	endif
 
 	if config.os eq 'windows' then begin
 		homedir = getenv("USERPROFILE")
 		tempbase = getenv("TMP")
 		if tempbase eq '' then tempbase = homedir
-		config.tempbase = tempbase+'\'
-		config.tempdir  = tempbase+'\'
-		config.workdir  = homedir+'\'
-		config.pref     = homedir+'\rat\preferences'
-		config.imagedir = homedir+'\rat\icons\'
 		config.prefdir  = homedir+'\rat\'
-		config.palettes = homedir+'\rat\palettes.rat'
-		config.pnames   = homedir+'\rat\palettes.txt'
 		config.pdfviewer= 'acrord32.exe'
 	endif
+
+;;; test either configuration is installed in the source dir.
+   if ~file_test(config.prefdir,/dir,/read) then begin
+      sourcedir = file_dirname((routine_info('definitions',/source)).path,/mark)
+      prefdir1 = sourcedir+'preferences'+path_sep()+'installed'+path_sep()
+      if file_test(prefdir1,/dir,/read) then config.prefdir = prefdir1
+   endif
+
+   config.tempbase = tempbase+path_sep()
+   config.tempdir  = tempbase+path_sep()
+   config.workdir  = homedir+path_sep()
+   config.pref     = config.prefdir+'preferences'
+   config.imagedir = config.prefdir+'icons'+path_sep()
+   config.palettes = config.prefdir+'palettes.rat'
+   config.pnames   = config.prefdir+'palettes.txt'
 
 	if keyword_set(update_pref) then save,filename=config.pref,config,wid
 

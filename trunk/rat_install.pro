@@ -39,28 +39,16 @@ end
 
 
 pro cw_rat_install_filesel_test_file,ev
+  common rat_install, prefdir
 	
   	widget_control, ev.handler, get_uvalue = state, /no_copy
-	os = strlowcase(!version.os_family)
-	case os of
-		'unix': begin
-			;print,'UNIX operating system detected'
-			homedir = getenv("HOME")
-			homedir += '/.rat/'
-		end
-		'windows': begin
-			;print,'WINDOWS operating system detected'
-			homedir = getenv("USERPROFILE")
-			homedir += '\rat\'
-		end
-	endcase
 
 	path = state.path
 	old_path = path
 	
 	state.filename= dialog_pickfile(title=state.label, /directory, dialog_parent=state.base,/must_exist,path=path,get_path=path)
-	if state.filename eq homedir then begin
-		infotext = ["You cannot use the "+homedir+"directory","","please, choose another one" ]
+	if state.filename eq prefdir then begin
+		infotext = ["You cannot use the "+prefdir+"directory","","please, choose another one" ]
 		info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = base, /error)
 		state.filename="<please choose a valid directory>"
 	endif else state.path = path
@@ -95,23 +83,20 @@ end
 ; ==============================================================================
 pro rat_install
 	common rat, types, file, wid, config
+   common rat_install
 	os = strlowcase(!version.os_family)
 	case os of
 		'unix': begin
 			;print,'UNIX operating system detected'
 			homedir = getenv("HOME")
-			homedir += '/.rat/'
-			config1 = homedir + '/preferences'
-			config2 = homedir + '/preferences.old'
+			prefdir = homedir+'/.rat/'
 			newline = string(10B)
 			font = '6x13bold'
 		end
 		'windows': begin
 			;print,'WINDOWS operating system detected'
 			homedir = getenv("USERPROFILE")
-			homedir += '\rat\'
-			config1 = homedir + '\preferences'
-			config2 = homedir + '\preferences.old'
+			prefdir = homedir+'\rat\'
 			newline = strcompress(13B) + string(10B)
 			widget_control,default_font='Courier New*15'
 			font = 'Courier New*15*bold'
@@ -120,10 +105,10 @@ pro rat_install
 	     	error = DIALOG_MESSAGE("ERROR: Unknown operating system !!!",/error)
 			return
 		end
-		
-	endcase
-        sourcedir = file_dirname((routine_info('rat_install',/source)).path,/mark)
-
+   endcase
+   sourcedir = file_dirname((routine_info('rat_install',/source)).path,/mark)
+   prefdir0 = prefdir
+   prefdir1 = sourcedir+'preferences'+path_sep()+'installed'+path_sep()
 ;------------------------------------------------------------------
 ; - Star the graphical interface to install rat
 ;------------------------------------------------------------------
@@ -136,6 +121,7 @@ INTRODUCTION:
 			base2left = widget_base(base2,/column)
 				dummy = widget_label(base2left,value = "--> INTRODUCTION            ",font=font)
 				dummy = widget_label(base2left,value = "--> LICENSE                 ",sensitive=0)
+				dummy = widget_label(base2left,value = "--> INSTALATION DIRECTORY   ",sensitive=0)
 				dummy = widget_label(base2left,value = "--> PRE-INSTALLATION SUMMARY",sensitive=0)
 				dummy = widget_label(base2left,value = "--> INSTALLATION            ",sensitive=0)
 				dummy = widget_label(base2left,value = "--> INSTALL COMPLETE        ",sensitive=0)
@@ -176,6 +162,7 @@ LICENSE:
 			base2left = widget_base(base2,/column)
 				dummy = widget_label(base2left,value = "--> INTRODUCTION            ")
 				dummy = widget_label(base2left,value = "--> LICENSE                 ",font=font)
+				dummy = widget_label(base2left,value = "--> INSTALATION DIRECTORY   ",sensitive=0)
 				dummy = widget_label(base2left,value = "--> PRE-INSTALLATION SUMMARY",sensitive=0)
 				dummy = widget_label(base2left,value = "--> INSTALLATION            ",sensitive=0)
 				dummy = widget_label(base2left,value = "--> INSTALL COMPLETE        ",sensitive=0)
@@ -230,6 +217,56 @@ LICENSE:
 	widget_control,base,/destroy
 	if event.id eq but_prev then goto,INTRODUCTION
 
+; --> INSTALLATION DIR
+
+INSTALLATION_DIR:
+   prefdir = prefdir0
+	base = widget_base(title='RAT Installation',/column,/tlb_kill_request_events,/tlb_frame_attr)
+		base2 = widget_base(base,/row)
+			base2left = widget_base(base2,/column)
+				dummy = widget_label(base2left,value = "--> INTRODUCTION            ")
+				dummy = widget_label(base2left,value = "--> LICENSE                 ")
+				dummy = widget_label(base2left,value = "--> INSTALATION DIRECTORY   ",font=font)
+				dummy = widget_label(base2left,value = "--> PRE-INSTALLATION SUMMARY",sensitive=0)
+				dummy = widget_label(base2left,value = "--> INSTALLATION            ",sensitive=0)
+				dummy = widget_label(base2left,value = "--> INSTALL COMPLETE        ",sensitive=0)
+			base2right = widget_base(base2,/column)
+				mes  = "INSTALLATION DIRECTORY " + newline
+				mes += '----------------------------------------------------------------------' + newline
+            mes += 'By default, RAT will install the configuration files into ' +newline
+            mes += '      '+prefdir0+newline
+            mes += "If you prefer to install the configuration files into the source " + newline
+            mes += "directory, please check the box below." + newline + newline
+            mes += "Note that in the later case, if you have previously installed the " + newline
+            mes += "configuration files into " + newline
+            mes += '      '+prefdir0+newline
+            mes += 'you have to delete this directory.' + newline
+            mes += '(it will be done automatically if present)' + newline+newline
+				mes += '----------------------------------------------------------------------' + newline
+ 				dummy = widget_text(base2right,value=mes,SCR_XSIZE=300,YSIZE=13)
+            choice_dir = ['Install into "'+prefdir0+'"','Install into "'+prefdir1+'" and delete "'+prefdir0+'"']
+            but_dir = cw_bgroup(base2right,choice_dir,/EXCLUSIVE,/COLUMN,set_value=0)
+         buttons  = WIDGET_BASE(base,column=3,/frame)
+			but_prev   = WIDGET_BUTTON(buttons,VALUE='Previous',xsize=80,sensitive=0)
+			but_next   = WIDGET_BUTTON(buttons,VALUE='Next',xsize=80)
+			but_canc = WIDGET_BUTTON(buttons,VALUE='Cancel',xsize=80)
+	
+	WIDGET_CONTROL, base, /REALIZE, default_button = but_next, XOFFSET=200,yoffset=100
+	
+	repeat begin
+		event = widget_event(base)
+	endrep until (event.id eq but_next) or (event.id eq but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST'
+   widget_control,but_dir, get_value=val
+   if val eq 1 then prefdir = prefdir1
+	if (event.id eq  but_canc) or tag_names(event,/structure_name) eq 'WIDGET_KILL_REQUEST' then begin
+		infotext = ['Are you sure you want to cancel',$
+			' RAT INSTALLATION ?']
+		info = DIALOG_MESSAGE(infotext, DIALOG_PARENT = base, /question)
+		widget_control,base,/destroy
+		if info eq 'Yes' then return else goto,INSTALLATION_DIR
+	endif	
+	widget_control,base,/destroy
+
 ; --> UPDATE / NEW INSTALLATION
 PRE_INSTALL:
 	base = widget_base(title='RAT Installation',/column,/tlb_kill_request_events,/tlb_frame_attr)
@@ -237,6 +274,7 @@ PRE_INSTALL:
 			base2left = widget_base(base2,/column)
 				dummy = widget_label(base2left,value = "--> INTRODUCTION            ")
 				dummy = widget_label(base2left,value = "--> LICENSE                 ")
+				dummy = widget_label(base2left,value = "--> INSTALATION DIRECTORY   ")
 				dummy = widget_label(base2left,value = "--> PRE-INSTALLATION SUMMARY",font=font)
 				dummy = widget_label(base2left,value = "--> INSTALLATION            ",sensitive=0)
 				dummy = widget_label(base2left,value = "--> INSTALL COMPLETE        ",sensitive=0)
@@ -261,20 +299,31 @@ PRE_INSTALL:
 	wait,0.5
 	
 	; * is an installation ?
-	if file_test(homedir) then begin
+	if file_test(prefdir) then begin
 		mes += 'There is a previous version of RAT installed'+newline
-		mes += 'in: '+homedir+newline+newline
+		mes += 'in: '+prefdir+newline+newline
 		mes += 'Click on "Next" to update your RAT version' 
 		widget_control,wid_text,set_value=mes
 		widget_control,but_next,set_value='Next',sensitive=1
 		wait,0.5
-	endif else begin
-		mes += 'You will make a RAT Installation'+newline+newline
+	endif else if prefdir eq prefdir1 && prefdir ne prefdir0 && file_test(prefdir0,/dir,/write) then begin
+      mes += 'You have chosen to install the configuration files into'+newline
+      mes += prefdir + newline
+      mes += 'Delete the available directory '+newline
+      mes += prefdir0
+		mes += 'Click on "Next" to update your RAT version' 
+		widget_control,wid_text,set_value=mes
+		widget_control,but_next,set_value='Next',sensitive=1
+		wait,0.5
+   endif else begin
+      mes += 'You will make a RAT Installation'+newline+newline
 		mes += 'Click on "Next" to install RAT' 
 		widget_control,wid_text,set_value=mes
 		widget_control,but_next,set_value='Next',sensitive=1
 		wait,0.5
 	endelse
+
+
 
 	
 	repeat begin
@@ -291,6 +340,7 @@ PRE_INSTALL:
 		widget_control,base,/destroy
 		goto,LICENSE
 	endif
+
 	
 	if os eq 'windows' then begin
 		dummy = DIALOG_MESSAGE(["WINDOWS operating system detected!","","Would you like that RAT installs Linux ?"], DIALOG_PARENT = base, TITLE='Linux Installation ?',/question)
@@ -317,7 +367,15 @@ PRE_INSTALL:
 			widget_control,base2,/destroy
 		endelse
 	endif
-	
+
+	; * Delete default prefdir
+   if prefdir eq prefdir1 && prefdir ne prefdir0 && file_test(prefdir0,/dir,/write) then begin
+      prefdir0 = file_dirname(prefdir0,/m)+file_basename(prefdir0) ; important for win machines.
+      file_delete,/quiet,/rec,prefdir0
+   endif
+
+   config1 = prefdir + 'preferences'
+   config2 = prefdir + 'preferences.old'
 	if file_test(config1) then begin
 		file_move,config1,config2,/overwrite
 		restore,config2
@@ -327,8 +385,8 @@ PRE_INSTALL:
 		definitions,/update_pref
 		restore,config1
 	endif else begin
-		file_mkdir,homedir
-		file_mkdir,homedir+'icons'
+		file_mkdir,prefdir
+		file_mkdir,prefdir+'icons'
 		definitions,/update_pref
 		restore,config1
 		config_old = config
@@ -396,6 +454,7 @@ PRE_INSTALL:
 			base2left = widget_base(base2,/column)
 				dummy = widget_label(base2left,value = "--> INTRODUCTION            ")
 				dummy = widget_label(base2left,value = "--> LICENSE                 ")
+				dummy = widget_label(base2left,value = "--> INSTALATION DIRECTORY   ")
 				dummy = widget_label(base2left,value = "--> PRE-INSTALLATION SUMMARY")
 				dummy = widget_label(base2left,value = "--> INSTALLATION            ",font=font)
 				dummy = widget_label(base2left,value = "--> INSTALL COMPLETE        ",sensitive=0)
@@ -413,23 +472,24 @@ PRE_INSTALL:
 	mes += '-----------' + newline + newline
 	widget_control,wid_text,set_value=mes
 	wait,0.5
-	
+   
+
 	; * Create the home dir
-	mes += 'Installing in: '+ homedir
+	mes += 'Installing in: '+ prefdir
 	widget_control,wid_text,set_value=mes
 	wait,0.5
 	mes += '     OK' + newline
 	
 	; * Copie the color palettes
 	mes += 'Copy the color palettes '
-	file_copy,sourcedir+'preferences'+path_sep()+'*.*',homedir,/overwrite
+	file_copy,sourcedir+'preferences'+path_sep()+'*.*',prefdir,/overwrite
 	widget_control,wid_text,set_value=mes
 	wait,0.5
 	mes += '     OK' + newline
 	
 	; * Copie the color palettes
 	mes += 'Copy the icons '
-	file_copy,sourcedir+'icons'+path_sep()+'*.*',homedir+'icons'+path_sep(),/overwrite
+	file_copy,sourcedir+'icons'+path_sep()+'*.*',prefdir+'icons'+path_sep(),/overwrite
 	widget_control,wid_text,set_value=mes
 	wait,0.5
 	mes += '     OK' + newline
@@ -505,6 +565,7 @@ PRE_INSTALL:
 			base2left = widget_base(base2,/column)
 				dummy = widget_label(base2left,value = "--> INTRODUCTION            ")
 				dummy = widget_label(base2left,value = "--> LICENSE                 ")
+				dummy = widget_label(base2left,value = "--> INSTALATION DIRECTORY   ")
 				dummy = widget_label(base2left,value = "--> PRE-INSTALLATION SUMMARY")
 				dummy = widget_label(base2left,value = "--> INSTALLATION            ")
 				dummy = widget_label(base2left,value = "--> INSTALL COMPLETE        ",font=font)
