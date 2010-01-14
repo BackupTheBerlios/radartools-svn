@@ -50,6 +50,7 @@
 @io/open_pisar.pro
 @io/open_convair.pro
 @io/open_ramses.pro
+@io/open_uavsar.pro
 @io/open_gbsar_upc.pro
 @io/rit_read.pro
 @io/rit_write.pro
