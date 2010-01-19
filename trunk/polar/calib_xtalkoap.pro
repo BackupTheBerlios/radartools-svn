@@ -211,6 +211,7 @@ function oap_xtalk,covar
          for j=0,nry-1 do begin
             foo = reform(x[*,i,j])
             bar = reform(m[*,*,i,j])
+            if product(finite(foo),/int) eq 0 || product(finite(bar)) eq 0 then continue
             ludc,bar,index,/double
             foo = lusol(bar,index,foo,/double)
             dcal[0:3,i,j] += complex(foo[0:3],foo[4:7])*c_fact
