@@ -18,8 +18,11 @@
 ;
 ; The Initial Developer of the Original Code is the RAT development team.
 ; All Rights Reserved.
+;
+; :Modification History:
+; /SILENT - quit rat without dialog (mn, 15.02.10)
 ;-
-pro exit_rat
+pro exit_rat, SILENT=SILENT
    compile_opt idl2
    common rat, types, file, wid, config
    common rit, pars
@@ -28,10 +31,10 @@ pro exit_rat
 
 ;	if config.debug ne 1 then $ ;; sorry, i just took it out for not popping up every time during programming. maxim, 08/06
    ;; that's ok, but maybe better do it in your private version. anderl 01/07
-   if ~config.batch then $
+   if ~config.batch && ~keyword_set(SILENT) then $
      info = DIALOG_MESSAGE(infotext, /cancel, DIALOG_PARENT = wid.base, TITLE='Exit RAT')
 
-   if config.batch || info ne "Cancel" then begin
+   if config.batch || keyword_set(SILENT) || info ne "Cancel" then begin
 
 ;  ; cleaning up tempdir
 
