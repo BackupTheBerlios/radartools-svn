@@ -43,9 +43,9 @@ pro rat_finalise,outputfile,finalfile,PALETTE=palette,CALLED=called
 	palettes[0,*,*] = palettes[palette,*,*]  
 	palettes[1,*,*] = palettes[palette,*,*]  
 
-	if not keyword_set(called) then begin
+	if ~keyword_set(called) then begin
 		generate_preview
 		update_info_box
-	endif
+   endif else progress,/destroy
 	
 end

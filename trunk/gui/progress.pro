@@ -247,18 +247,28 @@ pro progress, message=message, drawsize=drawsize, percent=percent, destroy=destr
    common rat, types, file, wid, config
 
    if config.batch then begin
-      if n_elements(message) ne 0 then begin
-         print,''
-         print,format='(A,%"\r\t\t\t\t\t\t",$)','Progress of '+message+' : '
-         print,format='(A,%"\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",$)','       [                    ]'
-      endif
-               
-      if n_elements(submessage) ne 0 then print,'    Subprogress of '+submessage+' : '
-      if n_elements(percent) ne 0 then begin
-         for k=1,percent/5.0 do print,format='(A,$)','.'
-         for k=1,percent/5.0 do print,format='(%"\b",$)'
-      endif
-      if n_elements(subpercent) ne 0 then print,'      {'+string(percent,f='(f0.2)')+'%}+'
+      if n_elements(message) ne 0 && n_elements(submessage) eq 0 then $
+         print,f='(%"\n",A,$)', $
+               strmid('Progress of '+message,0,41)+' : [                    ]'
+      if n_elements(message) ne 0 && n_elements(submessage) ne 0 then $
+         print,f='(%"\n",A,%"\n",A-30,A,$)', $
+               strmid('Progress of '+message,0,71), $
+               strmid(submessage,0,30)+' : ','[                    ]'
+      if n_elements(message) eq 0 && n_elements(submessage) ne 0 then $
+         print,f='(%"\r",A-30,A,$)', $
+               strmid(submessage,0,30)+' : ','[                    ]'
+      if n_elements(percent) ne 0 && n_elements(subpercent) eq 0 then $
+         print,f='(%"\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",A,$)', $
+               '['+strjoin([(percent ge 3?  replicate('.',round(percent/5.))  :''), $
+                            (percent lt 98?replicate(' ',20-round(percent/5.)):'')])+']'
+      if n_elements(percent) ne 0 && n_elements(subpercent) ne 0 then $
+         print,f='(%"\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",A,' + $
+               '%"\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b",%"\b\b\b\b\b\b",$)', $
+               '['+strjoin([(percent ge 3? replicate('.',round(percent/5.))   :''), $
+                            (percent lt 98?replicate(' ',20-round(percent/5.)):'')])+'] sub: ['+ $
+               strjoin([(subpercent ge 3? replicate('-',round(subpercent/5.))   :''), $
+                        (subpercent lt 98?replicate(' ',20-round(subpercent/5.)):'')])+']'
+      if keyword_set(destroy) then print,''
       return
    endif
 	

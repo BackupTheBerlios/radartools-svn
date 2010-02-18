@@ -38,4 +38,5 @@ pro evolute,curr_step, SMALL=small, NO_TIMESTAMP=NO_TIMESTAMP
 
   if n_elements(small) eq 1 then file.info += ' '+small
 
+  if config.batch then print,'Finished: '+curr_step
 end
