@@ -79,7 +79,8 @@ pro decomp_sdh,CALLED = called
 	file_move,outputfile,finalfile,/overwrite
 	file.name = finalfile
 	file.type = 213l
-	file.var  = 4l
+   file.var  = 4l
+   file.zdim = 3L
 
         evolute,'Polarimetric Sphere-Diplane-Helix Decomposition.'
 	
