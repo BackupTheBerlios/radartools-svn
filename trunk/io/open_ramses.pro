@@ -19,7 +19,8 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
 
-function open_ramses_info, inputfile, x=x,y=y, CHANNEL_TYPE=channel_type, info=info
+function open_ramses_info, CALLED=CALLED, inputfile, x=x,y=y, $
+                           CHANNEL_TYPE=channel_type, info=info
   common rat
   ent_file = strmid(inputfile,0,strlen(inputfile)-4)+'.ent'
   if ~file_test(ent_file,/READ) then return, 1
@@ -51,7 +52,11 @@ function open_ramses_info, inputfile, x=x,y=y, CHANNEL_TYPE=channel_type, info=i
   err=set_par('res_sr',float(d.values[ind[0]]))
   ind = where(strlowcase(strcompress(d.names,/R)) $
               eq strlowcase(strcompress('Resolution_doppler',/R)),whereNr)
-  err=set_par('res_az',float(d.values[ind[0]]))
+  if whereNr eq 0 then $
+  ind = where(strlowcase(strcompress(d.names,/R)) $
+              eq strlowcase(strcompress('Resol_dopp',/R)),whereNr)
+  if whereNr ne 0 then $
+     err=set_par('res_az',float(d.values[ind[0]]))
 
 
   channel_type = 0              ; single channel
@@ -59,15 +64,16 @@ function open_ramses_info, inputfile, x=x,y=y, CHANNEL_TYPE=channel_type, info=i
 
 ;;; check for other POL-,IN-,POLIN- files
   ref_pol = ['RefHh','RefVv','RefHv','RefVh']
+  ref_pol = ['Hh','Vv','Hv','Vh']
   for i=0,3 do begin
      pos = strpos(inputfile,ref_pol[i])
      if pos gt 0 then begin
-        inputfiles = strmid(inputfile,0,pos)+ref_pol+strmid(inputfile,pos+5,strlen(inputfile))
+        inputfiles = strmid(inputfile,0,pos)+ref_pol+strmid(inputfile,pos+2,strlen(inputfile))
         ind = file_test(inputfiles,/READ)
         if ind[0] && ind[1] && ind[2] then begin
-           q = DIALOG_MESSAGE(['In this directory exist files for a polarimetric data set:',inputfiles[where(ind)],'','Should the polarimetric vector be built?'], $
-                              DIALOG_PARENT = main,/QUESTION)
-           if q eq 'Yes' then begin
+           if ~keyword_set(CALLED) then $
+              q = DIALOG_MESSAGE(['In this directory exist files for a polarimetric data set:',inputfiles[where(ind)],'','Should the polarimetric vector be built?'], DIALOG_PARENT = main,/QUESTION)
+           if keyword_set(CALLED) || q eq 'Yes' then begin
               channel_type = 2
               inputfile=inputfiles[where(ind)]
            endif
@@ -82,9 +88,9 @@ function open_ramses_info, inputfile, x=x,y=y, CHANNEL_TYPE=channel_type, info=i
         inputfiles = strmid(inputfile,0,pos)+ref_in+strmid(inputfile,pos+2,strlen(inputfile))
         ind = file_test(inputfiles,/READ)
         if ind[0] && ind[1] then begin
-           q = DIALOG_MESSAGE(['In this directory exist files for an interferometric data set:',inputfiles[where(ind)],'','Should the interferometric vector be built?'], $
-                              DIALOG_PARENT = main,/QUESTION)
-           if q eq 'Yes' then begin
+           if ~keyword_set(CALLED) then $
+              q = DIALOG_MESSAGE(['In this directory exist files for an interferometric data set:',inputfiles[where(ind)],'','Should the interferometric vector be built?'], DIALOG_PARENT = main,/QUESTION)
+           if keyword_set(CALLED) || q eq 'Yes' then begin
               channel_type = 1
               inputfile=inputfiles[where(ind)]
            endif
@@ -95,11 +101,11 @@ function open_ramses_info, inputfile, x=x,y=y, CHANNEL_TYPE=channel_type, info=i
   return, 0
 end
 
-pro open_ramses,INPUTFILE = inputfile
+pro open_ramses, CALLED=CALLED, INPUTFILE = inputfile
   common rat
   common channel, channel_names, channel_selec, color_flag, palettes, pnames
 
-  if ~keyword_set(inputfile) then begin ; GUI for file selection
+  if n_elements(inputfile) lt 1 then begin ; GUI for file selection
      path = config.workdir
      inputfile = cw_rat_dialog_pickfile(TITLE='Open RAMSES file', $
                                         DIALOG_PARENT=wid.base, FILTER = '*.dat', /MUST_EXIST, PATH=path, GET_PATH=path)
@@ -117,8 +123,8 @@ pro open_ramses,INPUTFILE = inputfile
   WIDGET_CONTROL,/hourglass     ; switch mouse cursor
 
 ; undo function
-   undo_prepare,outputfile,finalfile,CALLED=CALLED
-   open_rit,/EMPTY              ; no parameters are set: delete the odl ones!
+  undo_prepare,outputfile,finalfile,CALLED=CALLED
+  open_rit,/EMPTY               ; no parameters are set: delete the odl ones!
 
 ; converting format to RAT
   
@@ -128,7 +134,8 @@ pro open_ramses,INPUTFILE = inputfile
 ;   readu,ddd,nry                ; reading range size
 ;   readu,ddd,nrx                ; reading azimuth size
 
-  err=open_ramses_info(inputfile,x=nrx,y=nry,channel_type=channel_type,info=info)
+  err=open_ramses_info(inputfile,x=nrx,y=nry,channel_type=channel_type, $
+                        info=info,called=called)
   if err then return
   header = bytarr(4+nrx*4*2,/nozero)
 ;  data   = complexarr(nrx,nry,,/nozero)

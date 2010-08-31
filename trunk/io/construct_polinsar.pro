@@ -208,7 +208,9 @@ pro construct_polinsar,NOGUI=nogui, called=called, files=files, info_get=info_ge
   file.info  = newinfo
   file_move,outputfile,finalfile,/overwrite
 
-  open_rit,/EMPTY
+  if file_test(files[0]) then $
+    open_rit, file=files[0] $
+  else open_rit,/EMPTY
   ignore = set_par('polarizations',pol)
   ignore = set_par('nr_tracks',n_tr)
   evolute,'Construct multibaseline polarimetic SAR data with '+ $
