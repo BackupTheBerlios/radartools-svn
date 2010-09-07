@@ -48,7 +48,9 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
    sar_scl = 1                  ; SAR type scaling
    amp_scl = 1                  ; amplitude power trick for better display
    hist_scl = 0                 ; amplitude power trick for better display
-
+   
+   n_elements_arr = n_elements(arr) ;; for refl_sym case in T3/T6
+   
    case 1 of
       
 ;-----------------------------------------------------------
@@ -135,6 +137,12 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
       
       (type ge 220 and type le 222):  begin ; scattering matrices 
          arr = sqrt(arr > 0)
+         if arr[0,2,xdim/2,ydim/2] eq 0 && $ ;; reflection symmetric case
+           total(arr[0,2,*,*],/double) eq 0. then $
+             if vdim mod 3 eq 0 then $
+               n_elements_arr *= (5/9.) $
+             else if vdim mod 4 eq 0 then $
+               n_elements_arr *= (8/16.)
       end
       
       (type eq 214 or type eq 250):  begin ; eigenvalue / span
@@ -248,8 +256,14 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
       
       ((type ge 510) and (type le 513)): begin ;  PolInSAR matrix
          arr = sqrt(temporary(arr) > 0)
-      end
-
+         if arr[0,2,xdim/2,ydim/2] eq 0 && $ ;; reflection symmetric case
+           total(arr[0,2,*,*],/double) eq 0. then $
+             if vdim mod 3 eq 0 then $
+               n_elements_arr *= (5/9.) $
+             else if vdim mod 4 eq 0 then $
+               n_elements_arr *= (8/16.)
+       end
+      
       type eq 514: begin        ; normalized matrix
          arr=bytscl(sqrt(abs(temporary(arr))),0.0,1.0)
          scaling = 0
@@ -386,8 +400,8 @@ function float2bytes,arr,TYPE=type, OVERWRITE=OVERWRITE
          if config.log_scale then $
            arr = bytscl(temporary(10*alog10(arr)),min=0) $
          else begin
-            mm = float(total(arr,/double)/n_elements(arr))	
-            arr=bytscl(temporary(arr),0,config.sar_scale*mm)
+           mm = float(total(arr,/double)/n_elements_arr)	
+           arr=bytscl(temporary(arr),0,config.sar_scale*mm)
          endelse
       endif else begin
          mm = max(arr)
