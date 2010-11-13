@@ -20,7 +20,7 @@
 ; All Rights Reserved.
 ;------------------------------------------------------------------------
  
-pro open_palsar,INPUTFILE = inputfile, PATH = path, $
+pro open_palsar,CALLED=CALLED, INPUTFILE = inputfile, PATH = path, $
                 do_xpol=do_xpol, do_k2m=do_k2m, load_pol=load_pol
   common rat, types, file, wid, config 
   common channel, channel_names, channel_selec, color_flag, palettes, pnames 
@@ -141,17 +141,18 @@ pro open_palsar,INPUTFILE = inputfile, PATH = path, $
         mess = dialog_message(['No multiple files found.','This is not polarimetric data !!'],title = 'ALOS import',/error,dialog_parent=wid.base)
         return
       endif
-      if nr_channels eq 2 then begin
+      if nr_channels eq 2 && ~keyword_set(called) then begin
         mess = dialog_message(['Only two channels found (partial polarimetric data).','RAT is not supporting analysis of partial polarimetric data.','WARNING: errors are very likely to occur'],title = 'ALOS import',dialog_parent=wid.base)
       endif
       if nr_channels eq 3 then begin
         mess = dialog_message(['Not enough channel found / a file is missing','WARNING: errors are very likely to occur'],title = 'ALOS import',dialog_parent=wid.base)
       endif
-      if nr_channels gt 1 and level eq 1.5 then begin
+      if nr_channels gt 1 and level eq 1.5 && ~keyword_set(called) then begin
         mess = dialog_message(['You are loading polarimetric amplitude data. RAT is not supporting such data and it is',$
                                'generally recommended to use coherent complex data for polarimetric analysis !!','WARNING: errors are very likely to occur !'],title = 'ALOS import',/error,dialog_parent=wid.base)
       endif
-      if nr_channels eq 4 and level eq 1.1 then begin ; ask for crosspolar symmetrisation
+      if nr_channels eq 4 $     ; and level eq 1.1
+      then begin                ; ask for crosspolar symmetrisation
         if n_elements(do_xpol) eq 0 then begin 
           mess = dialog_message(['Perform cross-polar symmetrisation?','','Hint: HV / VH will be averaged.','This is usually recommendable.'],title = 'ALOS import',dialog_parent=wid.base,/question)
           if mess eq "Yes" then symm = 1
@@ -198,7 +199,11 @@ pro open_palsar,INPUTFILE = inputfile, PATH = path, $
     endelse
 
     progress,Message='Decoding ALOS-PALSAR...'
-    for i=0l,lines-1 do begin 
+    rev_img = level eq 1.5 ;; reverse y-direction
+    start_line = keyword_set(rev_img)? lines-1L: 0L
+    end_line   = keyword_set(rev_img)? 0L: lines-1L
+    incr_line  = keyword_set(rev_img)? -1: 1
+    for i=start_line,end_line,incr_line do begin 
       progress,percent=i*100.0/lines
       for k=0,nr_channels-1 do begin
         point_lun,ddd[k],offset+i*(prefix+bps*pixels)+prefix-1
@@ -227,7 +232,8 @@ pro open_palsar,INPUTFILE = inputfile, PATH = path, $
     
     mess = "No"
     progress,/destroy
-    if nr_channels eq 4 and level eq 1.1 then begin ; ask for crosspolar symmetrisation
+    if nr_channels eq 4 $       ; and level eq 1.1
+    then begin                  ; ask for crosspolar symmetrisation
       if n_elements(do_k2m) eq 0 then begin 
       mess = dialog_message(['Directly transform to covariance matrix representation?',' ',$
                              'Hint: Choose presumming factors, which correct','for different resolutions in range / azimuth.'],title = 'ALOS import',dialog_parent=wid.base,/question)
