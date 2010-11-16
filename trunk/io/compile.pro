@@ -77,3 +77,4 @@
 @io/open_palsar_ersdac_ceos.pro
 @io/open_palsar_ersdac.pro
 @io/ersdac_chk_ceos.pro
+@io/open_roipac.pro

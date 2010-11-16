@@ -125,6 +125,7 @@ PRO rat_event, event
                'Open external.UAVSAR       (JPL)'                          : open_uavsar
                'Open external.GB-SAR       (UPC)'                          : open_gbsar_upc
                'Open external.POLSARPRO 2.0/3.0'                           : open_polsarpro
+               'Open external.ROI_pac      (JPL)'                          : open_roipac
                'Open external.Generic binary'                              : open_generic
                'Open external.ENVI standard'                               : open_envi
                'Open pixmap.Open PNG'                                      : open_image,/png
@@ -571,6 +572,7 @@ PRO rat,STARTFILE=startfile, FILE=startfile_tmp, $
                     '2\JERS', $
                     '4\GB-SAR       (UPC)', $
                     '4\POLSARPRO 2.0/3.0', $
+                    '0\ROI_pac      (JPL)', $
                     '0\Generic binary', $
                     '2\ENVI standard', $
                     '1\Open internal', $

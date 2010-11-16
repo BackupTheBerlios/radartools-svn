@@ -60,6 +60,7 @@ function open_uavsar_info, inputfile, x=x,y=y, CHANNEL_TYPE=channel_type, info=i
   mlcHHVV = get_field(d, 'mlcHHVV')
   mlcHVVV = get_field(d, 'mlcHVVV')
 
+
   slcX = LONG(get_field(d,'slc_mag.set_cols'))
   slcY = LONG(get_field(d,'slc_mag.set_rows'))
 
@@ -72,9 +73,21 @@ function open_uavsar_info, inputfile, x=x,y=y, CHANNEL_TYPE=channel_type, info=i
   slc_available = 1
   for i=0, 3 do slc_available *= file_test(path+slc_files[i],/read)
   mlc_available = 1
-  for i=0, 3 do mlc_available *= file_test(path+mlc_files[i],/read)
+  for i=0, n_elements(mlc_files)-1 do mlc_available *= file_test(path+mlc_files[i],/read)
 
-  return, ~(slc_available || mlc_available)
+  grdHHHH = get_field(d, 'grdHHHH')
+  grdHVHV = get_field(d, 'grdHVHV')
+  grdVVVV = get_field(d, 'grdVVVV')
+  grdHHHV = get_field(d, 'grdHHHV')
+  grdHHVV = get_field(d, 'grdHHVV')
+  grdHVVV = get_field(d, 'grdHVVV')
+  grdX = LONG(get_field(d,'grd_mag.set_cols'))
+  grdY = LONG(get_field(d,'grd_mag.set_rows'))
+  grd_files = [grdHHHH,grdVVVV,grdHVHV,grdHHVV,grdHHHV,grdHVVV]
+  grd_available = 1
+  for i=0, n_elements(grd_files)-1 do grd_available *= file_test(path+grd_files[i],/read)
+
+  return, ~(slc_available || mlc_available || grd_available)
 end
 
 pro open_uavsar, CALLED=CALLED, INPUTFILE = inputfile
